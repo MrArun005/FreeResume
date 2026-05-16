@@ -1,0 +1,375 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .animate-delay-100 {
+        animation-delay: 100ms;
+    }
+
+    .animate-delay-200 {
+        animation-delay: 200ms;
+    }
+
+    .animate-delay-300 {
+        animation-delay: 300ms;
+    }
+}
+
+@media print {
+    @page {
+        margin: 0;
+        size: auto;
+    }
+
+    html,
+    body {
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: white;
+    }
+
+    /* Reset transforms for print to avoid scaling issues */
+    @media print {
+        * {
+            transform: none !important;
+        }
+    }
+
+    /* Force links to keep color and underline, overriding any browser defaults */
+    a {
+        color: #2563eb !important;
+        /* Force blue for all links in print */
+        text-decoration: underline !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Ensure Tailwind print classes work by forcing them */
+    .print\:text-blue-600 {
+        color: #2563eb !important;
+    }
+
+    .print\:underline {
+        text-decoration: underline !important;
+    }
+
+    /* Hide all UI elements - but NOT content inside resume-paper */
+    .no-print {
+        display: none !important;
+    }
+
+    /* Hide top-level UI elements (editor header, sidebars, etc) */
+    body>div>div>header,
+    body>div>div>div.flex>div:not(.print-area),
+    .editor-sidebar,
+    .tox-editor-container,
+    .resize-handle,
+    .drag-handle,
+    [role="tooltip"] {
+        display: none !important;
+    }
+
+    /* Hide buttons, inputs, textareas OUTSIDE of resume content */
+    body>div>div>header button,
+    body>div>div>header input,
+    body>div>div>header textarea,
+    .no-print button,
+    .no-print input,
+    .no-print textarea {
+        display: none !important;
+    }
+
+    /* Keep resume content visible - headers, decorative elements, etc inside resume-paper should print */
+    .resume-paper header,
+    .resume-paper h1,
+    .resume-paper h2,
+    .resume-paper h3,
+    .resume-paper h4,
+    .resume-paper svg,
+    .resume-paper a {
+        display: block !important;
+    }
+
+    .resume-paper svg {
+        display: inline-block !important;
+    }
+
+    /* Reset layout for the main container and its children */
+    #root,
+    #root>div,
+    #root>div>div {
+        display: block !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* Target the resume preview container */
+    .print-area {
+        display: block !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        background-color: white !important;
+        z-index: 9999 !important;
+    }
+
+    /* Ensure the resume pages print correctly */
+    .resume-paper {
+        break-after: page;
+        page-break-after: always;
+        /* Legacy support */
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        border: none !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        min-height: 297mm !important;
+        overflow: hidden !important;
+        /* Prevent content spill */
+        position: relative !important;
+    }
+
+    .resume-paper:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    /* Hide the gray background of the preview area */
+    .bg-gray-200 {
+        background-color: white !important;
+    }
+
+    /* Ensure first page header is always visible in print */
+    .resume-paper:first-child header {
+        display: block !important;
+    }
+
+    /* Ensure SVG icons print */
+    svg {
+        print-color-adjust: exact !important;
+        -webkit-print-color-adjust: exact !important;
+    }
+
+    /* Ensure links print without underlines but keep color */
+    a {
+        color: inherit !important;
+        text-decoration: none !important;
+    }
+}
+
+@keyframes float-3d {
+
+    0%,
+    100% {
+        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg) translateY(-5px);
+    }
+
+    50% {
+        transform: perspective(1000px) rotateY(5deg) rotateX(-5deg) translateY(5px);
+    }
+}
+
+.animate-float-3d {
+    animation: float-3d 6s ease-in-out infinite;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Perspective utility */
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+.preserve-3d {
+    transform-style: preserve-3d;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 40s linear infinite;
+}
+
+.pause-on-hover:hover .animate-marquee {
+    animation-play-state: paused;
+}
+
+@layer base {
+    html {
+        font-family: 'Rajdhani', sans-serif;
+        background-color: #020617;
+        /* Slate 950 deeply dark */
+        color: #f1f5f9;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 0.05em;
+    }
+}
+
+@layer utilities {
+    .glass-card {
+        @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+    }
+
+    .glass-card-dark {
+        @apply bg-gray-900/80 backdrop-blur-xl border border-white/10 shadow-2xl;
+    }
+
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-emerald-600;
+    }
+
+    .text-gradient-premium {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-800 via-teal-700 to-emerald-800;
+    }
+
+    .mesh-bg-light {
+        background-color: #020617;
+        /* Very dark slate */
+        background-image:
+            radial-gradient(at 20% 30%, hsla(189, 100%, 56%, 0.15) 0px, transparent 60%),
+            radial-gradient(at 80% 10%, hsla(260, 100%, 56%, 0.08) 0px, transparent 50%),
+            radial-gradient(at 50% 80%, hsla(220, 100%, 56%, 0.12) 0px, transparent 60%);
+    }
+}
+
+/* Minimal Theme Overrides */
+.minimal .mesh-bg-light {
+    background-image: none !important;
+    background-color: #ffffff !important;
+}
+
+.minimal .bg-gradient-to-r,
+.minimal .bg-gradient-to-br,
+.minimal .bg-gradient-to-b {
+    background-image: none !important;
+    background-color: transparent !important;
+}
+
+.minimal .text-transparent {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+.minimal .glass-card,
+.minimal .glass-card-dark {
+    background: white !important;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+}
+
+.minimal button {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.minimal .rounded-full,
+.minimal .rounded-xl,
+.minimal .rounded-2xl,
+.minimal .rounded-lg {
+    border-radius: 0 !important;
+}
+
+/* Dark Mode Global Overrides */
+.dark body {
+    background-color: #020617;
+    color: #f8fafc;
+}
+
+.dark .mesh-bg-light {
+    background-color: #020617;
+    background-image:
+        radial-gradient(at 30% 20%, hsla(189, 100%, 56%, 0.15) 0px, transparent 60%),
+        radial-gradient(at 70% 80%, hsla(260, 100%, 56%, 0.12) 0px, transparent 60%);
+}
+
+/* ==== PRINT STYLES (REACT-TO-PRINT) ==== */
+@media print {
+    @page {
+        size: A4;
+        margin: 0 !important;
+    }
+
+    body,
+    html {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background-color: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .no-print,
+    .no-print * {
+        display: none !important;
+    }
+
+    .resume-paper {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-after: page !important;
+        transform: scale(1) !important;
+    }
+
+    .mesh-bg-light,
+    .mesh-bg-dark {
+        display: none !important;
+    }
+}
