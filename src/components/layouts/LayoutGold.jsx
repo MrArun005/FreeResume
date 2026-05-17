@@ -143,7 +143,7 @@ const LayoutGold = ({ data, pageIndex }) => {
                                                 className="text-lg font-bold uppercase tracking-[0.2em]"
                                                 style={{ color: '#1a1a1a' }}
                                             >
-                                                Professional Experience
+                                                Experience
                                             </h3>
                                             <div
                                                 className="h-px flex-1"
@@ -277,7 +277,7 @@ const LayoutGold = ({ data, pageIndex }) => {
                                                 className="text-lg font-bold uppercase tracking-[0.2em]"
                                                 style={{ color: '#1a1a1a' }}
                                             >
-                                                Expertise
+                                                Skills
                                             </h3>
                                             <div
                                                 className="h-px flex-1"

@@ -76,7 +76,7 @@ const LayoutExecutive = ({ data, pageIndex }) => {
                                 <div id="section-title-experience" className="flex items-center gap-4 mb-6">
                                     <div className="h-px bg-slate-300 flex-1"></div>
                                     <h3 className="text-md font-bold uppercase tracking-widest text-slate-900 font-sans">
-                                        Professional Experience
+                                        Experience
                                     </h3>
                                     <div className="h-px bg-slate-300 flex-1"></div>
                                 </div>
@@ -155,7 +155,7 @@ const LayoutExecutive = ({ data, pageIndex }) => {
                                 <div id="section-title-skills" className="flex items-center gap-4 mb-6 mt-2">
                                     <div className="h-px bg-slate-300 flex-1"></div>
                                     <h3 className="text-md font-bold uppercase tracking-widest text-slate-900 font-sans">
-                                        Core Competencies
+                                        Skills
                                     </h3>
                                     <div className="h-px bg-slate-300 flex-1"></div>
                                 </div>

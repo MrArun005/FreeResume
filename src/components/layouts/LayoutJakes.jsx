@@ -128,8 +128,28 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                                     </div>
                                 )}
                                 <div className="text-sm">
-                                    <span className="font-bold">Technical Skills: </span>
-                                    {skills.join(', ')}
+                                    {skills.some((s) => typeof s === 'string' && s.includes(':')) ? (
+                                        // Categorized skills ("Languages: Python, SQL") — render
+                                        // each category on its own line with the label bolded so
+                                        // ATS picks up the structure and humans can scan it.
+                                        skills.map((entry, i) => {
+                                            const idx = entry.indexOf(':');
+                                            if (idx > 0) {
+                                                return (
+                                                    <div key={i}>
+                                                        <span className="font-bold">
+                                                            {entry.slice(0, idx)}:
+                                                        </span>
+                                                        {entry.slice(idx + 1)}
+                                                    </div>
+                                                );
+                                            }
+                                            return <div key={i}>{entry}</div>;
+                                        })
+                                    ) : (
+                                        // Plain comma-joined list when no categories present.
+                                        <span>{skills.join(', ')}</span>
+                                    )}
                                 </div>
                             </div>
                         );
