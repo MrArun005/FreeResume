@@ -7,7 +7,7 @@ const ShareModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     const shareUrl = window.location.href; // Uses the current deployed URL
-    const shareText = "I just updated my resume using Free Resume! It's actually free, privacy-focused, and ATS-friendly. Check it out here: " + shareUrl;
+    const shareText = "I just updated my resume using Paperjet — AI-powered, ATS-friendly, and privacy-first. Try it: " + shareUrl;
     const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
 
     const handleCopy = () => {
@@ -21,7 +21,7 @@ const ShareModal = ({ isOpen, onClose }) => {
             <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all scale-100">
 
                 {/* Header */}
-                <div className="bg-gradient-to-r from-teal-600 to-indigo-600 p-6 text-white text-center relative">
+                <div className="bg-gradient-to-r from-brand-600 to-indigo-600 p-6 text-white text-center relative">
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
@@ -32,7 +32,7 @@ const ShareModal = ({ isOpen, onClose }) => {
                         <Heart className="fill-white text-white" size={24} />
                     </div>
                     <h2 className="text-2xl font-bold mb-1">Resume Downloaded!</h2>
-                    <p className="text-teal-100 text-sm">Good luck with your applications! 🚀</p>
+                    <p className="text-brand-100 text-sm">Good luck with your applications! 🚀</p>
                 </div>
 
                 {/* Body */}
@@ -49,7 +49,7 @@ const ShareModal = ({ isOpen, onClose }) => {
                             href={linkedinUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full bg-[#0077b5] hover:bg-[#006396] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-teal-500/30"
+                            className="flex items-center justify-center gap-2 w-full bg-[#0077b5] hover:bg-[#006396] text-white font-bold py-3 px-4 rounded-xl transition-all transform hover:scale-[1.02] shadow-lg shadow-brand-500/30"
                         >
                             <Linkedin size={20} />
                             Share on LinkedIn

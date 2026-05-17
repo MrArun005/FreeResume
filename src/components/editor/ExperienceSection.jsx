@@ -74,7 +74,7 @@ const ExperienceSection = ({
                                             />
                                             <button
                                                 type="button"
-                                                className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-50/60 text-teal-700 border border-teal-200 hover:bg-teal-50 transition-colors"
+                                                className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-50/60 text-brand-700 border border-brand-200 hover:bg-brand-50 transition-colors"
                                                 title="Improve writing with AI"
                                             >
                                                 <Sparkles size={11} /> Improve with AI

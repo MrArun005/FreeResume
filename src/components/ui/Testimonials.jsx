@@ -18,7 +18,7 @@ const TestimonialCard = ({ t, featured = false }) => (
     <div
         className={`bg-white p-8 lg:p-10 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 relative group ${featured ? 'max-w-2xl mx-auto' : ''}`}
     >
-        <div className="absolute top-6 right-6 text-teal-50 group-hover:text-teal-100 transition-colors">
+        <div className="absolute top-6 right-6 text-brand-50 group-hover:text-brand-100 transition-colors">
             <Quote size={featured ? 56 : 44} fill="currentColor" />
         </div>
 

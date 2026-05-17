@@ -90,9 +90,9 @@ const JobAssistantModal = ({ isOpen, onClose, resume, onImproveResume }) => {
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
 
                 {/* Header */}
-                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-teal-50 to-indigo-50">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-brand-50 to-indigo-50">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-teal-600 rounded-lg text-white shadow-lg shadow-teal-200">
+                        <div className="p-2 bg-brand-600 rounded-lg text-white shadow-lg shadow-brand-200">
                             <Briefcase size={24} />
                         </div>
                         <div>
@@ -116,7 +116,7 @@ const JobAssistantModal = ({ isOpen, onClose, resume, onImproveResume }) => {
                                 value={jobDescription}
                                 onChange={(e) => setJobDescription(e.target.value)}
                                 placeholder="Paste Job Description text OR a Job Post URL (e.g., LinkedIn, Indeed)..."
-                                className="w-full h-64 p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none text-sm"
+                                className="w-full h-64 p-4 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none text-sm"
                             />
                         </div>
 
@@ -124,7 +124,7 @@ const JobAssistantModal = ({ isOpen, onClose, resume, onImproveResume }) => {
                             <button
                                 onClick={() => { setActiveTab('match'); handleMatch(); }}
                                 disabled={isLoading || !jobDescription}
-                                className={`w-full py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${activeTab === 'match' ? 'bg-teal-600 text-white shadow-lg shadow-teal-200' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+                                className={`w-full py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${activeTab === 'match' ? 'bg-brand-600 text-white shadow-lg shadow-brand-200' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
                             >
                                 {isLoading && activeTab === 'match' ? <Loader className="animate-spin" /> : <CheckCircle size={18} />}
                                 Analyze Match

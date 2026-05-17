@@ -12,7 +12,7 @@ const LivePreview = ({ onStartBuilding }) => {
             <div className="max-w-7xl mx-auto px-6">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-100 text-teal-700 rounded-full text-sm font-bold mb-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-100 text-brand-700 rounded-full text-sm font-bold mb-4">
                         <Sparkles size={16} />
                         <span>Interactive Demo</span>
                     </div>
@@ -43,7 +43,7 @@ const LivePreview = ({ onStartBuilding }) => {
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900 outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all"
                                     placeholder="e.g., John Smith"
                                 />
                             </div>
@@ -56,7 +56,7 @@ const LivePreview = ({ onStartBuilding }) => {
                                     type="text"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900 outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all"
                                     placeholder="e.g., Software Engineer"
                                 />
                             </div>
@@ -69,14 +69,14 @@ const LivePreview = ({ onStartBuilding }) => {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:border-teal-500 focus:ring-2 focus:ring-teal-200 dark:focus:ring-teal-900 outline-none transition-all"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:focus:ring-brand-900 outline-none transition-all"
                                     placeholder="your.email@example.com"
                                 />
                             </div>
 
                             {/* Info Box */}
-                            <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 rounded-xl p-4 mt-6">
-                                <p className="text-sm text-teal-900 dark:text-teal-200">
+                            <div className="bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-xl p-4 mt-6">
+                                <p className="text-sm text-brand-900 dark:text-brand-200">
                                     <strong>💡 This is just a preview!</strong> Your actual resume will have
                                     complete sections for experience, education, skills, and more.
                                 </p>
@@ -86,7 +86,7 @@ const LivePreview = ({ onStartBuilding }) => {
                             <div className="pt-4">
                                 <button
                                     onClick={onStartBuilding}
-                                    className="w-full bg-gradient-to-r from-teal-600 to-emerald-600 text-white px-6 py-4 rounded-xl font-bold hover:from-teal-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group"
+                                    className="w-full bg-gradient-to-r from-brand-600 to-emerald-600 text-white px-6 py-4 rounded-xl font-bold hover:from-brand-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group"
                                 >
                                     Continue Building My Resume
                                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -112,7 +112,7 @@ const LivePreview = ({ onStartBuilding }) => {
                             <div className="relative z-10">
                                 <div className="mb-4 flex items-center justify-between">
                                     <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                                        <Sparkles size={16} className="text-teal-500" />
+                                        <Sparkles size={16} className="text-brand-500" />
                                         Live Preview
                                     </h3>
                                     {(name || title || email) && (
@@ -132,7 +132,7 @@ const LivePreview = ({ onStartBuilding }) => {
                                         </h1>
 
                                         {/* Title Preview with Animation */}
-                                        <p className={`text-lg text-teal-600 dark:text-teal-400 font-medium transition-all duration-300 ${title ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}>
+                                        <p className={`text-lg text-brand-600 dark:text-brand-400 font-medium transition-all duration-300 ${title ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}>
                                             {title || 'Your Job Title'}
                                         </p>
 
@@ -176,7 +176,7 @@ const LivePreview = ({ onStartBuilding }) => {
                                             </h3>
                                             <div className="flex flex-wrap gap-2">
                                                 {['Skill 1', 'Skill 2', 'Skill 3', 'Skill 4'].map((skill, i) => (
-                                                    <div key={i} className="px-3 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 text-xs font-medium rounded-full">
+                                                    <div key={i} className="px-3 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs font-medium rounded-full">
                                                         {skill}
                                                     </div>
                                                 ))}
@@ -186,7 +186,7 @@ const LivePreview = ({ onStartBuilding }) => {
                                 </div>
 
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center flex items-center justify-center gap-1">
-                                    <Sparkles size={12} className="text-teal-500" />
+                                    <Sparkles size={12} className="text-brand-500" />
                                     Your resume updates instantly as you type
                                 </p>
                             </div>
@@ -198,7 +198,7 @@ const LivePreview = ({ onStartBuilding }) => {
                 {/* Stats Below */}
                 <div className="mt-16 grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                     <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-300">
-                        <div className="text-4xl font-bold text-teal-600 mb-2">30s</div>
+                        <div className="text-4xl font-bold text-brand-600 mb-2">30s</div>
                         <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Average Build Time</div>
                     </div>
                     <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-300">
@@ -206,7 +206,7 @@ const LivePreview = ({ onStartBuilding }) => {
                         <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Free Forever</div>
                     </div>
                     <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-300">
-                        <div className="text-4xl font-bold text-teal-600 mb-2">ATS</div>
+                        <div className="text-4xl font-bold text-brand-600 mb-2">ATS</div>
                         <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Optimized Templates</div>
                     </div>
                 </div>

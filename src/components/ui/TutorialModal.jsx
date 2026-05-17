@@ -6,14 +6,14 @@ const TutorialModal = ({ onClose }) => {
 
     const steps = [
         {
-            title: "Welcome to Free Resume! 🎉",
+            title: "Welcome to Paperjet! 🎉",
             icon: <Sparkles className="w-12 h-12" />,
             iconColor: "from-yellow-400 to-orange-500",
             description: "Let's take a quick tour to help you create your perfect resume in minutes.",
             content: (
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-gradient-to-br from-teal-50 to-indigo-50 p-4 rounded-xl border border-teal-100">
+                        <div className="bg-gradient-to-br from-brand-50 to-indigo-50 p-4 rounded-xl border border-brand-100">
                             <div className="text-3xl mb-2">🎨</div>
                             <h4 className="font-bold text-gray-900 mb-1">10+ Templates</h4>
                             <p className="text-sm text-gray-600">Professional designs</p>
@@ -40,28 +40,28 @@ const TutorialModal = ({ onClose }) => {
         {
             title: "Choose Your Template",
             icon: <FileText className="w-12 h-12" />,
-            iconColor: "from-teal-500 to-indigo-600",
+            iconColor: "from-brand-500 to-indigo-600",
             description: "Browse our professional templates and select the one that fits your style.",
             content: (
                 <div className="space-y-4">
                     <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                         <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 w-16 h-16 bg-teal-100 rounded-lg flex items-center justify-center">
+                            <div className="flex-shrink-0 w-16 h-16 bg-brand-100 rounded-lg flex items-center justify-center">
                                 <div className="text-2xl">📋</div>
                             </div>
                             <div>
                                 <h4 className="font-bold text-gray-900 mb-2">Template Gallery</h4>
                                 <p className="text-sm text-gray-600 mb-3">You'll find templates on the landing page. Each one is optimized for ATS (Applicant Tracking Systems).</p>
                                 <div className="flex gap-2">
-                                    <span className="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-medium rounded-full">Classic</span>
+                                    <span className="px-3 py-1 bg-brand-100 text-brand-700 text-xs font-medium rounded-full">Classic</span>
                                     <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">Creative</span>
                                     <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">Modern</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-gradient-to-r from-teal-50 to-indigo-50 rounded-xl p-4 border border-teal-200">
-                        <p className="text-sm text-teal-900">
+                    <div className="bg-gradient-to-r from-brand-50 to-indigo-50 rounded-xl p-4 border border-brand-200">
+                        <p className="text-sm text-brand-900">
                             💡 <strong>Tip:</strong> You can switch templates anytime without losing your content!
                         </p>
                     </div>

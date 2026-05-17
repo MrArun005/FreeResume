@@ -5,7 +5,7 @@ const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial
     return (
         <div className="space-y-5">
             <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 tracking-tight">
-                <User size={18} className="text-teal-700" /> Personal details
+                <User size={18} className="text-brand-700" /> Personal details
             </h2>
 
             <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
@@ -38,7 +38,7 @@ const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial
                     <FieldLabel>Social links & portfolio</FieldLabel>
                     <button
                         onClick={onAddSocial}
-                        className="text-teal-700 hover:text-teal-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                        className="text-brand-700 hover:text-brand-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
                     >
                         <Plus size={12} /> Add link
                     </button>

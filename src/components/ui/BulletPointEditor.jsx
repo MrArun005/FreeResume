@@ -51,13 +51,13 @@ const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPer
                 <div className="space-y-2">
                     {bullets.map((bullet, index) => (
                         <div key={index} className="flex items-start gap-2 group relative">
-                            <span className="text-teal-600 mt-2.5 shrink-0 leading-none">•</span>
+                            <span className="text-brand-600 mt-2.5 shrink-0 leading-none">•</span>
                             <div className="flex-1 relative">
                                 <input
                                     type="text"
                                     value={bullet}
                                     onChange={(e) => editBullet(index, e.target.value)}
-                                    className="w-full py-2 pl-2.5 pr-9 text-sm bg-white border border-slate-200 rounded-md hover:border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none text-slate-900 transition-colors"
+                                    className="w-full py-2 pl-2.5 pr-9 text-sm bg-white border border-slate-200 rounded-md hover:border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none text-slate-900 transition-colors"
                                     placeholder="Bullet point"
                                 />
                                 <button
@@ -84,13 +84,13 @@ const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPer
                             value={currentInput}
                             onChange={(e) => setCurrentInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="flex-1 py-2 pl-2.5 text-sm bg-white border border-dashed border-slate-300 rounded-md hover:border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none text-slate-900 placeholder-slate-400 transition-colors"
+                            className="flex-1 py-2 pl-2.5 text-sm bg-white border border-dashed border-slate-300 rounded-md hover:border-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none text-slate-900 placeholder-slate-400 transition-colors"
                             placeholder="Add bullet point — press Enter"
                         />
                         <button
                             onClick={addBullet}
                             disabled={!currentInput.trim()}
-                            className="text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 px-2.5 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                            className="text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 px-2.5 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                             title="Add bullet"
                         >
                             <Plus size={16} />

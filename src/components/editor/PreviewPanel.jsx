@@ -159,7 +159,7 @@ const PreviewPanel = ({
                     {/* Template Selection */}
                     <div>
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                            <LayoutIcon size={14} className="text-teal-500" /> Templates
+                            <LayoutIcon size={14} className="text-brand-500" /> Templates
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
                             {TEMPLATES.map(template => (
@@ -185,7 +185,7 @@ const PreviewPanel = ({
             {isCalculatingLayout && (
                 <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center">
                     <div className="bg-slate-900 p-5 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.3)] border border-white/10 flex items-center gap-4 animate-in fade-in zoom-in duration-300">
-                        <div className="w-4 h-4 bg-teal-500 rounded-full animate-ping" />
+                        <div className="w-4 h-4 bg-brand-500 rounded-full animate-ping" />
                         <span className="font-semibold tracking-wide text-gray-200">Reflowing Layout...</span>
                     </div>
                 </div>

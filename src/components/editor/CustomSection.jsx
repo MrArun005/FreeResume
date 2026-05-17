@@ -21,7 +21,7 @@ const CustomSection = ({
                 <input
                     value={section.title}
                     onChange={(e) => onUpdateTitle(section.id, e.target.value)}
-                    className="text-base font-semibold text-slate-900 border-b-2 border-transparent focus:border-teal-500 outline-none bg-transparent w-full pb-1 transition-colors placeholder-slate-400"
+                    className="text-base font-semibold text-slate-900 border-b-2 border-transparent focus:border-brand-500 outline-none bg-transparent w-full pb-1 transition-colors placeholder-slate-400"
                     placeholder="Section title (e.g. Certifications)"
                 />
             </div>

@@ -48,7 +48,7 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
                     </FieldLabel>
                     <button
                         onClick={() => addCategory()}
-                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-teal-700 hover:text-teal-800 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:text-brand-800 transition-colors"
                     >
                         <FolderPlus size={13} /> Add group
                     </button>

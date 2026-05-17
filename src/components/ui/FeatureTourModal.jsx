@@ -10,7 +10,7 @@ const FeatureTourModal = ({ isOpen, onClose }) => {
         {
             title: "Welcome to Your AI Job Assistant!",
             description: "We've upgraded your resume builder with powerful AI tools to help you land your dream job faster.",
-            icon: <Sparkles size={48} className="text-teal-500" />,
+            icon: <Sparkles size={48} className="text-brand-500" />,
             image: null
         },
         {
@@ -57,7 +57,7 @@ const FeatureTourModal = ({ isOpen, onClose }) => {
                 {/* Progress Bar */}
                 <div className="h-1 bg-gray-100 w-full">
                     <div
-                        className="h-full bg-teal-600 transition-all duration-300"
+                        className="h-full bg-brand-600 transition-all duration-300"
                         style={{ width: `${((step + 1) / steps.length) * 100}%` }}
                     />
                 </div>
@@ -77,7 +77,7 @@ const FeatureTourModal = ({ isOpen, onClose }) => {
 
                     <button
                         onClick={handleNext}
-                        className="w-full py-3 px-6 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-teal-200"
+                        className="w-full py-3 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-brand-200"
                     >
                         {step === steps.length - 1 ? "Get Started" : "Next"}
                         {step < steps.length - 1 && <ChevronRight size={18} />}
@@ -87,7 +87,7 @@ const FeatureTourModal = ({ isOpen, onClose }) => {
                         {steps.map((_, i) => (
                             <div
                                 key={i}
-                                className={`w-2 h-2 rounded-full transition-colors ${i === step ? 'bg-teal-600' : 'bg-gray-200'}`}
+                                className={`w-2 h-2 rounded-full transition-colors ${i === step ? 'bg-brand-600' : 'bg-gray-200'}`}
                             />
                         ))}
                     </div>

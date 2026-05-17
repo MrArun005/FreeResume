@@ -6,6 +6,7 @@ import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import mammoth from 'mammoth';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
+import { buildResumeDocx } from './docxBuilder.js';
 
 import dotenv from 'dotenv';
 
@@ -570,6 +571,28 @@ async function parseWithGemini(fileBuffer, mimeType, textContent = null) {
 
 
 // Generate PDF with Puppeteer
+// DOCX export — builds a structurally clean Word document from the resume
+// data (separate from the WYSIWYG HTML-to-PDF pipeline above). DOCX users
+// care about ATS parseability more than visual fidelity, so we use real
+// Word styles (Heading 1/2, bullet lists) the docxBuilder module produces.
+app.post('/api/generate-docx', async (req, res) => {
+    try {
+        const { resumeData, templateId } = req.body;
+        if (!resumeData) return res.status(400).json({ error: 'Missing resumeData' });
+
+        const buffer = await buildResumeDocx(resumeData, templateId || 'standard');
+        res.set({
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition': 'attachment; filename=resume.docx',
+            'Content-Length': buffer.length,
+        });
+        res.send(buffer);
+    } catch (error) {
+        console.error('DOCX Generation Error:', error);
+        sendError(res, 500, 'Failed to generate DOCX', error.message);
+    }
+});
+
 app.post('/api/generate-pdf', async (req, res) => {
     let browser = null;
     try {

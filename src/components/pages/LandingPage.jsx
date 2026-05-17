@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import TemplateThumbnail from '../ui/TemplateThumbnail';
 import Testimonials from '../ui/Testimonials';
 import ScrollToTop from '../ui/ScrollToTop';
+import Logo from '../ui/Logo';
 import { TEMPLATES } from '../../constants/layouts';
 import { BLOG_POSTS } from '../../constants/blogPosts';
 
@@ -103,13 +104,12 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
     const featuredPost = BLOG_POSTS[0];
 
     return (
-        <div className="min-h-screen bg-stone-50 text-slate-900 font-clean antialiased selection:bg-teal-600/15 selection:text-teal-900">
+        <div className="min-h-screen bg-stone-50 text-slate-900 font-clean antialiased selection:bg-brand-600/15 selection:text-brand-900">
             {/* ─────────── NAV ─────────── */}
             <nav className="sticky top-0 z-50 bg-stone-50/80 backdrop-blur-xl border-b border-slate-200/60">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <a href="#top" className="flex items-center gap-2 group">
-                        <div className="w-7 h-7 rounded-md bg-slate-900 flex items-center justify-center text-stone-50 font-bold text-sm">r</div>
-                        <span className="font-semibold tracking-tight text-slate-900">résumé.</span>
+                    <a href="#top" className="group">
+                        <Logo className="w-7 h-7" textClassName="text-base" />
                     </a>
 
                     {/* desktop links */}
@@ -142,7 +142,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                 {mobileMenuOpen && (
                     <div className="fixed inset-0 bg-stone-50 z-50 md:hidden flex flex-col">
                         <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200/60">
-                            <span className="font-semibold tracking-tight">résumé.</span>
+                            <Logo className="w-7 h-7" textClassName="text-base" />
                             <button onClick={() => setMobileMenuOpen(false)} className="p-2" aria-label="Close menu">
                                 <X size={22} />
                             </button>
@@ -184,7 +184,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         transition={{ duration: 0.7, delay: 0.05, ease: [0.21, 0.47, 0.32, 0.98] }}
                         className="font-serif-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] tracking-tight text-slate-900 max-w-4xl"
                     >
-                        The résumé you&rsquo;d actually <em className="italic text-teal-700">hire</em> someone for.
+                        The résumé you&rsquo;d actually <em className="italic text-brand-700">hire</em> someone for.
                     </motion.h1>
 
                     <motion.p
@@ -225,7 +225,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                     >
                         {TRUST_POINTS.map(p => (
                             <span key={p} className="inline-flex items-center gap-1.5">
-                                <Check size={14} className="text-teal-600" />
+                                <Check size={14} className="text-brand-600" />
                                 {p}
                             </span>
                         ))}
@@ -271,7 +271,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             <section id="features" className="py-24 lg:py-32 bg-white border-y border-slate-200/60">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8">
                     <motion.div {...fadeUp} className="max-w-2xl mb-16">
-                        <div className="text-xs font-semibold text-teal-700 tracking-wide uppercase mb-3">Features</div>
+                        <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">Features</div>
                         <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900">
                             Quiet on the outside.<br />
                             <em className="italic text-slate-400">Smart on the inside.</em>
@@ -285,7 +285,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                 {...fadeUp}
                                 className="bg-white p-8 lg:p-10 hover:bg-stone-50 transition-colors group"
                             >
-                                <div className="w-10 h-10 rounded-lg bg-slate-900 text-stone-50 flex items-center justify-center mb-6 group-hover:bg-teal-600 transition-colors">
+                                <div className="w-10 h-10 rounded-lg bg-slate-900 text-stone-50 flex items-center justify-center mb-6 group-hover:bg-brand-600 transition-colors">
                                     <f.icon size={18} strokeWidth={1.8} />
                                 </div>
                                 <h3 className="text-lg font-semibold text-slate-900 mb-2 tracking-tight">{f.title}</h3>
@@ -301,7 +301,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                 <div className="max-w-6xl mx-auto px-6 lg:px-8">
                     <motion.div {...fadeUp} className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
                         <div className="max-w-2xl">
-                            <div className="text-xs font-semibold text-teal-700 tracking-wide uppercase mb-3">Templates</div>
+                            <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">Templates</div>
                             <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900">
                                 Pick a starting point.<br />
                                 <em className="italic text-slate-400">Change anything later.</em>
@@ -357,11 +357,11 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             {/* ─────────── HOW IT WORKS ─────────── */}
             <section id="how" className="py-24 lg:py-32 bg-slate-900 text-stone-50 relative overflow-hidden">
                 {/* subtle teal glow */}
-                <div className="absolute -top-1/2 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -top-1/2 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 relative">
                     <motion.div {...fadeUp} className="max-w-2xl mb-16">
-                        <div className="text-xs font-semibold text-teal-400 tracking-wide uppercase mb-3">How it works</div>
+                        <div className="text-xs font-semibold text-brand-400 tracking-wide uppercase mb-3">How it works</div>
                         <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight">
                             Three steps. <em className="italic text-stone-400">That&rsquo;s all.</em>
                         </h2>
@@ -370,7 +370,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden">
                         {STEPS.map((s) => (
                             <motion.div key={s.n} {...fadeUp} className="bg-slate-900 p-8 lg:p-10">
-                                <div className="font-serif-display text-5xl text-teal-400 mb-6">{s.n}</div>
+                                <div className="font-serif-display text-5xl text-brand-400 mb-6">{s.n}</div>
                                 <h3 className="text-xl font-semibold mb-3 tracking-tight">{s.title}</h3>
                                 <p className="text-sm text-stone-400 leading-relaxed">{s.body}</p>
                             </motion.div>
@@ -411,7 +411,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             <section className="py-24 lg:py-32 bg-stone-50">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8">
                     <motion.div {...fadeUp} className="max-w-2xl mb-12">
-                        <div className="text-xs font-semibold text-teal-700 tracking-wide uppercase mb-3">Real people</div>
+                        <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">Real people</div>
                         <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900">
                             Loved by job seekers <em className="italic text-slate-400">who got the job.</em>
                         </h2>
@@ -424,7 +424,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             <section className="py-24 lg:py-32 bg-white">
                 <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
                     <motion.h2 {...fadeUp} className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900">
-                        Ready to land your <em className="italic text-teal-700">next interview?</em>
+                        Ready to land your <em className="italic text-brand-700">next interview?</em>
                     </motion.h2>
                     <motion.p {...fadeUp} className="mt-5 text-lg text-slate-600 max-w-xl mx-auto">
                         Build a resume that gets read, not filtered. No sign-up, no email, no payment.
@@ -453,7 +453,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                     <div className="max-w-6xl mx-auto px-6 lg:px-8">
                         <motion.div {...fadeUp} className="flex items-end justify-between gap-6 mb-12">
                             <div>
-                                <div className="text-xs font-semibold text-teal-700 tracking-wide uppercase mb-3">From the blog</div>
+                                <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">From the blog</div>
                                 <h2 className="font-serif-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-slate-900">
                                     Job-search advice <em className="italic text-slate-400">worth your time.</em>
                                 </h2>
@@ -577,12 +577,11 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                 <div className="max-w-6xl mx-auto px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                         <div className="col-span-2">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="w-7 h-7 rounded-md bg-stone-50 flex items-center justify-center text-slate-900 font-bold text-sm">r</div>
-                                <span className="font-semibold tracking-tight text-stone-50">résumé.</span>
+                            <div className="mb-4">
+                                <Logo className="w-7 h-7" textClassName="text-base" tone="light" />
                             </div>
                             <p className="text-sm leading-relaxed text-stone-400 max-w-sm">
-                                A free, privacy-first resume builder. No signups, no watermarks. Your data stays in your browser.
+                                AI-powered resume builder. No signups, no watermarks. Your data stays in your browser.
                             </p>
                         </div>
                         <div>
@@ -602,7 +601,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         </div>
                     </div>
                     <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-                        <div>© {new Date().getFullYear()} résumé. Made with care.</div>
+                        <div>© {new Date().getFullYear()} Paperjet. Made with care.</div>
                         <div className="flex items-center gap-4">
                             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-50 transition-colors">
                                 <Github size={16} />

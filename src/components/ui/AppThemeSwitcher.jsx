@@ -23,7 +23,7 @@ const AppThemeSwitcher = () => {
                     {theme === t.id && (
                         <motion.div
                             layoutId="activeTheme"
-                            className="absolute inset-0 bg-gray-900 dark:bg-teal-600 rounded-full"
+                            className="absolute inset-0 bg-gray-900 dark:bg-brand-600 rounded-full"
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                     )}

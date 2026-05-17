@@ -176,3 +176,36 @@ export async function exportResumePdf({ filename = 'Resume.pdf' } = {}) {
         }
     }
 }
+
+// DOCX export — completely separate pipeline from PDF. The server's
+// /api/generate-docx endpoint builds a structurally clean Word document
+// from the resume data (not the HTML), which gives recruiters something
+// they can edit and ATS scanners something they can parse cleanly.
+//
+// There is no graceful fallback for DOCX: if the server is down, we surface
+// the error rather than trying to fabricate a DOCX in the browser (the
+// libraries that do this are ~600 KB and produce inferior output).
+export async function exportResumeDocx({ resume, templateId, filename = 'Resume.docx' } = {}) {
+    if (!resume) return { ok: false, reason: 'No resume provided.' };
+
+    try {
+        const response = await fetch('/api/generate-docx', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resumeData: resume, templateId }),
+        });
+
+        if (!response.ok) {
+            let detail = '';
+            try { detail = (await response.json())?.details || (await response.text()); } catch { /* empty */ }
+            return { ok: false, reason: `Server DOCX failed (${response.status}): ${detail || 'no detail'}` };
+        }
+
+        const blob = await response.blob();
+        if (blob.size === 0) return { ok: false, reason: 'Server returned an empty DOCX.' };
+        downloadBlob(blob, filename);
+        return { ok: true };
+    } catch (error) {
+        return { ok: false, reason: error?.message || String(error) };
+    }
+}

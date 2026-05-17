@@ -36,7 +36,7 @@ const SummarySection = ({ summary, onChange, resume }) => {
     return (
         <div className="space-y-3">
             <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 tracking-tight">
-                <FileText size={18} className="text-teal-700" /> Professional summary
+                <FileText size={18} className="text-brand-700" /> Professional summary
             </h2>
 
             <div className="bg-white border border-slate-200 rounded-lg p-4">
@@ -55,11 +55,11 @@ const SummarySection = ({ summary, onChange, resume }) => {
                 <button
                     onClick={handleImprove}
                     disabled={improving || !summary}
-                    className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-teal-50/60 text-teal-700 border border-teal-200 hover:bg-teal-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-50/60 text-brand-700 border border-brand-200 hover:bg-brand-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {improving ? (
                         <>
-                            <div className="w-3 h-3 border-2 border-teal-200 border-t-teal-700 rounded-full animate-spin" />
+                            <div className="w-3 h-3 border-2 border-brand-200 border-t-brand-700 rounded-full animate-spin" />
                             Refining…
                         </>
                     ) : (

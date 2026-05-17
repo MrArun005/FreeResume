@@ -22,9 +22,9 @@ const OnboardingModal = ({ onUpload, onCreateNew, onCancel }) => {
                         {/* Option 1: Upload */}
                         <button
                             onClick={onUpload}
-                            className="group flex flex-col items-center p-8 rounded-xl border-2 border-dashed border-gray-300 hover:border-teal-500 hover:bg-teal-50 transition-all text-left"
+                            className="group flex flex-col items-center p-8 rounded-xl border-2 border-dashed border-gray-300 hover:border-brand-500 hover:bg-brand-50 transition-all text-left"
                         >
-                            <div className="w-16 h-16 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <div className="w-16 h-16 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                 <Upload size={32} />
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Upload Resume</h3>

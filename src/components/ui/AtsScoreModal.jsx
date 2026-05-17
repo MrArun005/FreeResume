@@ -29,7 +29,7 @@ const FindingRow = ({ item, palette, onApply, applied }) => {
                         className={`mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors ${
                             applied
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
-                                : 'bg-teal-600 hover:bg-teal-700 text-white border border-teal-700'
+                                : 'bg-brand-600 hover:bg-brand-700 text-white border border-brand-700'
                         }`}
                     >
                         {applied ? (
@@ -130,7 +130,7 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                 {/* Header */}
                 <header className="px-6 py-5 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                     <h2 className="flex items-center gap-2 text-[20px] font-bold text-slate-800 m-0 tracking-tight">
-                        <CheckCircle size={20} className="text-teal-600" /> AI Resume Audit
+                        <CheckCircle size={20} className="text-brand-600" /> AI Resume Audit
                     </h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 transition-colors">
                         <X size={20} />
@@ -141,7 +141,7 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                 <div className="px-6 py-6 overflow-y-auto">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-16">
-                            <div className="w-10 h-10 border-4 border-teal-100 border-t-teal-600 rounded-full animate-spin mb-4" />
+                            <div className="w-10 h-10 border-4 border-brand-100 border-t-brand-600 rounded-full animate-spin mb-4" />
                             <p className="text-slate-500 text-sm">Analyzing your resume with AI…</p>
                         </div>
                     ) : analysis ? (
@@ -169,7 +169,7 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                             {analysis.missingKeywords?.length > 0 && (
                                 <div className="mb-6 rounded-xl p-4 border" style={{ background: 'rgba(13,148,136,0.05)', borderColor: 'rgba(13,148,136,0.15)' }}>
                                     <div className="flex items-center justify-between mb-2.5">
-                                        <h3 className="flex items-center gap-1.5 text-sm font-bold text-teal-900 m-0">
+                                        <h3 className="flex items-center gap-1.5 text-sm font-bold text-brand-900 m-0">
                                             <Info size={16} /> Recommended Keywords
                                         </h3>
                                         {typeof onApplyFix === 'function' && (
@@ -179,7 +179,7 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                                 className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors ${
                                                     missingKeywordsApplied
                                                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
-                                                        : 'bg-teal-600 hover:bg-teal-700 text-white border border-teal-700'
+                                                        : 'bg-brand-600 hover:bg-brand-700 text-white border border-brand-700'
                                                 }`}
                                             >
                                                 {missingKeywordsApplied ? (
@@ -198,7 +198,7 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                         {analysis.missingKeywords.map((kw, i) => (
                                             <span
                                                 key={i}
-                                                className="bg-white text-teal-700 px-2.5 py-1 rounded-md text-[13px] font-medium border"
+                                                className="bg-white text-brand-700 px-2.5 py-1 rounded-md text-[13px] font-medium border"
                                                 style={{ borderColor: 'rgba(13,148,136,0.15)', boxShadow: '0 1px 2px 0 rgba(15,23,42,0.05)' }}
                                             >
                                                 {kw}
@@ -270,7 +270,7 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                         <button
                             onClick={fetchAnalysis}
                             disabled={loading}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
                         >
                             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Re-analyze
                         </button>

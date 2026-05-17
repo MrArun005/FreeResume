@@ -30,8 +30,8 @@ const ImproveResumeModal = ({ stage, errorMessage, onConfirm, onClose, onRetry }
         return (
             <Shell onClose={onClose} dismissable={false}>
                 <div className="px-6 py-10 flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center mb-4">
-                        <div className="w-7 h-7 border-2 border-teal-200 border-t-teal-600 rounded-full animate-spin" />
+                    <div className="w-14 h-14 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center mb-4">
+                        <div className="w-7 h-7 border-2 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
                     </div>
                     <h2 className="text-lg font-bold text-slate-900 mb-1.5 tracking-tight">Refining your resume…</h2>
                     <p className="text-sm text-slate-500 leading-relaxed">
@@ -122,8 +122,8 @@ const ImproveResumeModal = ({ stage, errorMessage, onConfirm, onClose, onRetry }
     return (
         <Shell onClose={onClose}>
             <header className="px-6 py-5 flex items-start gap-3">
-                <div className="shrink-0 w-9 h-9 rounded-full bg-teal-50 border border-teal-100 flex items-center justify-center">
-                    <Sparkles size={18} className="text-teal-700" />
+                <div className="shrink-0 w-9 h-9 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center">
+                    <Sparkles size={18} className="text-brand-700" />
                 </div>
                 <div className="flex-1 min-w-0">
                     <h2 className="text-base font-bold text-slate-900 m-0 tracking-tight">Refine entire resume with AI</h2>
@@ -141,15 +141,15 @@ const ImproveResumeModal = ({ stage, errorMessage, onConfirm, onClose, onRetry }
                 </p>
                 <ul className="text-[13px] text-slate-600 space-y-1.5">
                     <li className="flex items-start gap-2">
-                        <span className="text-teal-600 mt-0.5">·</span>
+                        <span className="text-brand-600 mt-0.5">·</span>
                         <span>Your dates, company names, education, and contact info won't change.</span>
                     </li>
                     <li className="flex items-start gap-2">
-                        <span className="text-teal-600 mt-0.5">·</span>
+                        <span className="text-brand-600 mt-0.5">·</span>
                         <span>Takes 10–20 seconds.</span>
                     </li>
                     <li className="flex items-start gap-2">
-                        <span className="text-teal-600 mt-0.5">·</span>
+                        <span className="text-brand-600 mt-0.5">·</span>
                         <span>
                             You can press <kbd className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-mono">⌘Z</kbd> anytime to undo.
                         </span>
@@ -166,7 +166,7 @@ const ImproveResumeModal = ({ stage, errorMessage, onConfirm, onClose, onRetry }
                 </button>
                 <button
                     onClick={onConfirm}
-                    className="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-semibold text-sm transition-colors inline-flex items-center gap-1.5"
+                    className="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-semibold text-sm transition-colors inline-flex items-center gap-1.5"
                 >
                     <Wand2 size={14} /> Refine resume
                 </button>

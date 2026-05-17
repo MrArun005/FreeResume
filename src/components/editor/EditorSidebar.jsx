@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    FileText, Download, LayoutGrid, User, Plus, SplitSquareHorizontal, Sparkles, ArrowRight
+    Download, LayoutGrid, User, Plus, SplitSquareHorizontal, Sparkles, ArrowRight, Palette
 } from 'lucide-react';
 import {
     DndContext,
@@ -12,6 +12,7 @@ import {
 } from '@dnd-kit/sortable';
 
 import { SortableTag } from '../ui/SortableTag';
+import Logo from '../ui/Logo';
 import PersonalSection from '../editor/PersonalSection';
 import SummarySection from '../editor/SummarySection';
 import ExperienceSection from '../editor/ExperienceSection';
@@ -19,6 +20,7 @@ import EducationSection from '../editor/EducationSection';
 import SkillsSection from '../editor/SkillsSection';
 import CustomSection from '../editor/CustomSection';
 import CoverLetterSection from '../editor/CoverLetterSection';
+import ProfilesMenu from '../ui/ProfilesMenu';
 
 const EditorSidebar = ({
     mobileView,
@@ -46,19 +48,24 @@ const EditorSidebar = ({
     removeCustomItem,
     addCustomItem,
     onOpenAts,
+    onOpenTheme,
+    profiles,
+    activeProfileId,
+    onSwitchProfile,
+    onCreateProfile,
+    onDuplicateProfile,
+    onRenameProfile,
+    onDeleteProfile,
 }) => {
     return (
         <div className={`${mobileView === 'editor' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] bg-stone-50 border-r border-slate-200 flex-col h-full z-10 overflow-hidden no-print absolute lg:relative inset-0`}>
             {/* Header */}
             <div className="px-6 py-5 border-b border-slate-200 bg-white sticky top-0 z-10">
-                <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center">
-                            <FileText className="text-stone-50" size={18} />
-                        </div>
-                        <h1 className="text-lg font-semibold text-slate-900 tracking-tight">Resume Editor</h1>
+                <div className="flex items-center justify-between mb-1 gap-2">
+                    <div className="min-w-0">
+                        <Logo className="w-8 h-8" textClassName="text-lg" />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 shrink-0">
                         <button
                             onClick={handleDownloadPDF}
                             className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-stone-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
@@ -66,11 +73,29 @@ const EditorSidebar = ({
                         >
                             <Download size={14} /> <span className="hidden sm:inline">Export</span>
                         </button>
+                        {onOpenTheme && (
+                            <button onClick={onOpenTheme} className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors" title="Design & Theme">
+                                <Palette size={18} />
+                            </button>
+                        )}
                         <button onClick={() => setView('gallery')} className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors" title="Back to Gallery">
                             <LayoutGrid size={18} />
                         </button>
                     </div>
                 </div>
+                {profiles?.length > 0 && (
+                    <div className="mt-2">
+                        <ProfilesMenu
+                            profiles={profiles}
+                            activeProfileId={activeProfileId}
+                            onSwitchProfile={onSwitchProfile}
+                            onCreateProfile={onCreateProfile}
+                            onDuplicateProfile={onDuplicateProfile}
+                            onRenameProfile={onRenameProfile}
+                            onDeleteProfile={onDeleteProfile}
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Navigation & Content */}
@@ -81,7 +106,7 @@ const EditorSidebar = ({
                     <div className="flex flex-wrap gap-2">
                         <button
                             onClick={() => setActiveSection('personal')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-colors flex items-center gap-1.5 ${activeSection === 'personal' ? 'bg-teal-50 text-teal-700 border-teal-200' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'}`}
+                            className={`px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-colors flex items-center gap-1.5 ${activeSection === 'personal' ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'}`}
                         >
                             <User size={14} /> Personal
                         </button>
@@ -117,7 +142,7 @@ const EditorSidebar = ({
                                         >
                                             <button
                                                 onClick={() => setActiveSection(sectionId)}
-                                                className={`text-xs font-semibold tracking-wide transition-colors ${activeSection === sectionId ? 'text-teal-700' : 'text-slate-600 group-hover:text-slate-900'}`}
+                                                className={`text-xs font-semibold tracking-wide transition-colors ${activeSection === sectionId ? 'text-brand-700' : 'text-slate-600 group-hover:text-slate-900'}`}
                                             >
                                                 {label}
                                             </button>
@@ -149,17 +174,17 @@ const EditorSidebar = ({
                     {onOpenAts && (
                         <button
                             onClick={onOpenAts}
-                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-teal-200 text-left transition-all hover:border-teal-300 hover:-translate-y-px"
+                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-brand-200 text-left transition-all hover:border-brand-300 hover:-translate-y-px"
                             style={{ background: 'linear-gradient(135deg, rgba(20,184,166,0.10), rgba(20,184,166,0.02))' }}
                         >
-                            <div className="w-9 h-9 rounded-full bg-teal-600 text-white flex items-center justify-center shrink-0">
+                            <div className="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center shrink-0">
                                 <Sparkles size={16} />
                             </div>
                             <div className="flex-1">
                                 <div className="text-sm font-semibold text-slate-900">Run ATS audit</div>
                                 <div className="text-[12px] text-slate-500 mt-0.5">AI score + keyword check</div>
                             </div>
-                            <ArrowRight size={16} className="text-teal-700 shrink-0" />
+                            <ArrowRight size={16} className="text-brand-700 shrink-0" />
                         </button>
                     )}
 
