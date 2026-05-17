@@ -74,7 +74,6 @@ import AtsScoreModal from './components/ui/AtsScoreModal';
 import ThemeSettingsModal from './components/ui/ThemeSettingsModal';
 import AutoScrollingGuide from './components/ui/AutoScrollingGuide';
 import PageOverflowIndicator from './components/ui/PageOverflowIndicator';
-import BulletPointEditor from './components/ui/BulletPointEditor';
 import EditorSidebar from './components/editor/EditorSidebar';
 import PreviewPanel from './components/editor/PreviewPanel';
 import JobAssistantModal from './components/ui/JobAssistantModal';
