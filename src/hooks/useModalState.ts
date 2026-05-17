@@ -13,10 +13,23 @@ import { useReducer, useMemo } from 'react';
 //   modals.toggle('exportMenu');
 //   modals.is('ats');         // boolean
 //
-// Every key defaults to false. Unknown keys are silently no-ops on close
-// so we never accidentally crash on a typo in a button handler.
+// Unknown keys are silently no-ops on close/open so a typo in a button
+// handler never crashes.
 
-const KNOWN_KEYS = [
+export type ModalKey =
+    | 'ats'
+    | 'theme'
+    | 'jobAssistant'
+    | 'onboarding'
+    | 'share'
+    | 'tutorial'
+    | 'featureTour'
+    | 'aiMenu'
+    | 'exportMenu'
+    | 'roast'
+    | 'coverLetter';
+
+const KNOWN_KEYS: ModalKey[] = [
     'ats',
     'theme',
     'jobAssistant',
@@ -30,9 +43,18 @@ const KNOWN_KEYS = [
     'coverLetter',
 ];
 
-const initialState = Object.fromEntries(KNOWN_KEYS.map((k) => [k, false]));
+type ModalState = Record<ModalKey, boolean>;
 
-function reducer(state, action) {
+const initialState: ModalState = KNOWN_KEYS.reduce((acc, k) => ({ ...acc, [k]: false }), {} as ModalState);
+
+type Action =
+    | { type: 'OPEN'; key: ModalKey }
+    | { type: 'CLOSE'; key: ModalKey }
+    | { type: 'TOGGLE'; key: ModalKey }
+    | { type: 'SET'; key: ModalKey; value: boolean }
+    | { type: 'CLOSE_ALL' };
+
+function reducer(state: ModalState, action: Action): ModalState {
     switch (action.type) {
         case 'OPEN':
             if (!(action.key in state)) return state;
@@ -53,7 +75,17 @@ function reducer(state, action) {
     }
 }
 
-export function useModalState() {
+export interface ModalStateApi {
+    state: ModalState;
+    is: (key: ModalKey) => boolean;
+    open: (key: ModalKey) => void;
+    close: (key: ModalKey) => void;
+    toggle: (key: ModalKey) => void;
+    set: (key: ModalKey, value: boolean) => void;
+    closeAll: () => void;
+}
+
+export function useModalState(): ModalStateApi {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     // Memoize the public surface so referential identity is stable across

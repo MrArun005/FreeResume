@@ -1,8 +1,9 @@
 name: CI
 
 # Runs on every push to main and on every pull request. The job is small
-# (~1-2 min): install, lint, format-check, build. Designed so a red check
-# blocks merging anything that breaks the build or the formatter contract.
+# (~1-2 min): install, lint, typecheck, format-check, build. Designed so a
+# red check blocks merging anything that breaks the build or the formatter
+# contract.
 on:
   push:
     branches: [main]
@@ -15,7 +16,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint, format, build
+    name: Lint, typecheck, format, build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -33,6 +34,9 @@ jobs:
 
       - name: ESLint
         run: npm run lint
+
+      - name: TypeScript typecheck
+        run: npm run typecheck
 
       - name: Prettier check
         run: npm run format:check
