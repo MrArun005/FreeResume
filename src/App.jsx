@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useModalState } from './hooks/useModalState';
 import {
     Layout,
     ChevronRight,
@@ -100,19 +101,9 @@ import {
 const App = () => {
     const [view, setView] = useState('gallery'); // 'gallery' | 'editor'
     const [mobileView, setMobileView] = useState('editor'); // 'editor' | 'preview'
-    const [showAtsModal, setShowAtsModal] = useState(false);
-    const [showThemeModal, setShowThemeModal] = useState(false);
-    const [showJobAssistant, setShowJobAssistant] = useState(false);
-    const [showOnboarding, setShowOnboarding] = useState(false);
-    const [showShareModal, setShowShareModal] = useState(false);
-    const [showTutorial, setShowTutorial] = useState(false);
-    const [showFeatureTour, setShowFeatureTour] = useState(false);
+    const modals = useModalState();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isImproving, setIsImproving] = useState(false);
-    const [showAiMenu, setShowAiMenu] = useState(false);
-    const [showExportMenu, setShowExportMenu] = useState(false);
-    const [isRoastModalOpen, setIsRoastModalOpen] = useState(false);
-    const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
 
     // Normalize a single resume blob — handles the description→bullets
     // migration and the legacy skills mega-bucket case. Used both for loading
@@ -168,8 +159,11 @@ const App = () => {
         const hasSeenTour = localStorage.getItem('hasSeenFeatureTour');
         if (!hasSeenTour && view === 'editor') {
             // Delay slightly to let things load
-            setTimeout(() => setShowFeatureTour(true), 1000);
+            setTimeout(() => modals.open('featureTour'), 1000);
         }
+        // modals reference is stable per render thanks to useMemo in the hook;
+        // the effect should only fire on view changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [view]);
 
     // Multi-profile state. The active profile's resume drives the editor;
@@ -670,7 +664,7 @@ const App = () => {
         const result = await exportResumePdf({ filename: `${baseFileName()}_Resume.pdf` });
 
         if (result.ok && result.method === 'server') {
-            setShowShareModal(true);
+            modals.open('share');
         } else if (result.ok && result.method === 'print') {
             console.info('[Export] Used browser print fallback because:', result.reason);
         } else {
@@ -688,7 +682,7 @@ const App = () => {
             filename: `${baseFileName()}_Resume.docx`,
         });
         if (result.ok) {
-            setShowShareModal(true);
+            modals.open('share');
         } else {
             alert(
                 `Failed to generate DOCX: ${result.reason || 'unknown error'}\n\nMake sure the server is running.`
@@ -777,29 +771,34 @@ const App = () => {
     };
 
     // Show tutorial when entering editor (only once per user)
+    const isOnboarding = modals.is('onboarding');
+    const isTutorial = modals.is('tutorial');
     useEffect(() => {
-        if (view === 'editor' && !showOnboarding && !showTutorial) {
+        if (view === 'editor' && !isOnboarding && !isTutorial) {
             const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
             if (!hasSeenTutorial) {
                 const timer = setTimeout(() => {
-                    setShowTutorial(true);
+                    modals.open('tutorial');
                     localStorage.setItem('hasSeenTutorial', 'true');
                 }, 800);
                 return () => clearTimeout(timer);
             }
         }
-    }, [view, showOnboarding, showTutorial]);
+        // modals reference is stable per render thanks to useMemo in the hook;
+        // we only re-fire when the boolean state changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [view, isOnboarding, isTutorial]);
 
     // --- VIEW: ONBOARDING ---
-    if (showOnboarding) {
+    if (modals.is('onboarding')) {
         return (
             <>
                 <OnboardingModal
-                    isOpen={showOnboarding}
-                    onClose={() => setShowOnboarding(false)}
+                    isOpen={modals.is('onboarding')}
+                    onClose={() => modals.close('onboarding')}
                     onCreateNew={() => {
                         setResume(initialData);
-                        setShowOnboarding(false);
+                        modals.close('onboarding');
                         setView('editor');
                     }}
                     onUpload={() => {
@@ -813,7 +812,7 @@ const App = () => {
                     accept=".pdf,.docx,.doc"
                     onChange={(e) => {
                         handleFileUpload(e);
-                        setShowOnboarding(false);
+                        modals.close('onboarding');
                         setView('editor');
                     }}
                 />
@@ -827,7 +826,7 @@ const App = () => {
             <LandingPage
                 onSelectTemplate={(template) => {
                     setSelectedTemplate(template);
-                    setShowOnboarding(true);
+                    modals.open('onboarding');
                 }}
             />
         );
@@ -868,7 +867,7 @@ const App = () => {
                 accept=".pdf,.docx,.doc"
                 onChange={(e) => {
                     handleFileUpload(e);
-                    setShowOnboarding(false);
+                    modals.close('onboarding');
                     setView('editor');
                 }}
             />
@@ -894,7 +893,7 @@ const App = () => {
                     </button>
                     <div className="h-6 w-px bg-white/10 mx-2" />
                     <button
-                        onClick={() => setShowTutorial(true)}
+                        onClick={() => modals.open('tutorial')}
                         className="text-gray-400 hover:text-white flex items-center gap-1.5 text-sm font-medium transition-colors"
                         title="Show tutorial"
                     >
@@ -935,8 +934,8 @@ const App = () => {
                     <div className="relative">
                         <button
                             onClick={() => {
-                                setShowAiMenu(!showAiMenu);
-                                setShowExportMenu(false);
+                                modals.toggle('aiMenu');
+                                modals.close('exportMenu');
                             }}
                             disabled={isImproving}
                             className="hidden lg:flex items-center gap-2.5 bg-white/5 backdrop-blur-md border border-white/10 text-white px-5 py-2.5 rounded-xl font-medium shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed group"
@@ -955,19 +954,19 @@ const App = () => {
                             {!isImproving && (
                                 <ChevronDown
                                     size={14}
-                                    className={`text-gray-400 transition-transform duration-300 ${showAiMenu ? 'rotate-180' : ''}`}
+                                    className={`text-gray-400 transition-transform duration-300 ${modals.is('aiMenu') ? 'rotate-180' : ''}`}
                                 />
                             )}
                         </button>
 
                         {/* Dropdown Content */}
-                        {showAiMenu && (
+                        {modals.is('aiMenu') && (
                             <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                                 <div className="p-2 space-y-1">
                                     <button
                                         onClick={() => {
-                                            setShowJobAssistant(true);
-                                            setShowAiMenu(false);
+                                            modals.open('jobAssistant');
+                                            modals.close('aiMenu');
                                         }}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 text-gray-700 hover:text-brand-700 rounded-lg transition-colors text-left"
                                     >
@@ -985,7 +984,7 @@ const App = () => {
                                     <button
                                         onClick={() => {
                                             handleImproveResume();
-                                            setShowAiMenu(false);
+                                            modals.close('aiMenu');
                                         }}
                                         disabled={isImproving}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-emerald-50 text-gray-700 hover:text-emerald-700 rounded-lg transition-colors text-left disabled:opacity-50"
@@ -1007,8 +1006,8 @@ const App = () => {
 
                                     <button
                                         onClick={() => {
-                                            setShowAtsModal(true);
-                                            setShowAiMenu(false);
+                                            modals.open('ats');
+                                            modals.close('aiMenu');
                                         }}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 text-gray-700 hover:text-brand-700 rounded-lg transition-colors text-left"
                                     >
@@ -1029,8 +1028,8 @@ const App = () => {
                     <div className="relative">
                         <button
                             onClick={() => {
-                                setShowExportMenu(!showExportMenu);
-                                setShowAiMenu(false);
+                                modals.toggle('exportMenu');
+                                modals.close('aiMenu');
                             }}
                             className="flex items-center gap-2.5 bg-brand-600 hover:bg-brand-500 text-white px-6 py-2.5 rounded-xl font-medium transition-all duration-200 hover:-translate-y-0.5 border border-brand-500/60"
                         >
@@ -1038,17 +1037,17 @@ const App = () => {
                             <span className="hidden sm:inline tracking-wide text-sm">Export</span>
                             <ChevronDown
                                 size={14}
-                                className={`transition-transform duration-300 ${showExportMenu ? 'rotate-180' : ''}`}
+                                className={`transition-transform duration-300 ${modals.is('exportMenu') ? 'rotate-180' : ''}`}
                             />
                         </button>
 
-                        {showExportMenu && (
+                        {modals.is('exportMenu') && (
                             <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-2xl dark:shadow-black/40 border border-gray-100 dark:border-slate-700 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                                 <div className="p-2 space-y-1">
                                     <button
                                         onClick={() => {
-                                            setIsRoastModalOpen(true);
-                                            setShowExportMenu(false);
+                                            modals.open('roast');
+                                            modals.close('exportMenu');
                                         }}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-700 dark:text-stone-200 hover:text-red-700 dark:hover:text-red-300 rounded-lg transition-colors text-left"
                                     >
@@ -1065,8 +1064,8 @@ const App = () => {
 
                                     <button
                                         onClick={() => {
-                                            setShowAtsModal(true);
-                                            setShowExportMenu(false);
+                                            modals.open('ats');
+                                            modals.close('exportMenu');
                                         }}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 dark:hover:bg-brand-500/10 text-gray-700 dark:text-stone-200 hover:text-brand-700 dark:hover:text-brand-300 rounded-lg transition-colors text-left"
                                     >
@@ -1084,7 +1083,7 @@ const App = () => {
                                     <button
                                         onClick={() => {
                                             handleDownloadPDF();
-                                            setShowExportMenu(false);
+                                            modals.close('exportMenu');
                                         }}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 dark:hover:bg-brand-500/10 text-gray-700 dark:text-stone-200 hover:text-brand-700 dark:hover:text-brand-300 rounded-lg transition-colors text-left"
                                     >
@@ -1102,7 +1101,7 @@ const App = () => {
                                     <button
                                         onClick={() => {
                                             handleDownloadDOCX();
-                                            setShowExportMenu(false);
+                                            modals.close('exportMenu');
                                         }}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-blue-50 dark:hover:bg-blue-500/10 text-gray-700 dark:text-stone-200 hover:text-blue-700 dark:hover:text-blue-300 rounded-lg transition-colors text-left"
                                     >
@@ -1119,8 +1118,8 @@ const App = () => {
 
                                     <button
                                         onClick={() => {
-                                            setShowCoverLetterModal(true);
-                                            setShowExportMenu(false);
+                                            modals.open('coverLetter');
+                                            modals.close('exportMenu');
                                         }}
                                         className="w-full flex items-center gap-3 px-3 py-3 hover:bg-purple-50 dark:hover:bg-purple-500/10 text-gray-700 dark:text-stone-200 hover:text-purple-700 dark:hover:text-purple-300 rounded-lg transition-colors text-left"
                                     >
@@ -1186,8 +1185,8 @@ const App = () => {
                     updateCustomItem={updateCustomItem}
                     removeCustomItem={removeCustomItem}
                     addCustomItem={addCustomItem}
-                    onOpenAts={() => setShowAtsModal(true)}
-                    onOpenTheme={() => setShowThemeModal(true)}
+                    onOpenAts={() => modals.open('ats')}
+                    onOpenTheme={() => modals.open('theme')}
                     profiles={profilesStore.profiles}
                     activeProfileId={activeProfile.id}
                     onSwitchProfile={handleSwitchProfile}
@@ -1338,8 +1337,8 @@ const App = () => {
             {/* Modals */}
 
             <RoastModal
-                isOpen={isRoastModalOpen}
-                onClose={() => setIsRoastModalOpen(false)}
+                isOpen={modals.is('roast')}
+                onClose={() => modals.close('roast')}
                 resumeData={resume}
                 onApplyFix={(fix) => setResume((prev) => applyResumeFix(prev, fix))}
             />
@@ -1358,8 +1357,8 @@ const App = () => {
             )}
 
             <JobAssistantModal
-                isOpen={showJobAssistant}
-                onClose={() => setShowJobAssistant(false)}
+                isOpen={modals.is('jobAssistant')}
+                onClose={() => modals.close('jobAssistant')}
                 onResumeUpdate={(updated) =>
                     setResume({
                         ...updated,
@@ -1369,28 +1368,28 @@ const App = () => {
             />
 
             <CoverLetterModal
-                isOpen={showCoverLetterModal}
-                onClose={() => setShowCoverLetterModal(false)}
+                isOpen={modals.is('coverLetter')}
+                onClose={() => modals.close('coverLetter')}
                 resume={resume}
             />
 
             <FeatureTourModal
-                isOpen={showFeatureTour}
+                isOpen={modals.is('featureTour')}
                 onClose={() => {
-                    setShowFeatureTour(false);
+                    modals.close('featureTour');
                     localStorage.setItem('hasSeenFeatureTour', 'true');
                 }}
             />
-            {showAtsModal && (
+            {modals.is('ats') && (
                 <AtsScoreModal
                     resume={resume}
-                    onClose={() => setShowAtsModal(false)}
+                    onClose={() => modals.close('ats')}
                     onApplyFix={(fix) => setResume((prev) => applyResumeFix(prev, fix))}
                 />
             )}
-            {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
-            <ShareModal isOpen={showShareModal} onClose={() => setShowShareModal(false)} />
-            <ThemeSettingsModal isOpen={showThemeModal} onClose={() => setShowThemeModal(false)} />
+            {modals.is('tutorial') && <TutorialModal onClose={() => modals.close('tutorial')} />}
+            <ShareModal isOpen={modals.is('share')} onClose={() => modals.close('share')} />
+            <ThemeSettingsModal isOpen={modals.is('theme')} onClose={() => modals.close('theme')} />
 
             {/* Parsing Loader */}
             {isParsing && (
