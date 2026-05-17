@@ -1,15 +1,12 @@
 import React from 'react';
-import { SplineScene } from "../ui/spline";
-import { Card } from "../ui/card"
-import { Spotlight } from "../ui/spotlight"
+import { SplineScene } from '../ui/spline';
+import { Card } from '../ui/card';
+import { Spotlight } from '../ui/spotlight';
 
 export function SplineSceneBasic() {
     return (
         <Card className="w-full h-[500px] bg-black/[0.96] relative overflow-hidden">
-            <Spotlight
-                className="-top-40 left-0 md:left-60 md:-top-20"
-                fill="white"
-            />
+            <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
 
             <div className="flex h-full">
                 {/* Left content */}
@@ -18,8 +15,8 @@ export function SplineSceneBasic() {
                         Interactive 3D
                     </h1>
                     <p className="mt-4 text-neutral-300 max-w-lg">
-                        Bring your UI to life with beautiful 3D scenes. Create immersive experiences
-                        that capture attention and enhance your design.
+                        Bring your UI to life with beautiful 3D scenes. Create immersive experiences that
+                        capture attention and enhance your design.
                     </p>
                 </div>
 
@@ -32,5 +29,5 @@ export function SplineSceneBasic() {
                 </div>
             </div>
         </Card>
-    )
+    );
 }

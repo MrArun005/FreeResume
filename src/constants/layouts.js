@@ -12,7 +12,7 @@ export const LAYOUTS = [
     { id: 'deedy', name: "The Designer (Deedy's)" },
     { id: 'modern-grid', name: 'Modern Grid' },
     { id: 'jakes', name: "The Engineer (Jake's)" },
-    { id: 'freeform', name: "Freeform Builder" },
+    { id: 'freeform', name: 'Freeform Builder' },
     { id: 'sidebar-left', name: 'Left Sidebar' },
     { id: 'sidebar-right', name: 'Right Sidebar' },
     { id: 'minimal', name: 'Minimalist' },
@@ -39,16 +39,52 @@ export const LAYOUTS = [
 //     deedy, leaf, glitch, freeform, canvas — all under threshold, hidden from gallery.
 export const TEMPLATES = [
     // Modern recruiter-friendly with subtle color accents
-    { id: 'google-1', name: 'Google Style', layout: 'google', theme: THEMES.find(t => t.id === 'black'), category: 'Modern' },
-    { id: 'navy-modern-1', name: 'Navy Modern', layout: 'navy-modern', theme: THEMES.find(t => t.id === 'black'), category: 'Modern' },
+    {
+        id: 'google-1',
+        name: 'Google Style',
+        layout: 'google',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Modern',
+    },
+    {
+        id: 'navy-modern-1',
+        name: 'Navy Modern',
+        layout: 'navy-modern',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Modern',
+    },
 
     // Bold / high-contrast
-    { id: 'bold-recruit-1', name: 'Bold Recruit', layout: 'bold-recruit', theme: THEMES.find(t => t.id === 'black'), category: 'Bold' },
+    {
+        id: 'bold-recruit-1',
+        name: 'Bold Recruit',
+        layout: 'bold-recruit',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Bold',
+    },
 
     // Pure black-and-white, maximum ATS parseability
-    { id: 'ats-1', name: 'Standard ATS', layout: 'ats', theme: THEMES.find(t => t.id === 'black'), category: 'Minimal' },
-    { id: 'minimal-mono-1', name: 'Minimal Mono', layout: 'minimal-mono', theme: THEMES.find(t => t.id === 'black'), category: 'Minimal' },
+    {
+        id: 'ats-1',
+        name: 'Standard ATS',
+        layout: 'ats',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Minimal',
+    },
+    {
+        id: 'minimal-mono-1',
+        name: 'Minimal Mono',
+        layout: 'minimal-mono',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Minimal',
+    },
 
     // Classical / professional
-    { id: 'executive-serif-1', name: 'Executive Serif', layout: 'executive-serif', theme: THEMES.find(t => t.id === 'black'), category: 'Classical' },
+    {
+        id: 'executive-serif-1',
+        name: 'Executive Serif',
+        layout: 'executive-serif',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Classical',
+    },
 ];

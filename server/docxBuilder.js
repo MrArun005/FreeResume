@@ -12,22 +12,14 @@
 // based; no absolute positioning). The goal is "recognizably the same
 // template" not "screenshot of the preview".
 
-import {
-    Document,
-    Packer,
-    Paragraph,
-    TextRun,
-    HeadingLevel,
-    AlignmentType,
-    BorderStyle,
-} from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from 'docx';
 
 // ── Theme config ─────────────────────────────────────────────────────────
 // Keys match the `layout` field on each template definition in
 // src/constants/layouts.js. Any unknown id falls through to STANDARD.
 const THEMES = {
     standard: {
-        accent: '0F172A',     // slate-900
+        accent: '0F172A', // slate-900
         accentRule: 'CBD5E1', // slate-300
         muted: '475569',
         font: 'Calibri',
@@ -60,7 +52,7 @@ const THEMES = {
         nameUppercase: false,
         nameCentered: false,
         nameBold: true,
-        nameAccent: true,    // name itself is colored
+        nameAccent: true, // name itself is colored
         sectionRule: true,
     },
     'navy-modern': {
@@ -106,14 +98,15 @@ const resolveTheme = (templateId) => THEMES[templateId] || THEMES.standard;
 const t = (v) => (v == null ? '' : String(v)).trim();
 
 // Run factory — defaults size + color from theme but accepts overrides.
-const run = (text, theme, opts = {}) => new TextRun({
-    text: t(text),
-    size: opts.size ?? 20,
-    color: opts.color ?? '0F172A',
-    bold: opts.bold,
-    italics: opts.italics,
-    font: opts.font ?? theme.font,
-});
+const run = (text, theme, opts = {}) =>
+    new TextRun({
+        text: t(text),
+        size: opts.size ?? 20,
+        color: opts.color ?? '0F172A',
+        bold: opts.bold,
+        italics: opts.italics,
+        font: opts.font ?? theme.font,
+    });
 
 // ── Header ───────────────────────────────────────────────────────────────
 function buildHeader(personal = {}, theme) {
@@ -124,19 +117,23 @@ function buildHeader(personal = {}, theme) {
     if (t(personal.fullName)) {
         let nameText = t(personal.fullName);
         if (theme.nameUppercase) nameText = nameText.toUpperCase();
-        blocks.push(new Paragraph({
-            alignment,
-            spacing: { after: 60 },
-            children: [run(nameText, theme, { size: 40, bold: theme.nameBold, color: nameColor })],
-        }));
+        blocks.push(
+            new Paragraph({
+                alignment,
+                spacing: { after: 60 },
+                children: [run(nameText, theme, { size: 40, bold: theme.nameBold, color: nameColor })],
+            })
+        );
     }
 
     if (t(personal.title)) {
-        blocks.push(new Paragraph({
-            alignment,
-            spacing: { after: 80 },
-            children: [run(personal.title, theme, { size: 22, italics: true, color: theme.muted })],
-        }));
+        blocks.push(
+            new Paragraph({
+                alignment,
+                spacing: { after: 80 },
+                children: [run(personal.title, theme, { size: 22, italics: true, color: theme.muted })],
+            })
+        );
     }
 
     const contactBits = [];
@@ -152,14 +149,16 @@ function buildHeader(personal = {}, theme) {
     }
 
     if (contactBits.length) {
-        blocks.push(new Paragraph({
-            alignment,
-            spacing: { after: 160 },
-            border: theme.sectionRule
-                ? { bottom: { color: theme.accentRule, style: BorderStyle.SINGLE, size: 6 } }
-                : undefined,
-            children: [run(contactBits.join(' | '), theme, { size: 20, color: theme.muted })],
-        }));
+        blocks.push(
+            new Paragraph({
+                alignment,
+                spacing: { after: 160 },
+                border: theme.sectionRule
+                    ? { bottom: { color: theme.accentRule, style: BorderStyle.SINGLE, size: 6 } }
+                    : undefined,
+                children: [run(contactBits.join(' | '), theme, { size: 20, color: theme.muted })],
+            })
+        );
     }
 
     return blocks;
@@ -198,24 +197,28 @@ function body(text, theme, opts = {}) {
 function itemHeaderLine({ left, right, theme }) {
     const children = [];
     for (const part of left) {
-        children.push(new TextRun({
-            text: part.text,
-            bold: part.bold,
-            italics: part.italics,
-            size: 20,
-            color: part.bold && theme.itemHeaderAccent ? theme.accent : '0F172A',
-            font: theme.font,
-        }));
+        children.push(
+            new TextRun({
+                text: part.text,
+                bold: part.bold,
+                italics: part.italics,
+                size: 20,
+                color: part.bold && theme.itemHeaderAccent ? theme.accent : '0F172A',
+                font: theme.font,
+            })
+        );
     }
     if (right) {
         children.push(new TextRun({ text: '\t', size: 20, font: theme.font }));
-        children.push(new TextRun({
-            text: t(right),
-            italics: true,
-            size: 20,
-            color: theme.muted,
-            font: theme.font,
-        }));
+        children.push(
+            new TextRun({
+                text: t(right),
+                italics: true,
+                size: 20,
+                color: theme.muted,
+                font: theme.font,
+            })
+        );
     }
     return new Paragraph({
         spacing: { before: 80, after: 20 },
@@ -258,7 +261,8 @@ function buildEducation(resume, theme) {
         if (t(edu.location)) left.push({ text: ` | ${t(edu.location)}`, italics: true });
         if (left.length) blocks.push(itemHeaderLine({ left, right: edu.date, theme }));
         if (t(edu.gpa)) blocks.push(body(`GPA: ${t(edu.gpa)}`, theme, { after: 40 }));
-        if (t(edu.coursework)) blocks.push(body(`Relevant Coursework: ${t(edu.coursework)}`, theme, { after: 40 }));
+        if (t(edu.coursework))
+            blocks.push(body(`Relevant Coursework: ${t(edu.coursework)}`, theme, { after: 40 }));
     }
     return blocks;
 }
@@ -273,13 +277,21 @@ function buildSkills(resume, theme) {
         if (idx > 0) {
             const label = s.slice(0, idx).trim();
             const rest = s.slice(idx + 1).trim();
-            blocks.push(new Paragraph({
-                spacing: { after: 40 },
-                children: [
-                    new TextRun({ text: `${label}: `, bold: true, size: 20, color: theme.itemHeaderAccent ? theme.accent : '0F172A', font: theme.font }),
-                    new TextRun({ text: rest, size: 20, color: '0F172A', font: theme.font }),
-                ],
-            }));
+            blocks.push(
+                new Paragraph({
+                    spacing: { after: 40 },
+                    children: [
+                        new TextRun({
+                            text: `${label}: `,
+                            bold: true,
+                            size: 20,
+                            color: theme.itemHeaderAccent ? theme.accent : '0F172A',
+                            font: theme.font,
+                        }),
+                        new TextRun({ text: rest, size: 20, color: '0F172A', font: theme.font }),
+                    ],
+                })
+            );
         } else {
             blocks.push(body(s, theme, { after: 40 }));
         }
@@ -359,28 +371,34 @@ export async function buildResumeDocx(resume, templateId = 'standard') {
             },
         },
         numbering: {
-            config: [{
-                reference: `bullets-${theme.bulletKey}`,
-                levels: [{
-                    level: 0,
-                    format: 'bullet',
-                    text: theme.bulletChar,
-                    alignment: AlignmentType.LEFT,
-                    style: {
-                        paragraph: { indent: { left: 360, hanging: 200 } },
-                        run: { color: theme.accent, font: theme.font },
-                    },
-                }],
-            }],
-        },
-        sections: [{
-            properties: {
-                page: {
-                    margin: { top: 720, bottom: 720, left: 1080, right: 1080 },
+            config: [
+                {
+                    reference: `bullets-${theme.bulletKey}`,
+                    levels: [
+                        {
+                            level: 0,
+                            format: 'bullet',
+                            text: theme.bulletChar,
+                            alignment: AlignmentType.LEFT,
+                            style: {
+                                paragraph: { indent: { left: 360, hanging: 200 } },
+                                run: { color: theme.accent, font: theme.font },
+                            },
+                        },
+                    ],
                 },
+            ],
+        },
+        sections: [
+            {
+                properties: {
+                    page: {
+                        margin: { top: 720, bottom: 720, left: 1080, right: 1080 },
+                    },
+                },
+                children: buildBody(resume, theme),
             },
-            children: buildBody(resume, theme),
-        }],
+        ],
     });
 
     return await Packer.toBuffer(doc);

@@ -19,10 +19,7 @@ const FuturisticThemeSwitcher = () => {
 
             {isOpen && (
                 <>
-                    <div
-                        className="fixed inset-0 z-40"
-                        onClick={() => setIsOpen(false)}
-                    />
+                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
                     <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -35,12 +32,15 @@ const FuturisticThemeSwitcher = () => {
                                     setTheme(t.id);
                                     setIsOpen(false);
                                 }}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${theme === t.id
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                                    theme === t.id
                                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
                                         : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                    }`}
+                                }`}
                             >
-                                <span className={`w-4 h-4 rounded-full ${t.color} border border-white/20 shadow-sm`}></span>
+                                <span
+                                    className={`w-4 h-4 rounded-full ${t.color} border border-white/20 shadow-sm`}
+                                ></span>
                                 {t.name}
                             </button>
                         ))}

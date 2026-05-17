@@ -17,12 +17,14 @@ I built a real-time editor where your changes appear instantly. No guessing how 
 
 🎨 **2. Premium Design System**
 I didn't just want it to work; I wanted it to feel amazing.
+
 - **Glassmorphism UI:** A modern, clean interface that helps you focus.
 - **Mesh Gradients:** A visual treat that makes resume building less boring.
 - **Interactive Demo:** You can type your name on the landing page and watch it update live on a mini-resume.
 
 📄 **3. ATS-Friendly Templates**
 I researched what recruiters and Applicant Tracking Systems (ATS) actually look for.
+
 - **"The Classic":** Perfect for corporate roles.
 - **"The Modern Grid":** Great for designers and creatives.
 - **"The Minimalist":** Clean, efficient, and content-focused.

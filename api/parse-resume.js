@@ -10,7 +10,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 async function parseWithGemini(fileBuffer, mimeType, textContent = null) {
     const genAI = getGeminiClient();
     // Use Flash for speed and multimodal capabilities
-    const modelsToTry = ["gemini-2.0-flash", "gemini-2.5-flash-preview-09-2025", "gemini-flash-latest"];
+    const modelsToTry = ['gemini-2.0-flash', 'gemini-2.5-flash-preview-09-2025', 'gemini-flash-latest'];
 
     const systemPrompt = `
     You are an expert resume parser. Extract the following information from the resume provided.
@@ -58,17 +58,14 @@ async function parseWithGemini(fileBuffer, mimeType, textContent = null) {
             { text: systemPrompt },
             {
                 inlineData: {
-                    mimeType: "application/pdf",
-                    data: fileBuffer.toString("base64")
-                }
-            }
+                    mimeType: 'application/pdf',
+                    data: fileBuffer.toString('base64'),
+                },
+            },
         ];
     } else {
         // Text-based (DOCX converted to text, or plain text)
-        parts = [
-            { text: systemPrompt },
-            { text: `Resume Text:\n${textContent}` }
-        ];
+        parts = [{ text: systemPrompt }, { text: `Resume Text:\n${textContent}` }];
     }
 
     for (const modelName of modelsToTry) {
@@ -78,7 +75,10 @@ async function parseWithGemini(fileBuffer, mimeType, textContent = null) {
             let textResponse = await generateContentWithRetry(model, parts);
 
             // Clean up markdown
-            textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+            textResponse = textResponse
+                .replace(/```json/g, '')
+                .replace(/```/g, '')
+                .trim();
             const parsed = JSON.parse(textResponse);
 
             // Add IDs
@@ -103,7 +103,10 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -134,8 +137,10 @@ export default async function handler(req, res) {
         console.log(`Processing file: ${req.file.originalname} (${mimeType})`);
 
         // Handle DOCX extraction locally
-        if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-            req.file.originalname.toLowerCase().endsWith('.docx')) {
+        if (
+            mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            req.file.originalname.toLowerCase().endsWith('.docx')
+        ) {
             textContent = await extractTextFromDOCX(buffer);
         }
         // Handle PDF
@@ -150,7 +155,6 @@ export default async function handler(req, res) {
 
         const parsedData = await parseWithGemini(buffer, mimeType, textContent);
         res.status(200).json(parsedData);
-
     } catch (error) {
         console.error('Error parsing resume:', error);
         res.status(500).json({ error: 'Failed to parse resume', details: error.message });

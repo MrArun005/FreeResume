@@ -35,15 +35,26 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
             >
                 <header className="px-6 py-5 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--brand-600)' }}>
+                        <div
+                            className="w-9 h-9 rounded-lg flex items-center justify-center"
+                            style={{ background: 'var(--brand-600)' }}
+                        >
                             <Palette size={18} className="text-white" />
                         </div>
                         <div>
-                            <h2 className="text-base font-bold text-slate-900 tracking-tight m-0">Design & Theme</h2>
-                            <p className="text-[12px] text-slate-500 m-0">Brand colors used across the app.</p>
+                            <h2 className="text-base font-bold text-slate-900 tracking-tight m-0">
+                                Design & Theme
+                            </h2>
+                            <p className="text-[12px] text-slate-500 m-0">
+                                Brand colors used across the app.
+                            </p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 transition-colors" aria-label="Close">
+                    <button
+                        onClick={onClose}
+                        className="text-slate-400 hover:text-slate-700 p-1 transition-colors"
+                        aria-label="Close"
+                    >
                         <X size={20} />
                     </button>
                 </header>
@@ -51,7 +62,9 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                 <div className="px-6 py-5 overflow-y-auto space-y-6">
                     {/* Preset list */}
                     <div>
-                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3">Themes</h3>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3">
+                            Themes
+                        </h3>
                         <div className="space-y-2">
                             {Object.entries(THEMES).map(([key, theme]) => {
                                 const isActive = key === activeTheme;
@@ -80,7 +93,9 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                                                 {theme.name}
                                                 {isActive && <Check size={14} className="text-emerald-600" />}
                                             </div>
-                                            <div className="text-[11px] text-slate-500 mt-0.5">{theme.description}</div>
+                                            <div className="text-[11px] text-slate-500 mt-0.5">
+                                                {theme.description}
+                                            </div>
                                         </div>
                                     </button>
                                 );
@@ -91,14 +106,21 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                     {/* Token inspector — the active theme's scale, hex values, and a
                         live preview of buttons / pills using brand-* classes. */}
                     <div>
-                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3">Token inspector</h3>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3">
+                            Token inspector
+                        </h3>
                         <div className="border border-slate-200 rounded-xl overflow-hidden">
                             <div className="grid grid-cols-5 gap-px bg-slate-100">
                                 {Object.entries(currentTheme.scale).map(([shade, hex]) => (
                                     <div key={shade} className="bg-white p-2 text-center">
-                                        <div className="w-full h-8 rounded mb-1.5" style={{ background: hex }} />
+                                        <div
+                                            className="w-full h-8 rounded mb-1.5"
+                                            style={{ background: hex }}
+                                        />
                                         <div className="text-[10px] text-slate-500 font-mono">{shade}</div>
-                                        <div className="text-[10px] text-slate-700 font-mono">{hex.toUpperCase()}</div>
+                                        <div className="text-[10px] text-slate-700 font-mono">
+                                            {hex.toUpperCase()}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -107,7 +129,9 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
 
                     {/* Live preview using brand-* utility classes */}
                     <div>
-                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3">Live preview</h3>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3">
+                            Live preview
+                        </h3>
                         <div className="border border-slate-200 rounded-xl p-4 space-y-3">
                             <div className="flex gap-2">
                                 <button className="px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-md transition-colors">
@@ -121,7 +145,10 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                                 </span>
                             </div>
                             <div className="text-xs text-slate-600">
-                                Link styling: <a className="text-brand-700 underline hover:text-brand-800">resume.paperjet.app</a>
+                                Link styling:{' '}
+                                <a className="text-brand-700 underline hover:text-brand-800">
+                                    resume.paperjet.app
+                                </a>
                             </div>
                         </div>
                     </div>

@@ -14,14 +14,15 @@ export async function generateContentWithRetry(model, promptOrParts) {
             const response = await result.response;
             return response.text();
         } catch (error) {
-            const isRateLimit = error.message.includes('429') ||
+            const isRateLimit =
+                error.message.includes('429') ||
                 error.message.includes('Too Many Requests') ||
                 error.message.includes('Resource exhausted');
 
             if (isRateLimit && retries < MAX_RETRIES) {
                 const delay = INITIAL_DELAY * Math.pow(2, retries);
                 console.warn(`Gemini 429 error. Retrying in ${delay}ms...`);
-                await new Promise(resolve => setTimeout(resolve, delay));
+                await new Promise((resolve) => setTimeout(resolve, delay));
                 retries++;
             } else {
                 throw error;
@@ -32,11 +33,7 @@ export async function generateContentWithRetry(model, promptOrParts) {
 
 // Helper to generate content with fallback models
 export async function generateWithFallback(prompt) {
-    const models = [
-        "gemini-2.0-flash",
-        "gemini-2.5-flash-preview-09-2025",
-        "gemini-flash-latest"
-    ];
+    const models = ['gemini-2.0-flash', 'gemini-2.5-flash-preview-09-2025', 'gemini-flash-latest'];
 
     let lastError = null;
 

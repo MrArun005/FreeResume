@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Move, Maximize2 } from 'lucide-react';
 
-const DraggableElement = ({ id, children, initialPos = { x: 0, y: 0 }, initialSize = { w: 'auto', h: 'auto' }, onUpdate, isEditable = true }) => {
+const DraggableElement = ({
+    id,
+    children,
+    initialPos = { x: 0, y: 0 },
+    initialSize = { w: 'auto', h: 'auto' },
+    onUpdate,
+    isEditable = true,
+}) => {
     const [pos, setPos] = useState(initialPos);
     const [size, setSize] = useState(initialSize);
 
@@ -30,8 +37,12 @@ const DraggableElement = ({ id, children, initialPos = { x: 0, y: 0 }, initialSi
         if (initialSize.w !== undefined) setSize(initialSize);
     }
 
-    useEffect(() => { currentPos.current = pos; }, [pos]);
-    useEffect(() => { currentSize.current = size; }, [size]);
+    useEffect(() => {
+        currentPos.current = pos;
+    }, [pos]);
+    useEffect(() => {
+        currentSize.current = size;
+    }, [size]);
 
     // --- DRAG LOGIC ---
     const handleMouseDown = (e) => {
@@ -59,7 +70,7 @@ const DraggableElement = ({ id, children, initialPos = { x: 0, y: 0 }, initialSi
 
         setPos({
             x: Math.round(rawX / 20) * 20,
-            y: Math.round(rawY / 20) * 20
+            y: Math.round(rawY / 20) * 20,
         });
     };
 
@@ -100,7 +111,7 @@ const DraggableElement = ({ id, children, initialPos = { x: 0, y: 0 }, initialSi
 
         setSize({
             w: Math.round(rawW / 20) * 20,
-            h: Math.round(rawH / 20) * 20
+            h: Math.round(rawH / 20) * 20,
         });
     };
 
@@ -119,9 +130,9 @@ const DraggableElement = ({ id, children, initialPos = { x: 0, y: 0 }, initialSi
                 transform: `translate(${pos.x}px, ${pos.y}px)`,
                 width: size.w,
                 height: size.h,
-                transition: (isDragging || isResizing) ? 'none' : 'transform 0.1s ease-out',
-                zIndex: (isDragging || isResizing) ? 50 : 10,
-                cursor: isDragging ? 'grabbing' : (isEditable ? 'grab' : 'default')
+                transition: isDragging || isResizing ? 'none' : 'transform 0.1s ease-out',
+                zIndex: isDragging || isResizing ? 50 : 10,
+                cursor: isDragging ? 'grabbing' : isEditable ? 'grab' : 'default',
             }}
             onMouseDown={handleMouseDown}
         >
@@ -133,9 +144,7 @@ const DraggableElement = ({ id, children, initialPos = { x: 0, y: 0 }, initialSi
             )}
 
             {/* Content */}
-            <div className="w-full h-full overflow-hidden">
-                {children}
-            </div>
+            <div className="w-full h-full overflow-hidden">{children}</div>
 
             {/* Resize Handle (Bottom Right) */}
             {isEditable && (

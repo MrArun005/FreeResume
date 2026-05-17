@@ -1,6 +1,19 @@
 import { useState } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable,
+} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Mail, Phone, MapPin, Link as LinkIcon } from 'lucide-react';
 import SectionTitle from '../ui/SectionTitle';
@@ -19,7 +32,11 @@ const SortableSection = ({ id, children, isEditing }) => {
     return (
         <div ref={setNodeRef} style={style} className={`group relative ${isDragging ? 'opacity-50' : ''}`}>
             {isEditing && (
-                <div {...attributes} {...listeners} className="absolute -left-8 top-0 bottom-0 w-8 flex items-center justify-center cursor-grab active:cursor-grabbing text-gray-300 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity no-print">
+                <div
+                    {...attributes}
+                    {...listeners}
+                    className="absolute -left-8 top-0 bottom-0 w-8 flex items-center justify-center cursor-grab active:cursor-grabbing text-gray-300 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity no-print"
+                >
                     <GripVertical size={20} />
                 </div>
             )}
@@ -43,13 +60,12 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
         setLastInput({ sectionOrder: data.sectionOrder, pageIndex });
         // Preserve the user's local drag order where possible: keep ids still present, drop the rest.
         const validIds = new Set(computeItemsFromProps(data.sectionOrder, pageIndex));
-        setItems(prev => {
-            const kept = prev.filter(id => validIds.has(id));
-            const missing = [...validIds].filter(id => !kept.includes(id));
+        setItems((prev) => {
+            const kept = prev.filter((id) => validIds.has(id));
+            const missing = [...validIds].filter((id) => !kept.includes(id));
             return [...kept, ...missing];
         });
     }
-
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -70,15 +86,32 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
     // Renderers
     const renderPersonal = () => (
         <div id="section-personal" className={`mb-6 pb-6 border-b-2 ${theme.border}`}>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">{data.personal.fullName || "Your Name"}</h1>
-            <p className="text-xl text-gray-600 mb-4">{data.personal.title || "Job Title"}</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">{data.personal.fullName || 'Your Name'}</h1>
+            <p className="text-xl text-gray-600 mb-4">{data.personal.title || 'Job Title'}</p>
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-                {data.personal.email && <div className="flex items-center gap-1"><Mail size={14} /> {data.personal.email}</div>}
-                {data.personal.phone && <div className="flex items-center gap-1"><Phone size={14} /> {data.personal.phone}</div>}
-                {data.personal.location && <div className="flex items-center gap-1"><MapPin size={14} /> {data.personal.location}</div>}
-                {(data.personal.socials || []).map(s => (
-                    <div key={s.id} className="flex items-center gap-1"><LinkIcon size={14} /> <a href={s.url} className="hover:underline text-blue-600">{s.network}</a></div>
+                {data.personal.email && (
+                    <div className="flex items-center gap-1">
+                        <Mail size={14} /> {data.personal.email}
+                    </div>
+                )}
+                {data.personal.phone && (
+                    <div className="flex items-center gap-1">
+                        <Phone size={14} /> {data.personal.phone}
+                    </div>
+                )}
+                {data.personal.location && (
+                    <div className="flex items-center gap-1">
+                        <MapPin size={14} /> {data.personal.location}
+                    </div>
+                )}
+                {(data.personal.socials || []).map((s) => (
+                    <div key={s.id} className="flex items-center gap-1">
+                        <LinkIcon size={14} />{' '}
+                        <a href={s.url} className="hover:underline text-blue-600">
+                            {s.network}
+                        </a>
+                    </div>
                 ))}
             </div>
         </div>
@@ -88,7 +121,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
         if (sectionId === 'personal') return renderPersonal();
 
         const isCustom = !['summary', 'experience', 'education', 'skills'].includes(sectionId);
-        const sectionData = isCustom ? data.customSections.find(s => s.id === sectionId) : null;
+        const sectionData = isCustom ? data.customSections.find((s) => s.id === sectionId) : null;
 
         if (sectionId === 'summary' && data.personal.summary) {
             return (
@@ -102,7 +135,8 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
         }
 
         if (sectionId === 'experience' && data.experience.length > 0) {
-            const isFirstPageOfSection = !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
+            const isFirstPageOfSection =
+                !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
                 <div id={`section-${sectionId}`} className="mb-6">
                     {isFirstPageOfSection && (
@@ -110,7 +144,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
                             <SectionTitle title="Experience" theme={theme} />
                         </div>
                     )}
-                    {data.experience.map(exp => (
+                    {data.experience.map((exp) => (
                         <div key={exp.id} id={`item-${exp.id}`} className="mb-4">
                             <div className="flex justify-between items-baseline font-bold text-gray-900">
                                 <span>{exp.company}</span>
@@ -123,7 +157,9 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
                             {exp.bullets && exp.bullets.length > 0 && (
                                 <ul className="list-disc list-outside ml-5 space-y-1">
                                     {exp.bullets.map((bullet, i) => (
-                                        <li key={i} className="text-sm text-gray-700 leading-relaxed">{bullet}</li>
+                                        <li key={i} className="text-sm text-gray-700 leading-relaxed">
+                                            {bullet}
+                                        </li>
                                     ))}
                                 </ul>
                             )}
@@ -134,7 +170,8 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
         }
 
         if (sectionId === 'education' && data.education.length > 0) {
-            const isFirstPageOfSection = !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
+            const isFirstPageOfSection =
+                !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
                 <div id={`section-${sectionId}`} className="mb-6">
                     {isFirstPageOfSection && (
@@ -142,7 +179,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
                             <SectionTitle title="Education" theme={theme} />
                         </div>
                     )}
-                    {data.education.map(edu => (
+                    {data.education.map((edu) => (
                         <div key={edu.id} id={`item-${edu.id}`} className="mb-3">
                             <div className="flex justify-between items-baseline font-bold text-gray-900">
                                 <span>{edu.school}</span>
@@ -163,7 +200,12 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {data.skills.map((skill, i) => (
-                            <span key={i} className="px-2 py-1 bg-gray-100 rounded text-sm font-medium text-gray-700">{skill}</span>
+                            <span
+                                key={i}
+                                className="px-2 py-1 bg-gray-100 rounded text-sm font-medium text-gray-700"
+                            >
+                                {skill}
+                            </span>
                         ))}
                     </div>
                 </div>
@@ -178,14 +220,20 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
                             <SectionTitle title={sectionData.title} theme={theme} />
                         </div>
                     )}
-                    {sectionData.items.map(item => (
+                    {sectionData.items.map((item) => (
                         <div key={item.id} id={`item-${item.id}`} className="mb-3">
                             <div className="flex justify-between items-baseline font-bold text-gray-900">
                                 <span>{item.title}</span>
                                 <span className="text-sm text-gray-500">{item.date}</span>
                             </div>
-                            {item.subtitle && <div className="text-sm font-medium text-gray-700">{item.subtitle}</div>}
-                            {item.description && <p className="text-sm text-gray-600 whitespace-pre-line mt-1">{item.description}</p>}
+                            {item.subtitle && (
+                                <div className="text-sm font-medium text-gray-700">{item.subtitle}</div>
+                            )}
+                            {item.description && (
+                                <p className="text-sm text-gray-600 whitespace-pre-line mt-1">
+                                    {item.description}
+                                </p>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -199,7 +247,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
     if (isMeasurement) {
         return (
             <div className="p-10 font-sans bg-white h-auto">
-                {items.map(id => (
+                {items.map((id) => (
                     <div key={id}>{renderSection(id)}</div>
                 ))}
             </div>
@@ -207,10 +255,12 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
     }
 
     return (
-        <div className={`p-10 font-sans bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} relative`}>
+        <div
+            className={`p-10 font-sans bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} relative`}
+        >
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                    {items.map(id => (
+                    {items.map((id) => (
                         <SortableSection key={id} id={id} isEditing={true}>
                             {renderSection(id)}
                         </SortableSection>
@@ -221,7 +271,8 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
             {/* Hint - Only on first page */}
             {pageIndex === 0 && (
                 <div className="mt-8 p-4 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-100 text-center break-inside-avoid no-print">
-                    💡 Pro Tip: In this template, you can drag <strong>any</strong> section (including your name!) to reorder it.
+                    💡 Pro Tip: In this template, you can drag <strong>any</strong> section (including your
+                    name!) to reorder it.
                 </div>
             )}
         </div>

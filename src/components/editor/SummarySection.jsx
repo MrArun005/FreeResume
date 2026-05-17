@@ -52,6 +52,39 @@ const SummarySection = ({ summary, onChange, resume }) => {
                     rows={6}
                     placeholder="Write 2–3 sentences. Focus on your strongest impact and the kind of work you want next."
                 />
+                {/* Character counter with soft-limit color cues. ATS-friendly
+                    summaries land in 150–400 chars: long enough to seat the
+                    target role + 2-3 standout skills, short enough that a
+                    recruiter reads the whole thing. */}
+                {(() => {
+                    const len = (summary || '').length;
+                    const sweetSpot = len >= 150 && len <= 400;
+                    const tooShort = len > 0 && len < 150;
+                    const tooLong = len > 400;
+                    const color = tooLong
+                        ? 'text-red-600'
+                        : tooShort
+                          ? 'text-amber-600'
+                          : sweetSpot
+                            ? 'text-emerald-600'
+                            : 'text-slate-400';
+                    const hint =
+                        len === 0
+                            ? 'Aim for 150–400 characters.'
+                            : tooShort
+                              ? 'A bit short — aim for 150+ characters.'
+                              : tooLong
+                                ? 'Getting long — trim toward 400 characters.'
+                                : '';
+                    return (
+                        <div
+                            className={`mt-1.5 text-[11px] ${color} transition-colors flex items-center gap-2`}
+                        >
+                            <span className="font-medium">{len} / 400</span>
+                            {hint && <span className="text-slate-500">· {hint}</span>}
+                        </div>
+                    );
+                })()}
                 <button
                     onClick={handleImprove}
                     disabled={improving || !summary}

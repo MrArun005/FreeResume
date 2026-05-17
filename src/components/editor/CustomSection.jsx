@@ -3,6 +3,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from '../ui/SortableItem';
 import { CardChrome, FillInput, FillTextarea, FieldLabel } from '../ui/EditorPrimitives';
+import DateRangeInput from '../ui/DateRangeInput';
 
 const CustomSection = ({
     section,
@@ -26,7 +27,11 @@ const CustomSection = ({
                 />
             </div>
 
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(event) => onDragEnd(event, section.id)}>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => onDragEnd(event, section.id)}
+            >
                 <SortableContext items={section.items} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2.5">
                         {section.items.map((item) => {
@@ -44,7 +49,9 @@ const CustomSection = ({
                                             <FieldLabel>Title</FieldLabel>
                                             <FillInput
                                                 value={item.title || ''}
-                                                onChange={(e) => onUpdateItem(section.id, item.id, 'title', e.target.value)}
+                                                onChange={(e) =>
+                                                    onUpdateItem(section.id, item.id, 'title', e.target.value)
+                                                }
                                                 placeholder="AWS Certified Solutions Architect"
                                             />
                                         </div>
@@ -53,16 +60,24 @@ const CustomSection = ({
                                                 <FieldLabel optional>Subtitle</FieldLabel>
                                                 <FillInput
                                                     value={item.subtitle || ''}
-                                                    onChange={(e) => onUpdateItem(section.id, item.id, 'subtitle', e.target.value)}
+                                                    onChange={(e) =>
+                                                        onUpdateItem(
+                                                            section.id,
+                                                            item.id,
+                                                            'subtitle',
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     placeholder="Amazon Web Services"
                                                 />
                                             </div>
                                             <div>
                                                 <FieldLabel optional>Date</FieldLabel>
-                                                <FillInput
+                                                <DateRangeInput
                                                     value={item.date || ''}
-                                                    onChange={(e) => onUpdateItem(section.id, item.id, 'date', e.target.value)}
-                                                    placeholder="2024"
+                                                    onChange={(v) =>
+                                                        onUpdateItem(section.id, item.id, 'date', v)
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -70,7 +85,14 @@ const CustomSection = ({
                                             <FieldLabel optional>Description</FieldLabel>
                                             <FillTextarea
                                                 value={item.description || ''}
-                                                onChange={(e) => onUpdateItem(section.id, item.id, 'description', e.target.value)}
+                                                onChange={(e) =>
+                                                    onUpdateItem(
+                                                        section.id,
+                                                        item.id,
+                                                        'description',
+                                                        e.target.value
+                                                    )
+                                                }
                                                 placeholder="Add a short description…"
                                                 rows={3}
                                             />

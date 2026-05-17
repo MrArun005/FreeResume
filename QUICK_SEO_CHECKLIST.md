@@ -1,6 +1,7 @@
 # 🚀 Quick Action Checklist for Google SEO
 
 ## ✅ COMPLETED
+
 - ✅ Enhanced HTML with comprehensive SEO meta tags
 - ✅ Added meta description with target keywords
 - ✅ Added keywords meta tag
@@ -16,10 +17,13 @@
 ## 🎯 URGENT: Do These 3 Things NOW!
 
 ### 1. **Replace Placeholder URLs** ⚠️ CRITICAL
+
 Open `/Users/arunmallikarjun/Downloads/youtube-channel-search/my-resume/index.html` and replace **ALL** instances of:
+
 - `https://yourwebsite.com/` → Your actual domain (e.g., `https://freeresume.com/`)
 
 **Files to update:**
+
 - index.html (lines with canonical, og:url, twitter:url, JSON-LD)
 - /public/sitemap.xml
 
@@ -27,19 +31,22 @@ Open `/Users/arunmallikarjun/Downloads/youtube-channel-search/my-resume/index.ht
 <summary>Click to see exact lines to change</summary>
 
 In `index.html`:
+
 - Line ~18: Canonical URL
 - Line ~23: og:url
-- Line ~29: twitter:url  
+- Line ~29: twitter:url
 - Line ~49: JSON-LD url
 - Plus og:image and twitter:image URLs
 
 In `/public/sitemap.xml`:
+
 - Replace `https://yourwebsite.com/` with your actual URL
-</details>
+      </details>
 
 ---
 
 ### 2. **Submit to Google Search Console** 🔥 DO THIS TODAY
+
 1. Go to: https://search.google.com/search-console
 2. Select your verified property
 3. Click "Sitemaps" in left sidebar
@@ -47,6 +54,7 @@ In `/public/sitemap.xml`:
 5. Click "Submit"
 
 **Also request immediate indexing:**
+
 1. Go to "URL Inspection" tool
 2. Enter your homepage URL
 3. Click "Request Indexing"
@@ -54,17 +62,21 @@ In `/public/sitemap.xml`:
 ---
 
 ### 3. **Create Social Media Images**
+
 Create these two images and add to `/public/` folder:
 
 **og-image.jpg** (1200x630px)
+
 - Use for Facebook/LinkedIn sharing
 - Should showcase your Free Resume builder
 
-**twitter-image.jpg** (1200x628px)  
+**twitter-image.jpg** (1200x628px)
+
 - Use for Twitter sharing
 - Can be same as og-image
 
 Then update `index.html`:
+
 ```html
 <meta property="og:image" content="https://YOURDOMAIN.com/og-image.jpg" />
 <meta name="twitter:image" content="https://YOURDOMAIN.com/twitter-image.jpg" />
@@ -75,6 +87,7 @@ Then update `index.html`:
 ## 📈 IMPORTANT: 7-Day Action Plan
 
 ### Days 1-2: Technical Setup
+
 - [ ] Replace all placeholder URLs with actual domain
 - [ ] Create and upload social media images (og-image.jpg, twitter-image.jpg)
 - [ ] Submit sitemap to Google Search Console
@@ -83,12 +96,14 @@ Then update `index.html`:
 - [ ] Test page speed on PageSpeed Insights
 
 ### Days 3-4: Content Optimization
+
 - [ ] Add 300-500 words of content to landing page with "free resume" keyword
 - [ ] Add alt text to all images
 - [ ] Create a simple blog post (e.g., "How to Create a Resume in 2025")
 - [ ] Ensure H1 tag includes "Free Resume Builder" (already done ✅)
 
 ### Days 5-7: Off-Page SEO
+
 - [ ] Share on Twitter, LinkedIn, Facebook
 - [ ] Submit to Product Hunt
 - [ ] Post on Reddit (r/resumes, r/jobs, r/GetEmployed)
@@ -100,26 +115,32 @@ Then update `index.html`:
 ## 🎓 UNDERSTANDING SEO TIMELINE
 
 **Week 1-2**: Google discovers and indexes your site
+
 - You'll appear in "site:yourdomain.com" searches
 - May start appearing for very specific long-tail keywords
 
 **Month 1**: Start seeing organic traffic
+
 - Expect 10-50 visitors/day from Google
 - Ranking for long-tail keywords like "free resume builder online no sign up"
 
 **Month 2-3**: Growing visibility
+
 - Ranking for medium competition keywords
 - 50-200 visitors/day possible
 
 **Month 4-6**: Significant growth
+
 - Possible first page rankings for some keywords
 - 200-500+ visitors/day
 
 **Month 6-12**: Established presence
+
 - Competing for main keyword "free resume"
 - 500-2000+ visitors/day possible
 
 ⚠️ **Reality Check**: "Free resume" is VERY competitive. Focus first on:
+
 - "free resume builder online"
 - "free resume templates download"
 - "create resume free no sign up"
@@ -150,7 +171,7 @@ Then update `index.html`:
 
 Create these pages/blog posts (one per week):
 
-1. **"10 Best Free Resume Templates for 2025"** 
+1. **"10 Best Free Resume Templates for 2025"**
    → Target: "free resume templates"
 
 2. **"How to Beat ATS Systems: Complete Guide"**
@@ -166,6 +187,7 @@ Create these pages/blog posts (one per week):
    → Target: "resume vs cv", "cv vs resume"
 
 Each post should:
+
 - Be 800-1500 words
 - Include target keywords naturally
 - Link to your resume builder
@@ -176,14 +198,16 @@ Each post should:
 ## 📊 How to Track Progress
 
 ### Google Search Console (Check Weekly)
+
 1. Go to "Performance" report
 2. Look at:
-   - Total clicks (people visiting from Google)
-   - Total impressions (how often you appear in search)
-   - Average position (higher = better, aim for under 10)
-   - Click-through rate (CTR)
+    - Total clicks (people visiting from Google)
+    - Total impressions (how often you appear in search)
+    - Average position (higher = better, aim for under 10)
+    - Click-through rate (CTR)
 
 ### What Good Looks Like:
+
 - **Month 1**: 50-100 impressions/day, 1-5 clicks/day
 - **Month 3**: 500-1000 impressions/day, 20-50 clicks/day
 - **Month 6**: 2000-5000 impressions/day, 100-300 clicks/day
@@ -215,6 +239,7 @@ Each post should:
 ## 📞 Need Help?
 
 If something isn't working:
+
 1. Check Google Search Console for errors
 2. Use Google's URL Inspection tool
 3. Test on Mobile-Friendly Test

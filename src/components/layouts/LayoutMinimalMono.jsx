@@ -20,7 +20,8 @@ const Bullet = ({ children }) => (
         className="text-[10px] leading-[1.45]"
         style={{ color: TEXT, paddingLeft: 10, textIndent: -10, marginBottom: 1 }}
     >
-        <span>–&nbsp;</span>{children}
+        <span>–&nbsp;</span>
+        {children}
     </li>
 );
 
@@ -49,7 +50,9 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
                             <SectionTitle title="Summary" />
                         </div>
                     )}
-                    <p className="text-[10px] leading-[1.5]" style={{ color: TEXT }}>{personal.summary}</p>
+                    <p className="text-[10px] leading-[1.5]" style={{ color: TEXT }}>
+                        {personal.summary}
+                    </p>
                 </section>
             );
         }
@@ -70,12 +73,25 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
                                         <span className="font-bold">{exp.role || 'Role'}</span>
                                         {exp.company && <span> — {exp.company}</span>}
                                     </div>
-                                    {exp.date && <div className="text-[10px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{exp.date}</div>}
+                                    {exp.date && (
+                                        <div
+                                            className="text-[10px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {exp.date}
+                                        </div>
+                                    )}
                                 </div>
-                                {exp.location && <div className="text-[9.5px]" style={{ color: MUTED }}>{exp.location}</div>}
+                                {exp.location && (
+                                    <div className="text-[9.5px]" style={{ color: MUTED }}>
+                                        {exp.location}
+                                    </div>
+                                )}
                                 {exp.bullets?.length > 0 && (
                                     <ul className="list-none p-0 m-0 mt-1">
-                                        {exp.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                        {exp.bullets.map((b, i) => (
+                                            <Bullet key={i}>{b}</Bullet>
+                                        ))}
                                     </ul>
                                 )}
                             </div>
@@ -101,9 +117,20 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
                                         <span className="font-bold">{edu.school || 'School'}</span>
                                         {edu.degree && <span> — {edu.degree}</span>}
                                     </div>
-                                    {edu.date && <div className="text-[10px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{edu.date}</div>}
+                                    {edu.date && (
+                                        <div
+                                            className="text-[10px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {edu.date}
+                                        </div>
+                                    )}
                                 </div>
-                                {edu.gpa && <div className="text-[9.5px]" style={{ color: MUTED }}>GPA {edu.gpa}</div>}
+                                {edu.gpa && (
+                                    <div className="text-[9.5px]" style={{ color: MUTED }}>
+                                        GPA {edu.gpa}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -126,14 +153,19 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
                                 const label = skill.slice(0, idx);
                                 const items = skill.slice(idx + 1).trim();
                                 return (
-                                    <div key={i} className="text-[10px] leading-[1.5]" style={{ color: TEXT }}>
+                                    <div
+                                        key={i}
+                                        className="text-[10px] leading-[1.5]"
+                                        style={{ color: TEXT }}
+                                    >
                                         <span className="font-bold">{label}.</span> {items}
                                     </div>
                                 );
                             }
                             return (
                                 <span key={i} className="text-[10px]" style={{ color: TEXT }}>
-                                    {skill}{i < skills.length - 1 ? ', ' : ''}
+                                    {skill}
+                                    {i < skills.length - 1 ? ', ' : ''}
                                 </span>
                             );
                         })}
@@ -155,18 +187,38 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
                         {custom.items.map((item) => (
                             <div key={item.id} id={`item-${item.id}`} className="break-inside-avoid">
                                 <div className="flex items-baseline justify-between gap-4">
-                                    <div className="text-[10.5px] font-bold flex-1 min-w-0" style={{ color: TEXT }}>
-                                        {item.title}{item.subtitle && <span className="font-normal"> — {item.subtitle}</span>}
+                                    <div
+                                        className="text-[10.5px] font-bold flex-1 min-w-0"
+                                        style={{ color: TEXT }}
+                                    >
+                                        {item.title}
+                                        {item.subtitle && (
+                                            <span className="font-normal"> — {item.subtitle}</span>
+                                        )}
                                     </div>
-                                    {item.date && <div className="text-[10px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{item.date}</div>}
+                                    {item.date && (
+                                        <div
+                                            className="text-[10px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {item.date}
+                                        </div>
+                                    )}
                                 </div>
                                 {item.bullets?.length > 0 && (
                                     <ul className="list-none p-0 m-0 mt-1">
-                                        {item.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                        {item.bullets.map((b, i) => (
+                                            <Bullet key={i}>{b}</Bullet>
+                                        ))}
                                     </ul>
                                 )}
                                 {item.description && !item.bullets?.length && (
-                                    <p className="text-[10px] leading-[1.5] mt-1 whitespace-pre-line" style={{ color: TEXT }}>{item.description}</p>
+                                    <p
+                                        className="text-[10px] leading-[1.5] mt-1 whitespace-pre-line"
+                                        style={{ color: TEXT }}
+                                    >
+                                        {item.description}
+                                    </p>
                                 )}
                             </div>
                         ))}
@@ -189,9 +241,13 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
                         {personal.fullName || 'Your Name'}
                     </h1>
                     {personal.title && (
-                        <div className="text-[11px] mt-0.5" style={{ color: MUTED }}>{personal.title}</div>
+                        <div className="text-[11px] mt-0.5" style={{ color: MUTED }}>
+                            {personal.title}
+                        </div>
                     )}
-                    <div className="text-[9.5px] mt-1.5" style={{ color: TEXT }}>{renderContactLine()}</div>
+                    <div className="text-[9.5px] mt-1.5" style={{ color: TEXT }}>
+                        {renderContactLine()}
+                    </div>
                 </div>
             )}
 

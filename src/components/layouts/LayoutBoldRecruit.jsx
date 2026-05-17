@@ -5,7 +5,7 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Linkedin } from 'lucide-react';
 
-const ACCENT = '#DC2626';     // red-600
+const ACCENT = '#DC2626'; // red-600
 const TEXT = '#0F172A';
 const MUTED = '#475569';
 const RULE = '#CBD5E1';
@@ -48,8 +48,12 @@ const ContactItem = ({ icon: Icon, color, label, href }) => {
         </span>
     );
     return href ? (
-        <a href={href} className="hover:underline">{content}</a>
-    ) : content;
+        <a href={href} className="hover:underline">
+            {content}
+        </a>
+    ) : (
+        content
+    );
 };
 
 const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
@@ -76,12 +80,19 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
                                 {exp.location && <span> | {exp.location}</span>}
                             </div>
                             {exp.date && (
-                                <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{exp.date}</div>
+                                <div
+                                    className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                    style={{ color: MUTED }}
+                                >
+                                    {exp.date}
+                                </div>
                             )}
                         </div>
                         {exp.bullets?.length > 0 && (
                             <ul className="mt-1.5 list-none p-0 m-0">
-                                {exp.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                {exp.bullets.map((b, i) => (
+                                    <Bullet key={i}>{b}</Bullet>
+                                ))}
                             </ul>
                         )}
                     </div>
@@ -108,7 +119,12 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
                                 {edu.date && <span> | {edu.date}</span>}
                             </div>
                             {edu.gpa && (
-                                <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: TEXT }}>GPA: {edu.gpa}</div>
+                                <div
+                                    className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                    style={{ color: TEXT }}
+                                >
+                                    GPA: {edu.gpa}
+                                </div>
                             )}
                         </div>
                         {edu.coursework && (
@@ -169,16 +185,26 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
                                     {item.subtitle && <span className="font-medium"> - {item.subtitle}</span>}
                                 </div>
                                 {item.date && (
-                                    <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{item.date}</div>
+                                    <div
+                                        className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                        style={{ color: MUTED }}
+                                    >
+                                        {item.date}
+                                    </div>
                                 )}
                             </div>
                             {item.bullets?.length > 0 && (
                                 <ul className="mt-1.5 list-none p-0 m-0">
-                                    {item.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                    {item.bullets.map((b, i) => (
+                                        <Bullet key={i}>{b}</Bullet>
+                                    ))}
                                 </ul>
                             )}
                             {item.description && !item.bullets?.length && (
-                                <p className="text-[10.5px] leading-[1.55] mt-1 whitespace-pre-line" style={{ color: TEXT }}>
+                                <p
+                                    className="text-[10.5px] leading-[1.55] mt-1 whitespace-pre-line"
+                                    style={{ color: TEXT }}
+                                >
                                     {item.description}
                                 </p>
                             )}
@@ -198,7 +224,9 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
                             <SectionTitle title="Summary" />
                         </div>
                     )}
-                    <p className="text-[11px] leading-[1.55]" style={{ color: TEXT }}>{personal.summary}</p>
+                    <p className="text-[11px] leading-[1.55]" style={{ color: TEXT }}>
+                        {personal.summary}
+                    </p>
                 </section>
             );
         }
@@ -225,23 +253,38 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
                     >
                         {personal.fullName || 'Your Name'}
                     </h1>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10.5px]" style={{ color: TEXT }}>
+                    <div
+                        className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10.5px]"
+                        style={{ color: TEXT }}
+                    >
                         {personal.phone && (
                             <>
-                                <ContactItem icon={Phone} color={TEXT} label={personal.phone} href={`tel:${personal.phone}`} />
+                                <ContactItem
+                                    icon={Phone}
+                                    color={TEXT}
+                                    label={personal.phone}
+                                    href={`tel:${personal.phone}`}
+                                />
                                 <span style={{ color: RULE }}>|</span>
                             </>
                         )}
                         {personal.email && (
                             <>
-                                <ContactItem icon={Mail} color={TEXT} label={personal.email} href={`mailto:${personal.email}`} />
+                                <ContactItem
+                                    icon={Mail}
+                                    color={TEXT}
+                                    label={personal.email}
+                                    href={`mailto:${personal.email}`}
+                                />
                                 <span style={{ color: RULE }}>|</span>
                             </>
                         )}
                         {personal.location && (
                             <>
                                 <ContactItem icon={MapPin} color="#16A34A" label={personal.location} />
-                                {(personal.socials || []).length > 0 && <span style={{ color: RULE }}>|</span>}
+                                {(personal.socials || []).length > 0 && (
+                                    <span style={{ color: RULE }}>|</span>
+                                )}
                             </>
                         )}
                         {(personal.socials || []).map((s, i, arr) => {

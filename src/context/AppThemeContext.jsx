@@ -47,14 +47,20 @@ export const AppThemeProvider = ({ children }) => {
         theme,
         setTheme,
         themes: [
-            { id: 'app-white', name: 'White', icon: '☀️', color: 'bg-white text-black border border-gray-300' },
-            { id: 'app-black', name: 'Black', icon: '🌙', color: 'bg-black text-white border border-gray-700' }
-        ]
+            {
+                id: 'app-white',
+                name: 'White',
+                icon: '☀️',
+                color: 'bg-white text-black border border-gray-300',
+            },
+            {
+                id: 'app-black',
+                name: 'Black',
+                icon: '🌙',
+                color: 'bg-black text-white border border-gray-700',
+            },
+        ],
     };
 
-    return (
-        <AppThemeContext.Provider value={value}>
-            {children}
-        </AppThemeContext.Provider>
-    );
+    return <AppThemeContext.Provider value={value}>{children}</AppThemeContext.Provider>;
 };

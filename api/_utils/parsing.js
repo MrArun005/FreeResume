@@ -7,7 +7,7 @@ export async function extractTextFromDOCX(buffer) {
         const result = await mammoth.extractRawText({ buffer });
         return normalizeRaw(result.value);
     } catch (error) {
-        console.error("DOCX Parse Error:", error);
-        throw new Error("Failed to parse DOCX content");
+        console.error('DOCX Parse Error:', error);
+        throw new Error('Failed to parse DOCX content');
     }
 }

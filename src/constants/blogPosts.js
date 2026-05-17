@@ -4,14 +4,16 @@ export const BLOG_POSTS = [
         id: 'resume-mistakes-2025',
         title: '10 Resume Mistakes That Are Costing You Job Interviews (And How to Fix Them)',
         slug: 'resume-mistakes-costing-interviews',
-        excerpt: 'After analyzing thousands of resumes, I\'ve identified the 10 most common mistakes that are silently killing your chances of landing an interview. The good news? They\'re all fixable.',
+        excerpt:
+            "After analyzing thousands of resumes, I've identified the 10 most common mistakes that are silently killing your chances of landing an interview. The good news? They're all fixable.",
         author: 'Arun Mallikarjuna',
         date: '2025-01-23',
         readTime: '8 min read',
         category: 'Career Advice',
         tags: ['Resume Tips', 'Job Search', 'ATS', 'Career Advice'],
         image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop',
-        externalUrl: 'https://dev.to/arun_mallikarjuna_7c53800/10-resume-mistakes-that-are-costing-you-job-interviews-and-how-to-fix-them-4lcm',
+        externalUrl:
+            'https://dev.to/arun_mallikarjuna_7c53800/10-resume-mistakes-that-are-costing-you-job-interviews-and-how-to-fix-them-4lcm',
         content: `
 You've sent out dozens of resumes. Maybe even hundreds. But your phone isn't ringing, and your inbox is painfully quiet.
 
@@ -198,6 +200,6 @@ Fix these 10 mistakes, and you'll immediately stand out from 90% of applicants.
 **A great resume opens doors. But it's your skills, personality, and interview performance that land you the job.**
 
 Now go update that resume. Your dream job is waiting. 🚀
-        `
-    }
+        `,
+    },
 ];

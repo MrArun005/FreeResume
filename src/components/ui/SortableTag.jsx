@@ -4,13 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { X } from 'lucide-react';
 
 export function SortableTag({ id, children, onRemove }) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-    } = useSortable({ id });
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
     const style = {
         transform: CSS.Transform.toString(transform),

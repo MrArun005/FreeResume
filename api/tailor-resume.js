@@ -7,7 +7,10 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -29,8 +32,9 @@ export default async function handler(req, res) {
         try {
             const { data } = await axios.get(jobUrl, {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                }
+                    'User-Agent':
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                },
             });
             const $ = cheerio.load(data);
 
@@ -38,18 +42,24 @@ export default async function handler(req, res) {
             $('script, style, nav, header, footer, .nav, .menu').remove();
 
             // Extract text from main content areas (heuristics)
-            jobDescription = $('main, article, .job-description, #job-description, body').text().replace(/\s+/g, ' ').trim();
+            jobDescription = $('main, article, .job-description, #job-description, body')
+                .text()
+                .replace(/\s+/g, ' ')
+                .trim();
 
             // Truncate if too long (Gemini limit)
             if (jobDescription.length > 20000) jobDescription = jobDescription.substring(0, 20000);
-
         } catch (scrapeError) {
             console.error('Scraping failed:', scrapeError.message);
-            return res.status(400).json({ error: 'Failed to fetch job details from URL. Please paste the description manually.' });
+            return res.status(400).json({
+                error: 'Failed to fetch job details from URL. Please paste the description manually.',
+            });
         }
 
         if (jobDescription.length < 100) {
-            return res.status(400).json({ error: 'Could not extract meaningful content from the URL. Please paste the description manually.' });
+            return res.status(400).json({
+                error: 'Could not extract meaningful content from the URL. Please paste the description manually.',
+            });
         }
 
         // 2. AI Tailoring
@@ -73,11 +83,13 @@ export default async function handler(req, res) {
         `;
 
         let textResponse = await generateWithFallback(prompt);
-        textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+        textResponse = textResponse
+            .replace(/```json/g, '')
+            .replace(/```/g, '')
+            .trim();
 
         const tailoredResume = JSON.parse(textResponse);
         res.status(200).json({ tailoredResume, jobDescription }); // Return JD too so user can see what was extracted
-
     } catch (error) {
         console.error('Error tailoring resume:', error);
         res.status(500).json({ error: 'Failed to tailor resume', details: error.message });

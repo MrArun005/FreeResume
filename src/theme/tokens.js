@@ -139,12 +139,18 @@ export function loadSavedTheme() {
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved && THEMES[saved]) return saved;
-    } catch { /* private mode */ }
+    } catch {
+        /* private mode */
+    }
     return DEFAULT_THEME;
 }
 
 export function saveTheme(themeName) {
-    try { localStorage.setItem(STORAGE_KEY, themeName); } catch { /* private mode */ }
+    try {
+        localStorage.setItem(STORAGE_KEY, themeName);
+    } catch {
+        /* private mode */
+    }
 }
 
 // One-shot init for main.jsx: load saved theme + apply before first paint.

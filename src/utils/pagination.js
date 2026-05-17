@@ -1,4 +1,3 @@
-
 /**
  * Helper to create a fresh page structure
  */
@@ -8,7 +7,7 @@ const createPage = (data) => ({
     customSections: [],
     experience: [],
     education: [],
-    skills: []
+    skills: [],
 });
 
 /**
@@ -23,8 +22,8 @@ const paginateGold = (data, heights, maxPageHeight) => {
     // PADDING reflects the *top* padding of the layout — it is added to
     // currentHeight once and never released, so the effective fill budget
     // for content on each page is (maxPageHeight - PADDING).
-    const PADDING = 32;        // tightened from 40 so page 1 fills more before overflow
-    const ITEM_MARGIN = 24;    // tightened from 32 (real CSS space-y-8 measures less in practice)
+    const PADDING = 32; // tightened from 40 so page 1 fills more before overflow
+    const ITEM_MARGIN = 24; // tightened from 32 (real CSS space-y-8 measures less in practice)
     const SECTION_MARGIN = 32; // tightened from 40
     const TITLE_HEIGHT = 40;
 
@@ -40,7 +39,7 @@ const paginateGold = (data, heights, maxPageHeight) => {
         currentHeight = PADDING; // Reset to top padding
     };
 
-    data.sectionOrder.forEach(sectionId => {
+    data.sectionOrder.forEach((sectionId) => {
         // Manual Page Break Check
         if (data.pageBreaks?.[sectionId] === true && currentPage.sectionOrder.length > 0) {
             startNewPage();
@@ -50,15 +49,16 @@ const paginateGold = (data, heights, maxPageHeight) => {
         const titleHeight = heights[`section-title-${sectionId}`] || TITLE_HEIGHT;
 
         // Check if list-based section
-        const isListSection = ['experience', 'education'].includes(sectionId) ||
-            data.customSections.some(cs => cs.id === sectionId);
+        const isListSection =
+            ['experience', 'education'].includes(sectionId) ||
+            data.customSections.some((cs) => cs.id === sectionId);
 
         if (isListSection) {
             let items = [];
             if (sectionId === 'experience') items = data.experience;
             else if (sectionId === 'education') items = data.education;
             else {
-                const cs = data.customSections.find(s => s.id === sectionId);
+                const cs = data.customSections.find((s) => s.id === sectionId);
                 if (cs) items = cs.items;
             }
 
@@ -121,7 +121,6 @@ const paginateGold = (data, heights, maxPageHeight) => {
 
             // Add remaining items
             addItemsToPage(currentPage, sectionId, pageItems, data);
-
         } else {
             // Block Section (Summary, Skills)
             // Treat as atomic block
@@ -154,8 +153,8 @@ const paginateExecutive = (data, heights, maxPageHeight) => {
     let currentPage = createPage(data);
 
     // EXECUTIVE CONSTANTS — tightened to reduce trailing whitespace on page 1
-    const PADDING = 40;        // was 48; better matches measured fill
-    const ITEM_MARGIN = 24;    // was 32
+    const PADDING = 40; // was 48; better matches measured fill
+    const ITEM_MARGIN = 24; // was 32
     const SECTION_MARGIN = 24; // was 32
     const TITLE_HEIGHT = 36;
 
@@ -175,14 +174,16 @@ const paginateExecutive = (data, heights, maxPageHeight) => {
     // To respect user request for separate functions, I'm duplicating the logic structure
     // This allows future divergence without breaking Gold.
 
-    data.sectionOrder.forEach(sectionId => {
+    data.sectionOrder.forEach((sectionId) => {
         if (data.pageBreaks?.[sectionId] === true && currentPage.sectionOrder.length > 0) {
             startNewPage();
         }
 
         const sectionHeight = heights[`section-${sectionId}`] || 0;
         const titleHeight = heights[`section-title-${sectionId}`] || TITLE_HEIGHT;
-        const isListSection = ['experience', 'education'].includes(sectionId) || data.customSections.some(cs => cs.id === sectionId);
+        const isListSection =
+            ['experience', 'education'].includes(sectionId) ||
+            data.customSections.some((cs) => cs.id === sectionId);
 
         if (isListSection) {
             let items = getItems(data, sectionId);
@@ -203,7 +204,10 @@ const paginateExecutive = (data, heights, maxPageHeight) => {
 
                 if (isFirstItemOnPage) {
                     const marginToAdd = currentHeight > PADDING + 10 ? SECTION_MARGIN : 0;
-                    if (currentHeight + marginToAdd + titleHeight + itemHeight > maxPageHeight && currentHeight > PADDING + 100) {
+                    if (
+                        currentHeight + marginToAdd + titleHeight + itemHeight > maxPageHeight &&
+                        currentHeight > PADDING + 100
+                    ) {
                         startNewPage();
                         currentPage.sectionOrder.push(sectionId);
                         currentHeight += titleHeight + itemHeight;
@@ -295,21 +299,21 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
     const sidebarKeywords = ['language', 'interest', 'award', 'certification', 'skill', 'education'];
     const isSidebarSection = (sectionId) => {
         if (sectionId === 'education' || sectionId === 'skills') return true;
-        const cs = data.customSections.find(s => s.id === sectionId);
+        const cs = data.customSections.find((s) => s.id === sectionId);
         if (cs) {
             const title = cs.title.toLowerCase();
-            return sidebarKeywords.some(kw => title.includes(kw));
+            return sidebarKeywords.some((kw) => title.includes(kw));
         }
         return false;
     };
 
-    const sidebarSections = data.sectionOrder.filter(id => isSidebarSection(id));
-    const mainSections = data.sectionOrder.filter(id => !isSidebarSection(id));
+    const sidebarSections = data.sectionOrder.filter((id) => isSidebarSection(id));
+    const mainSections = data.sectionOrder.filter((id) => !isSidebarSection(id));
 
     // --- PASS 1: SIDEBAR CONTENT ---
     let currentPageIndex = 0;
 
-    sidebarSections.forEach(sectionId => {
+    sidebarSections.forEach((sectionId) => {
         // Manual Page Break Check
         if (data.pageBreaks?.[sectionId] === true && currentPageIndex === 0) {
             currentPageIndex++;
@@ -351,7 +355,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
             if (items && items.length > 0) {
                 // List (Education, Custom)
                 const pageItems = [];
-                items.forEach(item => {
+                items.forEach((item) => {
                     // Manual Item Break
                     if (data.pageBreaks?.[item.id] === true) {
                         addItemsToPage(pages[currentPageIndex], sectionId, pageItems, data);
@@ -404,7 +408,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
     currentPageIndex = 0; // RESET to Page 0
     // mainSections is already defined above
 
-    mainSections.forEach(sectionId => {
+    mainSections.forEach((sectionId) => {
         // Manual Page Break Check
         if (data.pageBreaks?.[sectionId] === true && currentPageIndex === 0) {
             currentPageIndex++;
@@ -417,7 +421,9 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
         const colIndex = mainCol;
         const sectionHeight = heights[`section-${sectionId}`] || 0;
         const titleHeight = heights[`section-title-${sectionId}`] || TITLE_HEIGHT;
-        const isListSection = ['experience', 'education'].includes(sectionId) || data.customSections.some(cs => cs.id === sectionId);
+        const isListSection =
+            ['experience', 'education'].includes(sectionId) ||
+            data.customSections.some((cs) => cs.id === sectionId);
 
         if (isListSection) {
             let items = getItems(data, sectionId);
@@ -523,14 +529,16 @@ const paginateStandard = (data, heights, maxPageHeight) => {
         currentHeight = PADDING;
     };
 
-    data.sectionOrder.forEach(sectionId => {
+    data.sectionOrder.forEach((sectionId) => {
         if (data.pageBreaks?.[sectionId] === true && currentPage.sectionOrder.length > 0) {
             startNewPage();
         }
 
         const sectionHeight = heights[`section-${sectionId}`] || 0;
         const titleHeight = heights[`section-title-${sectionId}`] || TITLE_HEIGHT;
-        const isListSection = ['experience', 'education'].includes(sectionId) || data.customSections.some(cs => cs.id === sectionId);
+        const isListSection =
+            ['experience', 'education'].includes(sectionId) ||
+            data.customSections.some((cs) => cs.id === sectionId);
 
         if (isListSection) {
             let items = getItems(data, sectionId);
@@ -551,7 +559,10 @@ const paginateStandard = (data, heights, maxPageHeight) => {
 
                 if (isFirstItemOnPage) {
                     const marginToAdd = currentHeight > PADDING + 10 ? SECTION_MARGIN : 0;
-                    if (currentHeight + marginToAdd + titleHeight + itemHeight > maxPageHeight && currentHeight > PADDING + 100) {
+                    if (
+                        currentHeight + marginToAdd + titleHeight + itemHeight > maxPageHeight &&
+                        currentHeight > PADDING + 100
+                    ) {
                         startNewPage();
                         currentPage.sectionOrder.push(sectionId);
                         currentHeight += titleHeight + itemHeight;
@@ -602,10 +613,10 @@ const paginateStandard = (data, heights, maxPageHeight) => {
 const paginateCanvas = (data) => {
     let maxY = 1123; // default 1 page (A4 at 96dpi approx)
     if (data.customStyles) {
-        Object.values(data.customStyles).forEach(style => {
+        Object.values(data.customStyles).forEach((style) => {
             if (style && style.y !== undefined) {
                 const bottom = style.y + 600; // rough estimate of block height
-                if (bottom > maxY) parseInt(maxY = bottom);
+                if (bottom > maxY) parseInt((maxY = bottom));
             }
         });
     }
@@ -631,7 +642,7 @@ const paginateCanvas = (data) => {
 const getItems = (data, sectionId) => {
     if (sectionId === 'experience') return data.experience;
     if (sectionId === 'education') return data.education;
-    const cs = data.customSections.find(s => s.id === sectionId);
+    const cs = data.customSections.find((s) => s.id === sectionId);
     return cs ? cs.items : [];
 };
 
@@ -640,11 +651,11 @@ const addItemsToPage = (page, sectionId, items, data) => {
     if (sectionId === 'experience') page.experience = [...(page.experience || []), ...items];
     else if (sectionId === 'education') page.education = [...(page.education || []), ...items];
     else {
-        const existingCS = page.customSections.find(s => s.id === sectionId);
+        const existingCS = page.customSections.find((s) => s.id === sectionId);
         if (existingCS) {
             existingCS.items = [...existingCS.items, ...items];
         } else {
-            const originalCS = data.customSections.find(s => s.id === sectionId);
+            const originalCS = data.customSections.find((s) => s.id === sectionId);
             page.customSections.push({ ...originalCS, items: [...items] });
         }
     }
@@ -653,7 +664,7 @@ const addItemsToPage = (page, sectionId, items, data) => {
 const addPageMetadata = (pages) => {
     const sectionStartPage = {};
     pages.forEach((page, index) => {
-        page.sectionOrder.forEach(sectionId => {
+        page.sectionOrder.forEach((sectionId) => {
             if (sectionStartPage[sectionId] === undefined) {
                 sectionStartPage[sectionId] = index;
             }
@@ -683,7 +694,7 @@ export const paginateResume = (data, heights, maxPageHeight = 1000, layoutId = '
         case 'sidebar-right':
             return paginateSidebar(data, heights, maxPageHeight, layoutId);
         case 'modern-grid':
-            // For now, use sidebar logic (2-col) or standard? 
+            // For now, use sidebar logic (2-col) or standard?
             // Modern grid is complex, let's use sidebar logic but tweak it if needed.
             // Actually, modern grid is 2-col but not sidebar.
             // Fallback to standard for now to avoid breaking it, or create paginateModernGrid.

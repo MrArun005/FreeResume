@@ -1,5 +1,5 @@
-import { Suspense, lazy } from 'react'
-const Spline = lazy(() => import('@splinetool/react-spline'))
+import { Suspense, lazy } from 'react';
+const Spline = lazy(() => import('@splinetool/react-spline'));
 
 export function SplineScene({ scene, className }) {
     return (
@@ -10,10 +10,7 @@ export function SplineScene({ scene, className }) {
                 </div>
             }
         >
-            <Spline
-                scene={scene}
-                className={className}
-            />
+            <Spline scene={scene} className={className} />
         </Suspense>
-    )
+    );
 }

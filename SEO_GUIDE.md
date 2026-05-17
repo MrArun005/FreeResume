@@ -3,6 +3,7 @@
 ## ✅ What We've Already Done
 
 ### 1. **Meta Tags Optimization**
+
 - ✅ Optimized title tag with target keyword
 - ✅ Added compelling meta description
 - ✅ Added relevant keywords meta tag
@@ -10,10 +11,12 @@
 - ✅ Google Site Verification meta tag
 
 ### 2. **Social Media Integration**
+
 - ✅ Open Graph tags for Facebook/LinkedIn sharing
 - ✅ Twitter Card tags for Twitter sharing
 
 ### 3. **Structured Data (JSON-LD)**
+
 - ✅ Added Schema.org structured data for web applications
 - ✅ Helps Google understand your website better
 
@@ -24,9 +27,11 @@
 ### **IMMEDIATE ACTIONS (Do These Now)**
 
 #### 1. **Update Canonical URLs**
+
 Replace all instances of `https://yourwebsite.com/` in `index.html` with your **actual domain URL**.
 
 Example: If your domain is `https://freeresume.com`, update:
+
 ```html
 <link rel="canonical" href="https://freeresume.com/" />
 <meta property="og:url" content="https://freeresume.com/" />
@@ -34,20 +39,25 @@ Example: If your domain is `https://freeresume.com`, update:
 ```
 
 #### 2. **Create and Upload Social Media Images**
+
 Create these images and upload them to your `/public` folder:
+
 - **og-image.jpg** (1200x630px) - For Facebook/LinkedIn
 - **twitter-image.jpg** (1200x628px) - For Twitter
 
 Then update the meta tags with the correct paths:
+
 ```html
 <meta property="og:image" content="https://yourwebsite.com/og-image.jpg" />
 <meta name="twitter:image" content="https://yourwebsite.com/twitter-image.jpg" />
 ```
 
 #### 3. **Submit Your Sitemap to Google Search Console**
+
 Create a `sitemap.xml` file (see below) and submit it to Google Search Console.
 
 #### 4. **Create a robots.txt File**
+
 Add a `robots.txt` file to your `/public` folder to help search engines crawl your site.
 
 ---
@@ -55,29 +65,36 @@ Add a `robots.txt` file to your `/public` folder to help search engines crawl yo
 ### **CONTENT OPTIMIZATION**
 
 #### 5. **Add H1 Tag with Target Keyword**
+
 Ensure your main landing page has an H1 tag with "Free Resume" or "Free Resume Builder":
+
 ```jsx
 <h1>Free Resume Builder - Create Professional Resumes Online</h1>
 ```
 
 #### 6. **Use Semantic HTML & Header Hierarchy**
+
 - Use `<h1>` for main title (only one per page)
 - Use `<h2>` for major sections
 - Use `<h3>` for subsections
 - Include keywords naturally in headers
 
 #### 7. **Add Quality Content**
+
 Add text content to your landing page that includes:
+
 - "Free resume" keyword 2-3 times naturally
 - Related keywords: "resume builder", "resume templates", "ATS resume"
 - Aim for at least 300-500 words of unique content
 - Answer common questions like:
-  - "How to create a resume?"
-  - "What is an ATS-friendly resume?"
-  - "Best free resume templates"
+    - "How to create a resume?"
+    - "What is an ATS-friendly resume?"
+    - "Best free resume templates"
 
 #### 8. **Add Alt Text to Images**
+
 For all images on your site, add descriptive alt text:
+
 ```html
 <img src="template.jpg" alt="Free ATS-friendly resume template" />
 ```
@@ -87,7 +104,9 @@ For all images on your site, add descriptive alt text:
 ### **TECHNICAL SEO**
 
 #### 9. **Create sitemap.xml**
+
 Create `/public/sitemap.xml`:
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -101,7 +120,9 @@ Create `/public/sitemap.xml`:
 ```
 
 #### 10. **Create robots.txt**
+
 Create `/public/robots.txt`:
+
 ```
 User-agent: *
 Allow: /
@@ -110,6 +131,7 @@ Sitemap: https://yourwebsite.com/sitemap.xml
 ```
 
 #### 11. **Improve Page Speed**
+
 - Optimize images (use WebP format when possible)
 - Minimize JavaScript and CSS
 - Enable compression (gzip/brotli)
@@ -117,11 +139,13 @@ Sitemap: https://yourwebsite.com/sitemap.xml
 - Lazy load images
 
 #### 12. **Ensure Mobile Responsiveness**
+
 - Test on Google Mobile-Friendly Test
 - Ensure text is readable without zooming
 - Buttons and links are easily tappable
 
 #### 13. **Add HTTPS SSL Certificate**
+
 If not already done, ensure your website uses HTTPS (most hosting providers offer free SSL)
 
 ---
@@ -129,7 +153,9 @@ If not already done, ensure your website uses HTTPS (most hosting providers offe
 ### **OFF-PAGE SEO**
 
 #### 14. **Build Backlinks**
+
 Get quality backlinks from:
+
 - Directory submissions (resume-related directories)
 - Guest posts on career/job search blogs
 - Social media profiles
@@ -137,35 +163,42 @@ Get quality backlinks from:
 - Product Hunt launch
 
 #### 15. **Social Media Presence**
+
 - Create social media profiles (Twitter, Facebook, LinkedIn)
 - Share your tool regularly
 - Engage with users
 
 #### 16. **Content Marketing**
+
 Create a blog with articles like:
+
 - "How to Write a Resume in 2025"
 - "10 Free Resume Templates for Job Seekers"
 - "ATS Resume: The Complete Guide"
-Each blog post should link back to your resume builder.
+  Each blog post should link back to your resume builder.
 
 ---
 
 ### **GOOGLE SEARCH CONSOLE ACTIONS**
 
 #### 17. **Submit URL for Indexing**
+
 - Go to Google Search Console
 - Use "URL Inspection" tool
 - Submit your homepage URL for indexing
 - Google will crawl it within 24-48 hours
 
 #### 18. **Monitor Performance**
+
 Check Google Search Console regularly for:
+
 - Indexing issues
 - Search queries bringing traffic
 - Click-through rates (CTR)
 - Mobile usability issues
 
 #### 19. **Request Indexing of New Pages**
+
 Whenever you add new content, request indexing in Search Console
 
 ---
@@ -173,6 +206,7 @@ Whenever you add new content, request indexing in Search Console
 ### **LOCAL SEO (If Applicable)**
 
 #### 20. **Google Business Profile**
+
 If you have a business, create a Google Business Profile for local searches
 
 ---
@@ -180,13 +214,16 @@ If you have a business, create a Google Business Profile for local searches
 ### **COMPETITIVE ANALYSIS**
 
 #### 21. **Analyze Competitors**
+
 Research top-ranking sites for "free resume":
+
 - What content do they have?
 - What keywords are they targeting?
 - How many backlinks do they have?
 - What's their page structure?
 
 Tools to use:
+
 - Ahrefs (paid)
 - SEMrush (paid)
 - Ubersuggest (free tier available)
@@ -197,20 +234,25 @@ Tools to use:
 ### **ONGOING OPTIMIZATION**
 
 #### 22. **Keyword Research**
+
 Target additional long-tail keywords:
+
 - "free resume builder online"
 - "free resume templates download"
 - "free ATS resume maker"
 - "create resume free no sign up"
 
 #### 23. **Update Content Regularly**
+
 - Add new resume templates
 - Update existing content
 - Add blog posts regularly
 - Keep information current
 
 #### 24. **Track Analytics**
+
 Use Google Analytics to:
+
 - Monitor traffic sources
 - Track user behavior
 - Identify popular pages

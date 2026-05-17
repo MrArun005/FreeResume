@@ -5,6 +5,7 @@ This guide will help you deploy your "Free Resume" app to Vercel for free hostin
 ## 🚀 Quick Overview
 
 Vercel is perfect for React/Vite apps:
+
 - ✅ Free hosting
 - ✅ Automatic HTTPS
 - ✅ Global CDN
@@ -23,6 +24,7 @@ Vercel is perfect for React/Vite apps:
 ## 🎯 Step 1: Push Your Code to GitHub
 
 ### Option A: Using GitHub Desktop (Easiest)
+
 1. Download [GitHub Desktop](https://desktop.github.com/)
 2. Open GitHub Desktop
 3. Click **File** → **Add Local Repository**
@@ -33,6 +35,7 @@ Vercel is perfect for React/Vite apps:
 8. Click **Publish Repository**
 
 ### Option B: Using Command Line
+
 ```bash
 cd /Users/arunmallikarjun/Downloads/youtube-channel-search/my-resume
 
@@ -80,16 +83,19 @@ Vercel should auto-detect your Vite project. Verify these settings:
 **Root Directory:** `./` (leave as is)
 
 **Build Command:**
+
 ```bash
 npm run build
 ```
 
 **Output Directory:**
+
 ```
 dist
 ```
 
 **Install Command:**
+
 ```bash
 npm install
 ```
@@ -110,22 +116,24 @@ If you have any API keys or secrets (you don't for this project), you'd add them
 
 1. Click the **Deploy** button
 2. Wait 1-2 minutes while Vercel:
-   - Installs dependencies
-   - Builds your project
-   - Deploys to their global CDN
+    - Installs dependencies
+    - Builds your project
+    - Deploys to their global CDN
 
 3. 🎉 **Success!** You'll see:
-   - ✅ Deployment complete
-   - 🔗 Your live URL (looks like: `https://free-resume-abc123.vercel.app`)
+    - ✅ Deployment complete
+    - 🔗 Your live URL (looks like: `https://free-resume-abc123.vercel.app`)
 
 ---
 
 ## 🎨 Step 7: Customize Your Domain (Optional)
 
 ### Free Vercel Subdomain
+
 Your app is live at: `https://your-project-name.vercel.app`
 
 ### Custom Domain (Optional)
+
 1. Go to your project dashboard on Vercel
 2. Click **Settings** → **Domains**
 3. Add your custom domain (if you have one)
@@ -136,12 +144,14 @@ Your app is live at: `https://your-project-name.vercel.app`
 ## 🔄 Automatic Deployments
 
 **Every time you push to GitHub, Vercel will automatically:**
+
 1. Detect the new commit
 2. Build your project
 3. Deploy the new version
 4. Update your live site
 
 **To update your site:**
+
 ```bash
 git add .
 git commit -m "Update: improved animations"
@@ -168,14 +178,16 @@ After deployment, explore your dashboard:
 ### Build Failed?
 
 **Check the build logs** on Vercel:
+
 1. Click on the failed deployment
 2. View the logs
 3. Common issues:
-   - Missing dependencies: Run `npm install` locally first
-   - TypeScript errors: Fix any linting issues
-   - Environment variables: Add them in Vercel settings
+    - Missing dependencies: Run `npm install` locally first
+    - TypeScript errors: Fix any linting issues
+    - Environment variables: Add them in Vercel settings
 
 ### Local build test:
+
 ```bash
 npm run build
 npm run preview
@@ -189,12 +201,12 @@ Add a `vercel.json` file to handle client-side routing:
 
 ```json
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
 }
 ```
 
@@ -203,6 +215,7 @@ Add a `vercel.json` file to handle client-side routing:
 ## ✅ Verification Checklist
 
 After deployment, test these:
+
 - [ ] Landing page loads
 - [ ] Animations work (cursor effects, parallax)
 - [ ] Templates load correctly
@@ -215,17 +228,21 @@ After deployment, test these:
 ## 🎯 What's Next?
 
 ### Share Your Site!
+
 Your app is live! Share it:
+
 - Add the link to your GitHub README
 - Share on LinkedIn, Twitter
 - Add it to your portfolio
 
 ### Monitor Performance
+
 - Use Vercel Analytics (upgrade for more features)
 - Check Google PageSpeed Insights
 - Monitor Formspree for feedback
 
 ### Keep Improving
+
 - Watch the feedback coming in
 - Deploy updates frequently
 - A/B test different designs
@@ -245,6 +262,7 @@ Your app is live! Share it:
 Your "Free Resume" app is now live and accessible to the world! 🌍
 
 **Next Steps:**
+
 1. Test the live site thoroughly
 2. Share the link with friends for feedback
 3. Keep iterating and improving!

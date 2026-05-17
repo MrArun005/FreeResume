@@ -7,7 +7,9 @@ const ShareModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     const shareUrl = window.location.href; // Uses the current deployed URL
-    const shareText = "I just updated my resume using Paperjet — AI-powered, ATS-friendly, and privacy-first. Try it: " + shareUrl;
+    const shareText =
+        'I just updated my resume using Paperjet — AI-powered, ATS-friendly, and privacy-first. Try it: ' +
+        shareUrl;
     const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
 
     const handleCopy = () => {
@@ -19,7 +21,6 @@ const ShareModal = ({ isOpen, onClose }) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
             <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all scale-100">
-
                 {/* Header */}
                 <div className="bg-gradient-to-r from-brand-600 to-indigo-600 p-6 text-white text-center relative">
                     <button
@@ -60,7 +61,7 @@ const ShareModal = ({ isOpen, onClose }) => {
                             className="flex items-center justify-center gap-2 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors border border-gray-200"
                         >
                             {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
-                            {copied ? "Copied to Clipboard!" : "Copy Link to Share"}
+                            {copied ? 'Copied to Clipboard!' : 'Copy Link to Share'}
                         </button>
                     </div>
                 </div>

@@ -56,13 +56,15 @@ function buildStandaloneHtml() {
 
     // Clone each page and strip the scaling transform on its ancestor (we
     // want 100% size in the printed PDF, not the editor's preview zoom).
-    const pageMarkup = pages.map((node) => {
-        const clone = node.cloneNode(true);
-        // Drop preview-only chrome that snuck into the clone (shadows etc.
-        // get cleared by the print stylesheet below; this is belt + braces).
-        clone.classList.remove('shadow-2xl', 'mb-8');
-        return clone.outerHTML;
-    }).join('\n');
+    const pageMarkup = pages
+        .map((node) => {
+            const clone = node.cloneNode(true);
+            // Drop preview-only chrome that snuck into the clone (shadows etc.
+            // get cleared by the print stylesheet below; this is belt + braces).
+            clone.classList.remove('shadow-2xl', 'mb-8');
+            return clone.outerHTML;
+        })
+        .join('\n');
 
     const inlineCss = collectInlineStyles();
     const fontLinks = collectFontLinks();
@@ -142,7 +144,11 @@ export async function exportPdfViaServer({ filename = 'Resume.pdf' } = {}) {
 
     if (!response.ok) {
         let detail = '';
-        try { detail = (await response.json())?.details || (await response.text()); } catch { /* empty */ }
+        try {
+            detail = (await response.json())?.details || (await response.text());
+        } catch {
+            /* empty */
+        }
         throw new Error(`Server PDF failed (${response.status}): ${detail || 'no detail'}`);
     }
 
@@ -197,7 +203,11 @@ export async function exportResumeDocx({ resume, templateId, filename = 'Resume.
 
         if (!response.ok) {
             let detail = '';
-            try { detail = (await response.json())?.details || (await response.text()); } catch { /* empty */ }
+            try {
+                detail = (await response.json())?.details || (await response.text());
+            } catch {
+                /* empty */
+            }
             return { ok: false, reason: `Server DOCX failed (${response.status}): ${detail || 'no detail'}` };
         }
 

@@ -5,7 +5,9 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
     const { personal, experience, education, skills, customSections, sectionOrder } = data;
 
     return (
-        <div className={`p-10 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} font-serif text-gray-900 bg-white relative box-border`}>
+        <div
+            className={`p-10 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} font-serif text-gray-900 bg-white relative box-border`}
+        >
             {/* Header */}
             {pageIndex === 0 && (
                 <div className="text-center mb-4">
@@ -13,22 +15,31 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                     <div className="flex justify-center items-center gap-3 text-sm">
                         {personal.phone && <span>{personal.phone}</span>}
                         {personal.email && (
-                            <a href={`mailto:${personal.email}`} className="hover:underline">{personal.email}</a>
-                        )}
-                        {personal.socials && personal.socials.map(social => (
-                            <a key={social.id} href={social.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                {social.network}
+                            <a href={`mailto:${personal.email}`} className="hover:underline">
+                                {personal.email}
                             </a>
-                        ))}
+                        )}
+                        {personal.socials &&
+                            personal.socials.map((social) => (
+                                <a
+                                    key={social.id}
+                                    href={social.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:underline"
+                                >
+                                    {social.network}
+                                </a>
+                            ))}
                     </div>
                 </div>
             )}
 
             {/* Sections */}
             <div className="space-y-4">
-                {sectionOrder.map(sectionId => {
+                {sectionOrder.map((sectionId) => {
                     const isCustom = !['summary', 'experience', 'education', 'skills'].includes(sectionId);
-                    const sectionData = isCustom ? customSections.find(s => s.id === sectionId) : null;
+                    const sectionData = isCustom ? customSections.find((s) => s.id === sectionId) : null;
 
                     // Helper for Section Heading
                     const SectionHeading = ({ title }) => (
@@ -38,7 +49,8 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                     );
 
                     if (sectionId === 'education' && education.length > 0) {
-                        const isFirstPageOfSection = !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
+                        const isFirstPageOfSection =
+                            !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                         return (
                             <div key={sectionId} id={`section-${sectionId}`}>
                                 {isFirstPageOfSection && (
@@ -46,8 +58,12 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                                         <SectionHeading title="Education" />
                                     </div>
                                 )}
-                                {education.map(edu => (
-                                    <div key={edu.id} id={`item-${edu.id}`} className="mb-2 break-inside-avoid">
+                                {education.map((edu) => (
+                                    <div
+                                        key={edu.id}
+                                        id={`item-${edu.id}`}
+                                        className="mb-2 break-inside-avoid"
+                                    >
                                         <div className="flex justify-between font-bold">
                                             <span>{edu.school}</span>
                                             {edu.location && <span>{edu.location}</span>}
@@ -63,7 +79,8 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                     }
 
                     if (sectionId === 'experience' && experience.length > 0) {
-                        const isFirstPageOfSection = !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
+                        const isFirstPageOfSection =
+                            !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                         return (
                             <div key={sectionId} id={`section-${sectionId}`}>
                                 {isFirstPageOfSection && (
@@ -71,8 +88,12 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                                         <SectionHeading title="Experience" />
                                     </div>
                                 )}
-                                {experience.map(exp => (
-                                    <div key={exp.id} id={`item-${exp.id}`} className="mb-3 break-inside-avoid">
+                                {experience.map((exp) => (
+                                    <div
+                                        key={exp.id}
+                                        id={`item-${exp.id}`}
+                                        className="mb-3 break-inside-avoid"
+                                    >
                                         <div className="flex justify-between font-bold">
                                             <span>{exp.company}</span>
                                             <span>{exp.date}</span>
@@ -84,7 +105,9 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                                         {exp.bullets && exp.bullets.length > 0 && (
                                             <ul className="list-disc list-outside ml-5 space-y-1">
                                                 {exp.bullets.map((bullet, i) => (
-                                                    <li key={i} className="text-sm leading-snug">{bullet}</li>
+                                                    <li key={i} className="text-sm leading-snug">
+                                                        {bullet}
+                                                    </li>
                                                 ))}
                                             </ul>
                                         )}
@@ -95,7 +118,8 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                     }
 
                     if (sectionId === 'skills' && skills.length > 0) {
-                        const isFirstPageOfSection = !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
+                        const isFirstPageOfSection =
+                            !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                         return (
                             <div key={sectionId} id={`section-${sectionId}`} className="break-inside-avoid">
                                 {isFirstPageOfSection && (
@@ -114,19 +138,30 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                     if (isCustom && sectionData && sectionData.items.length > 0) {
                         return (
                             <div key={sectionId} id={`section-${sectionId}`}>
-                                {(!data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex) && (
+                                {(!data.sectionStartPage ||
+                                    data.sectionStartPage[sectionId] === data.pageIndex) && (
                                     <div id={`section-title-${sectionId}`}>
                                         <SectionHeading title={sectionData.title} />
                                     </div>
                                 )}
-                                {sectionData.items.map(item => (
-                                    <div key={item.id} id={`item-${item.id}`} className="mb-2 break-inside-avoid">
+                                {sectionData.items.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        id={`item-${item.id}`}
+                                        className="mb-2 break-inside-avoid"
+                                    >
                                         <div className="flex justify-between font-bold">
                                             <span>{item.title}</span>
                                             <span>{item.date}</span>
                                         </div>
-                                        {item.subtitle && <div className="text-sm italic">{item.subtitle}</div>}
-                                        {item.description && <p className="text-sm whitespace-pre-line leading-snug">{item.description}</p>}
+                                        {item.subtitle && (
+                                            <div className="text-sm italic">{item.subtitle}</div>
+                                        )}
+                                        {item.description && (
+                                            <p className="text-sm whitespace-pre-line leading-snug">
+                                                {item.description}
+                                            </p>
+                                        )}
                                     </div>
                                 ))}
                             </div>

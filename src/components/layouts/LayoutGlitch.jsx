@@ -1,5 +1,15 @@
 import React from 'react';
-import { MapPin, Mail, Phone, Link as LinkIcon, Github, Linkedin, Twitter, Globe, Terminal } from 'lucide-react';
+import {
+    MapPin,
+    Mail,
+    Phone,
+    Link as LinkIcon,
+    Github,
+    Linkedin,
+    Twitter,
+    Globe,
+    Terminal,
+} from 'lucide-react';
 
 const LayoutGlitch = ({ data, pageIndex }) => {
     const { personal, experience, education, skills, customSections } = data;
@@ -20,7 +30,10 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                 {(!pageIndex || pageIndex === 0) && (
                     <header className="border-b-2 border-zinc-800 pb-8 mb-8 relative group">
                         <div className="absolute -left-4 top-0 h-full w-1 bg-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <h1 className="text-5xl font-bold text-white tracking-tighter mb-2 uppercase glitch-text" style={{ textShadow: '2px 2px 0px #06b6d4' }}>
+                        <h1
+                            className="text-5xl font-bold text-white tracking-tighter mb-2 uppercase glitch-text"
+                            style={{ textShadow: '2px 2px 0px #06b6d4' }}
+                        >
                             {personal.fullName}
                         </h1>
                         <p className="text-xl text-cyan-400 mb-6 font-medium tracking-wide">
@@ -44,7 +57,11 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                                 </div>
                             )}
                             {personal.socials?.map((social, index) => (
-                                <a key={index} href={social.url} className="flex items-center gap-2 hover:text-cyan-400 transition-colors">
+                                <a
+                                    key={index}
+                                    href={social.url}
+                                    className="flex items-center gap-2 hover:text-cyan-400 transition-colors"
+                                >
                                     <LinkIcon size={14} /> {social.network}
                                 </a>
                             ))}
@@ -54,7 +71,6 @@ const LayoutGlitch = ({ data, pageIndex }) => {
 
                 {/* Main Content Grid */}
                 <div className="flex-1 flex flex-col gap-8">
-
                     {/* Summary */}
                     {personal.summary && (!pageIndex || pageIndex === 0) && (
                         <section id="section-summary">
@@ -72,9 +88,14 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                     {experience.length > 0 && (
                         <section id="section-experience">
                             {shouldRenderTitle('experience') && (
-                                <div id="section-title-experience" className="mb-6 flex items-center gap-2 text-magenta-500 border-b border-zinc-800 pb-2">
+                                <div
+                                    id="section-title-experience"
+                                    className="mb-6 flex items-center gap-2 text-magenta-500 border-b border-zinc-800 pb-2"
+                                >
                                     <span className="text-lg font-bold">01.</span>
-                                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Experience_Log</h3>
+                                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">
+                                        Experience_Log
+                                    </h3>
                                 </div>
                             )}
                             <div className="space-y-6">
@@ -84,7 +105,9 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                                             <h4 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
                                                 {exp.role}
                                             </h4>
-                                            <span className="text-xs text-zinc-500 font-mono">[{exp.date}]</span>
+                                            <span className="text-xs text-zinc-500 font-mono">
+                                                [{exp.date}]
+                                            </span>
                                         </div>
                                         <div className="text-sm text-cyan-600 mb-2 font-medium">
                                             @ {exp.company}
@@ -93,7 +116,10 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                                             {exp.bullets && exp.bullets.length > 0 && (
                                                 <ul className="space-y-1.5">
                                                     {exp.bullets.map((bullet, i) => (
-                                                        <li key={i} className="text-gray-300 text-sm leading-relaxed flex items-start gap-2">
+                                                        <li
+                                                            key={i}
+                                                            className="text-gray-300 text-sm leading-relaxed flex items-start gap-2"
+                                                        >
                                                             <span className="text-cyan-400">▶</span>
                                                             <span>{bullet}</span>
                                                         </li>
@@ -111,9 +137,14 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                     {education.length > 0 && (
                         <section id="section-education">
                             {shouldRenderTitle('education') && (
-                                <div id="section-title-education" className="mb-6 flex items-center gap-2 text-yellow-500 border-b border-zinc-800 pb-2">
+                                <div
+                                    id="section-title-education"
+                                    className="mb-6 flex items-center gap-2 text-yellow-500 border-b border-zinc-800 pb-2"
+                                >
                                     <span className="text-lg font-bold">02.</span>
-                                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Education_Data</h3>
+                                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">
+                                        Education_Data
+                                    </h3>
                                 </div>
                             )}
                             <div className="space-y-4">
@@ -134,14 +165,22 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                     {skills.length > 0 && (
                         <section id="section-skills">
                             {shouldRenderTitle('skills') && (
-                                <div id="section-title-skills" className="mb-6 flex items-center gap-2 text-green-500 border-b border-zinc-800 pb-2">
+                                <div
+                                    id="section-title-skills"
+                                    className="mb-6 flex items-center gap-2 text-green-500 border-b border-zinc-800 pb-2"
+                                >
                                     <span className="text-lg font-bold">03.</span>
-                                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Skill_Matrix</h3>
+                                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">
+                                        Skill_Matrix
+                                    </h3>
                                 </div>
                             )}
                             <div className="flex flex-wrap gap-2">
                                 {skills.map((skill, index) => (
-                                    <span key={index} className="px-3 py-1 bg-zinc-800 text-cyan-400 text-xs rounded-sm border border-zinc-700 hover:border-cyan-500 hover:bg-zinc-800/80 transition-all">
+                                    <span
+                                        key={index}
+                                        className="px-3 py-1 bg-zinc-800 text-cyan-400 text-xs rounded-sm border border-zinc-700 hover:border-cyan-500 hover:bg-zinc-800/80 transition-all"
+                                    >
                                         {skill}
                                     </span>
                                 ))}
@@ -150,30 +189,48 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                     )}
 
                     {/* Custom Sections */}
-                    {customSections?.map((section) => (
-                        section.items.length > 0 && (
-                            <section key={section.id} id={`section-${section.id}`}>
-                                {shouldRenderTitle(section.id) && (
-                                    <div id={`section-title-${section.id}`} className="mb-6 flex items-center gap-2 text-purple-500 border-b border-zinc-800 pb-2">
-                                        <span className="text-lg font-bold">#</span>
-                                        <h3 className="text-sm font-bold uppercase tracking-widest text-white">{section.title.replace(/\s+/g, '_')}</h3>
-                                    </div>
-                                )}
-                                <div className="space-y-4">
-                                    {section.items.map((item) => (
-                                        <div key={item.id} id={`item-${item.id}`}>
-                                            <div className="flex justify-between items-baseline mb-1">
-                                                <h4 className="font-bold text-white">{item.title}</h4>
-                                                {item.date && <span className="text-xs text-zinc-500">[{item.date}]</span>}
-                                            </div>
-                                            {item.subtitle && <div className="text-cyan-600 text-sm mb-1">{item.subtitle}</div>}
-                                            {item.description && <p className="text-zinc-400 text-sm whitespace-pre-line border-l border-zinc-800 pl-4">{item.description}</p>}
+                    {customSections?.map(
+                        (section) =>
+                            section.items.length > 0 && (
+                                <section key={section.id} id={`section-${section.id}`}>
+                                    {shouldRenderTitle(section.id) && (
+                                        <div
+                                            id={`section-title-${section.id}`}
+                                            className="mb-6 flex items-center gap-2 text-purple-500 border-b border-zinc-800 pb-2"
+                                        >
+                                            <span className="text-lg font-bold">#</span>
+                                            <h3 className="text-sm font-bold uppercase tracking-widest text-white">
+                                                {section.title.replace(/\s+/g, '_')}
+                                            </h3>
                                         </div>
-                                    ))}
-                                </div>
-                            </section>
-                        )
-                    ))}
+                                    )}
+                                    <div className="space-y-4">
+                                        {section.items.map((item) => (
+                                            <div key={item.id} id={`item-${item.id}`}>
+                                                <div className="flex justify-between items-baseline mb-1">
+                                                    <h4 className="font-bold text-white">{item.title}</h4>
+                                                    {item.date && (
+                                                        <span className="text-xs text-zinc-500">
+                                                            [{item.date}]
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {item.subtitle && (
+                                                    <div className="text-cyan-600 text-sm mb-1">
+                                                        {item.subtitle}
+                                                    </div>
+                                                )}
+                                                {item.description && (
+                                                    <p className="text-zinc-400 text-sm whitespace-pre-line border-l border-zinc-800 pl-4">
+                                                        {item.description}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+                            )
+                    )}
                 </div>
             </div>
         </div>

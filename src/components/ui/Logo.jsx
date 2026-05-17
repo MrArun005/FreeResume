@@ -14,7 +14,7 @@ import React from 'react';
 // with `tone="light"`. We intentionally don't tie the tone to the global
 // `.dark` class because those backgrounds are hardcoded light and the
 // app-wide dark mode toggle doesn't affect them.
-const Logo = ({ className = "w-8 h-8", textClassName = "text-xl", tone = 'dark' }) => {
+const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'dark' }) => {
     const wordmarkClass = tone === 'light' ? 'text-stone-50' : 'text-slate-900';
     return (
         <div className="flex items-center gap-2.5 group cursor-pointer">
@@ -26,7 +26,14 @@ const Logo = ({ className = "w-8 h-8", textClassName = "text-xl", tone = 'dark' 
                     className="w-full h-full drop-shadow-sm"
                 >
                     <defs>
-                        <linearGradient id="paperjet-grad" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                        <linearGradient
+                            id="paperjet-grad"
+                            x1="2"
+                            y1="2"
+                            x2="38"
+                            y2="38"
+                            gradientUnits="userSpaceOnUse"
+                        >
                             <stop offset="0%" stopColor="var(--brand-600, #0D9488)" />
                             <stop offset="100%" stopColor="var(--brand-700, #0F766E)" />
                         </linearGradient>
@@ -37,12 +44,7 @@ const Logo = ({ className = "w-8 h-8", textClassName = "text-xl", tone = 'dark' 
 
                     {/* Letterform: stylized P drawn with two stroked paths
                         so it sits cleanly at every size without font-loading risk. */}
-                    <path
-                        d="M14 12 L14 28"
-                        stroke="white"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                    />
+                    <path d="M14 12 L14 28" stroke="white" strokeWidth="3" strokeLinecap="round" />
                     <path
                         d="M14 12 H22 C25.5 12 27.5 14 27.5 17 C27.5 20 25.5 22 22 22 H14"
                         stroke="white"
@@ -73,7 +75,10 @@ const Logo = ({ className = "w-8 h-8", textClassName = "text-xl", tone = 'dark' 
                 <span className={`${wordmarkClass} transition-colors`}>Paper</span>
                 <span
                     className="bg-clip-text text-transparent transition-colors"
-                    style={{ backgroundImage: 'linear-gradient(90deg, var(--brand-600, #0D9488), var(--brand-500, #14B8A6))' }}
+                    style={{
+                        backgroundImage:
+                            'linear-gradient(90deg, var(--brand-600, #0D9488), var(--brand-500, #14B8A6))',
+                    }}
                 >
                     jet
                 </span>

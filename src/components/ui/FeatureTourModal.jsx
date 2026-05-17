@@ -8,29 +8,33 @@ const FeatureTourModal = ({ isOpen, onClose }) => {
 
     const steps = [
         {
-            title: "Welcome to Your AI Job Assistant!",
-            description: "We've upgraded your resume builder with powerful AI tools to help you land your dream job faster.",
+            title: 'Welcome to Your AI Job Assistant!',
+            description:
+                "We've upgraded your resume builder with powerful AI tools to help you land your dream job faster.",
             icon: <Sparkles size={48} className="text-brand-500" />,
-            image: null
+            image: null,
         },
         {
-            title: "Tailor Your Resume Instantly",
-            description: "Paste a job link or description, and our AI will rewrite your resume to match the job requirements perfectly. Look for the 'Tailor Resume' button.",
+            title: 'Tailor Your Resume Instantly',
+            description:
+                "Paste a job link or description, and our AI will rewrite your resume to match the job requirements perfectly. Look for the 'Tailor Resume' button.",
             icon: <Briefcase size={48} className="text-purple-500" />,
-            highlight: "Tailor Resume"
+            highlight: 'Tailor Resume',
         },
         {
-            title: "Check Your ATS Score",
-            description: "Get detailed feedback on how well your resume parses. We'll show you exactly what to fix to beat the bots.",
+            title: 'Check Your ATS Score',
+            description:
+                "Get detailed feedback on how well your resume parses. We'll show you exactly what to fix to beat the bots.",
             icon: <CheckCircle size={48} className="text-green-500" />,
-            highlight: "ATS Score"
+            highlight: 'ATS Score',
         },
         {
-            title: "Download & Apply",
-            description: "Download your resume as a Word doc or PDF. Use the 'Printer' icon for the best visual quality PDF.",
+            title: 'Download & Apply',
+            description:
+                "Download your resume as a Word doc or PDF. Use the 'Printer' icon for the best visual quality PDF.",
             icon: <Download size={48} className="text-orange-500" />,
-            highlight: "Download"
-        }
+            highlight: 'Download',
+        },
     ];
 
     const currentStep = steps[step];
@@ -67,19 +71,15 @@ const FeatureTourModal = ({ isOpen, onClose }) => {
                         {currentStep.icon}
                     </div>
 
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                        {currentStep.title}
-                    </h2>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-3">{currentStep.title}</h2>
 
-                    <p className="text-gray-600 leading-relaxed mb-8">
-                        {currentStep.description}
-                    </p>
+                    <p className="text-gray-600 leading-relaxed mb-8">{currentStep.description}</p>
 
                     <button
                         onClick={handleNext}
                         className="w-full py-3 px-6 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 shadow-lg shadow-brand-200"
                     >
-                        {step === steps.length - 1 ? "Get Started" : "Next"}
+                        {step === steps.length - 1 ? 'Get Started' : 'Next'}
                         {step < steps.length - 1 && <ChevronRight size={18} />}
                     </button>
 

@@ -1,6 +1,6 @@
 # 10 Resume Mistakes That Are Costing You Job Interviews (And How to Fix Them)
 
-*Reading time: 8 minutes*
+_Reading time: 8 minutes_
 
 ---
 
@@ -24,6 +24,7 @@ About 75% of resumes never reach human eyes. They're filtered out by Applicant T
 If your resume has fancy graphics, tables, text boxes, or unconventional fonts, the ATS can't read it properly. Your beautifully designed resume? It just got tossed into the digital trash bin.
 
 **The Fix:**
+
 - Use standard fonts (Arial, Calibri, Times New Roman)
 - Stick to simple formatting with clear headings
 - Avoid headers, footers, tables, and text boxes
@@ -39,9 +40,10 @@ If your resume has fancy graphics, tables, text boxes, or unconventional fonts, 
 **The Problem:**
 Sending the same resume to every job posting is like wearing a tuxedo to a beach party. It might look good elsewhere, but it's completely wrong for the situation.
 
-Recruiters spend an average of **6 seconds** scanning your resume. If they don't immediately see that you're a perfect fit for *their specific role*, you're out.
+Recruiters spend an average of **6 seconds** scanning your resume. If they don't immediately see that you're a perfect fit for _their specific role_, you're out.
 
 **The Fix:**
+
 - Read the job description carefully and note repeated keywords
 - Mirror the job posting's language in your resume
 - Reorganize your bullet points to highlight relevant experience first
@@ -49,6 +51,7 @@ Recruiters spend an average of **6 seconds** scanning your resume. If they don't
 - Customize your professional summary for each application
 
 **Real Example:**
+
 - **Generic:** "Experienced marketing professional with strong communication skills"
 - **Tailored (for SaaS company):** "B2B SaaS marketing specialist with 5+ years driving user acquisition through content marketing and SEO"
 
@@ -61,21 +64,25 @@ Recruiters spend an average of **6 seconds** scanning your resume. If they don't
 "Helped increase sales."
 "Worked on a team."
 
-These bullet points say nothing. They're passive, vague, and forgettable. Recruiters need to see *what you actually accomplished* and *how you made an impact*.
+These bullet points say nothing. They're passive, vague, and forgettable. Recruiters need to see _what you actually accomplished_ and _how you made an impact_.
 
 **The Fix:**
 Use the **XYZ Formula**: Accomplished [X] as measured by [Y], by doing [Z]
 
 **Before:**
+
 - Managed social media accounts
 
 **After:**
+
 - Grew Instagram following by 250% (5K to 17.5K followers) in 6 months through data-driven content strategy and influencer partnerships
 
 **Before:**
+
 - Responsible for customer service
 
 **After:**
+
 - Resolved 95% of customer inquiries on first contact, achieving a 4.8/5 satisfaction rating and reducing escalations by 40%
 
 Always lead with strong action verbs: Spearheaded, Engineered, Launched, Optimized, Accelerated, Transformed.
@@ -90,12 +97,14 @@ Remember that ATS we talked about? It's looking for specific keywords that match
 Even if your resume makes it to a human, recruiters are trained to scan for industry-specific terms. If they don't see them, they assume you lack the experience.
 
 **The Fix:**
+
 - Create a master list of keywords from 5-10 job postings in your target role
 - Incorporate these naturally throughout your resume (don't just dump them in a list)
 - Include both the acronym and full term (e.g., "Search Engine Optimization (SEO)")
 - Use industry-standard terminology
 
 **Common Keywords by Industry:**
+
 - **Tech:** Agile, Scrum, CI/CD, AWS, React, Python, Machine Learning
 - **Marketing:** SEO, PPC, Google Analytics, A/B Testing, CRM, Conversion Rate
 - **Finance:** Financial Modeling, GAAP, Risk Management, Compliance, Due Diligence
@@ -109,6 +118,7 @@ Even if your resume makes it to a human, recruiters are trained to scan for indu
 Your resume isn't your autobiography. Including your high school achievements when you have a Master's degree, or listing hobbies like "reading" and "traveling," wastes precious space and dilutes your message.
 
 **What to Cut:**
+
 - ❌ Objective statements (use a professional summary instead)
 - ❌ References available upon request (obviously they are)
 - ❌ Outdated skills (Microsoft Word, "internet proficiency")
@@ -117,6 +127,7 @@ Your resume isn't your autobiography. Including your high school achievements wh
 - ❌ Generic hobbies
 
 **What to Keep:**
+
 - ✅ Professional summary (2-3 sentences)
 - ✅ Relevant skills with proficiency levels
 - ✅ Last 10-15 years of experience
@@ -132,6 +143,7 @@ Your resume isn't your autobiography. Including your high school achievements wh
 A wall of text is intimidating and hard to scan. If a recruiter can't find the information they need in 6 seconds, your resume is going in the "no" pile.
 
 **Design Red Flags:**
+
 - Tiny font (below 10pt)
 - No white space
 - Inconsistent formatting
@@ -140,6 +152,7 @@ A wall of text is intimidating and hard to scan. If a recruiter can't find the i
 - Dense paragraphs
 
 **The Fix:**
+
 - Use 10-12pt font for body text
 - Keep margins at 0.5-1 inch
 - Use bold and italics sparingly for emphasis
@@ -160,6 +173,7 @@ A single typo can cost you the job. It signals carelessness, lack of attention t
 Research shows that **58% of resumes** contain typos, and **77% of recruiters** will reject a candidate immediately for spelling or grammar mistakes.
 
 **The Fix:**
+
 - Run spell check (obviously)
 - Read your resume backward (seriously, it catches more errors)
 - Use Grammarly or Hemingway Editor
@@ -169,6 +183,7 @@ Research shows that **58% of resumes** contain typos, and **77% of recruiters** 
 - Take a break and review it with fresh eyes the next day
 
 **Common Mistakes to Watch:**
+
 - Their/there/they're
 - Your/you're
 - Its/it's
@@ -187,6 +202,7 @@ Numbers provide concrete evidence of your impact and make your achievements memo
 
 **The Fix:**
 Even if you don't have exact numbers, estimate reasonably:
+
 - Revenue: "Increased sales by 30% YoY"
 - Time: "Reduced processing time from 3 hours to 45 minutes"
 - Percentage: "Improved customer retention by 25%"
@@ -195,9 +211,11 @@ Even if you don't have exact numbers, estimate reasonably:
 - Scale: "Managed $2M budget"
 
 **Before:**
+
 - Improved team productivity
 
 **After:**
+
 - Implemented agile workflows that increased team productivity by 35% and reduced project delivery time by 2 weeks on average
 
 ---
@@ -209,11 +227,13 @@ Your email address is the first thing a recruiter sees in your contact informati
 
 **The Fix:**
 Create a simple, professional email address:
+
 - firstname.lastname@gmail.com ✅
 - firstname.initial@gmail.com ✅
 - firstnamelastname@gmail.com ✅
 
 Avoid:
+
 - Nicknames, birth years, numbers
 - Old AOL, Yahoo, or Hotmail addresses (use Gmail)
 - Anything remotely unprofessional or cute
@@ -226,6 +246,7 @@ Avoid:
 92% of recruiters use LinkedIn to find and vet candidates. If you don't include your LinkedIn URL, they'll search for you anyway — and if they can't find you, or your profile is incomplete, it raises red flags.
 
 **The Fix:**
+
 - Add a custom LinkedIn URL to your resume header
 - Customize your URL: linkedin.com/in/yourname (not the random numbers LinkedIn assigns)
 - Ensure your LinkedIn profile matches your resume (dates, titles, companies)
@@ -240,6 +261,7 @@ Avoid:
 ## Bonus Tip: Keep Your Resume Updated
 
 Don't wait until you're actively job hunting to update your resume. Make it a habit to:
+
 - Add new achievements quarterly
 - Update your skills as you learn them
 - Keep a "brag document" to track wins throughout the year
@@ -265,7 +287,7 @@ Ready to fix your resume? Here's what to do right now:
 
 ## Final Thoughts
 
-Your resume is your personal marketing document. It's not about listing everything you've ever done — it's about strategically presenting yourself as the *perfect solution* to an employer's problem.
+Your resume is your personal marketing document. It's not about listing everything you've ever done — it's about strategically presenting yourself as the _perfect solution_ to an employer's problem.
 
 Fix these 10 mistakes, and you'll immediately stand out from 90% of applicants. Your phone will start ringing. Your inbox will fill up with interview requests.
 
@@ -277,9 +299,9 @@ Now go update that resume. Your dream job is waiting.
 
 ## About the Author
 
-*This article was written as part of the Free Resume project — a completely free, ATS-friendly resume builder designed to help job seekers create professional resumes in minutes. No credit card required, no hidden fees. Just a simple tool to help you land your next interview.*
+_This article was written as part of the Free Resume project — a completely free, ATS-friendly resume builder designed to help job seekers create professional resumes in minutes. No credit card required, no hidden fees. Just a simple tool to help you land your next interview._
 
-*Try it at: [https://free-resume-8ud1fbgz5-aruns-projects-ddbf518f.vercel.app](https://free-resume-8ud1fbgz5-aruns-projects-ddbf518f.vercel.app)*
+_Try it at: [https://free-resume-8ud1fbgz5-aruns-projects-ddbf518f.vercel.app](https://free-resume-8ud1fbgz5-aruns-projects-ddbf518f.vercel.app)_
 
 ---
 

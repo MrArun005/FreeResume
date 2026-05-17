@@ -15,7 +15,7 @@ const PageOverflowIndicator = ({ pageId }) => {
 
             let totalHeight = 0;
             const children = Array.from(layoutContainer.children);
-            children.forEach(child => {
+            children.forEach((child) => {
                 totalHeight += child.offsetHeight;
             });
 
@@ -35,23 +35,29 @@ const PageOverflowIndicator = ({ pageId }) => {
             {/* Fill Gauge */}
             <div className="relative w-6 h-32 bg-gray-200 rounded-full overflow-hidden shadow-inner">
                 <div
-                    className={`absolute bottom-0 w-full transition-all duration-300 ${fillPercentage > 95 ? 'bg-red-500' :
-                        fillPercentage > 90 ? 'bg-amber-500' :
-                            'bg-emerald-500'
-                        }`}
+                    className={`absolute bottom-0 w-full transition-all duration-300 ${
+                        fillPercentage > 95
+                            ? 'bg-red-500'
+                            : fillPercentage > 90
+                              ? 'bg-amber-500'
+                              : 'bg-emerald-500'
+                    }`}
                     style={{ height: `${fillPercentage}%` }}
                 />
             </div>
 
             {/* Percentage */}
-            <div className={`text-xs font-bold ${fillPercentage > 95 ? 'text-red-600' :
-                fillPercentage > 90 ? 'text-amber-600' :
-                    'text-emerald-600'
-                }`}>
+            <div
+                className={`text-xs font-bold ${
+                    fillPercentage > 95
+                        ? 'text-red-600'
+                        : fillPercentage > 90
+                          ? 'text-amber-600'
+                          : 'text-emerald-600'
+                }`}
+            >
                 {Math.round(fillPercentage)}%
             </div>
-
-
         </div>
     );
 };

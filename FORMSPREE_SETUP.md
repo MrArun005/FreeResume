@@ -7,9 +7,9 @@ This guide will help you set up Formspree to receive feedback emails from your l
 1. Go to [https://formspree.io](https://formspree.io)
 2. Click **"Get Started"** or **"Sign Up"**
 3. Sign up using:
-   - Email + Password, or
-   - GitHub, or
-   - Google
+    - Email + Password, or
+    - GitHub, or
+    - Google
 
 > **Note**: The free tier includes **50 submissions per month**, which is usually enough for most personal projects.
 
@@ -24,6 +24,7 @@ This guide will help you set up Formspree to receive feedback emails from your l
 After creating the form, you'll see a page with your form details. Look for:
 
 **Form Endpoint:**
+
 ```
 https://formspree.io/f/YOUR_FORM_ID
 ```
@@ -70,16 +71,19 @@ const response = await fetch('https://formspree.io/f/xpznqwer', {
 ## 🚨 Troubleshooting
 
 ### "Failed to send feedback" error
+
 - **Check Form ID**: Make sure you replaced `YOUR_FORM_ID` correctly
 - **Verify Email**: Check if you verified your email with Formspree
 - **Check Console**: Open browser dev tools (F12) and check Console tab for errors
 
 ### Not receiving emails
+
 - **Check Spam folder**
 - **Verify your Formspree email** (they send a confirmation link on first use)
 - **Check form status** in Formspree dashboard
 
 ### Monthly limit reached
+
 - Free tier: 50 submissions/month
 - Upgrade to paid plan or wait for next month
 - Consider alternative: EmailJS, Firebase, etc.

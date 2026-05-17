@@ -11,10 +11,7 @@ const RULE = '#CBD5E1';
 
 const SectionTitle = ({ title }) => (
     <div className="mt-5 mb-2" style={{ pageBreakAfter: 'avoid' }}>
-        <h2
-            className="text-[11px] font-bold uppercase"
-            style={{ color: NAVY, letterSpacing: '0.08em' }}
-        >
+        <h2 className="text-[11px] font-bold uppercase" style={{ color: NAVY, letterSpacing: '0.08em' }}>
             {title}
         </h2>
         <div style={{ height: 2, width: 28, background: NAVY, marginTop: 4 }} />
@@ -26,7 +23,8 @@ const Bullet = ({ children }) => (
         className="text-[10.5px] leading-[1.5]"
         style={{ color: TEXT, paddingLeft: 12, textIndent: -12, marginBottom: 2 }}
     >
-        <span style={{ color: NAVY }}>▸&nbsp;&nbsp;</span>{children}
+        <span style={{ color: NAVY }}>▸&nbsp;&nbsp;</span>
+        {children}
     </li>
 );
 
@@ -64,7 +62,9 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
                             <SectionTitle title="Summary" />
                         </div>
                     )}
-                    <p className="text-[11px] leading-[1.55]" style={{ color: TEXT }}>{personal.summary}</p>
+                    <p className="text-[11px] leading-[1.55]" style={{ color: TEXT }}>
+                        {personal.summary}
+                    </p>
                 </section>
             );
         }
@@ -82,15 +82,28 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
                             <div key={exp.id} id={`item-${exp.id}`} className="break-inside-avoid">
                                 <div className="flex items-baseline justify-between gap-4">
                                     <div className="text-[11.5px] flex-1 min-w-0" style={{ color: TEXT }}>
-                                        <span className="font-bold" style={{ color: NAVY }}>{exp.role || 'Role'}</span>
+                                        <span className="font-bold" style={{ color: NAVY }}>
+                                            {exp.role || 'Role'}
+                                        </span>
                                         {exp.company && <span style={{ color: TEXT }}> · {exp.company}</span>}
-                                        {exp.location && <span style={{ color: MUTED }}> · {exp.location}</span>}
+                                        {exp.location && (
+                                            <span style={{ color: MUTED }}> · {exp.location}</span>
+                                        )}
                                     </div>
-                                    {exp.date && <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{exp.date}</div>}
+                                    {exp.date && (
+                                        <div
+                                            className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {exp.date}
+                                        </div>
+                                    )}
                                 </div>
                                 {exp.bullets?.length > 0 && (
                                     <ul className="list-none p-0 m-0 mt-1.5">
-                                        {exp.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                        {exp.bullets.map((b, i) => (
+                                            <Bullet key={i}>{b}</Bullet>
+                                        ))}
                                     </ul>
                                 )}
                             </div>
@@ -113,12 +126,28 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
                             <div key={edu.id} id={`item-${edu.id}`} className="break-inside-avoid">
                                 <div className="flex items-baseline justify-between gap-4">
                                     <div className="text-[11px] flex-1 min-w-0" style={{ color: TEXT }}>
-                                        <span className="font-bold" style={{ color: NAVY }}>{edu.school || 'School'}</span>
-                                        {edu.location && <span style={{ color: MUTED }}> · {edu.location}</span>}
+                                        <span className="font-bold" style={{ color: NAVY }}>
+                                            {edu.school || 'School'}
+                                        </span>
+                                        {edu.location && (
+                                            <span style={{ color: MUTED }}> · {edu.location}</span>
+                                        )}
                                     </div>
-                                    {edu.date && <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{edu.date}</div>}
+                                    {edu.date && (
+                                        <div
+                                            className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {edu.date}
+                                        </div>
+                                    )}
                                 </div>
-                                {edu.degree && <div className="text-[10.5px]" style={{ color: TEXT }}>{edu.degree}{edu.gpa && ` · GPA ${edu.gpa}`}</div>}
+                                {edu.degree && (
+                                    <div className="text-[10.5px]" style={{ color: TEXT }}>
+                                        {edu.degree}
+                                        {edu.gpa && ` · GPA ${edu.gpa}`}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -141,10 +170,19 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
                             const idx = typeof skill === 'string' ? skill.indexOf(':') : -1;
                             if (idx > 0) {
                                 const label = skill.slice(0, idx);
-                                const items = skill.slice(idx + 1).split(',').map((x) => x.trim()).filter(Boolean);
+                                const items = skill
+                                    .slice(idx + 1)
+                                    .split(',')
+                                    .map((x) => x.trim())
+                                    .filter(Boolean);
                                 return (
                                     <div key={i} className="flex items-start gap-2">
-                                        <div className="text-[10.5px] font-bold w-32 shrink-0 pt-1" style={{ color: NAVY }}>{label}</div>
+                                        <div
+                                            className="text-[10.5px] font-bold w-32 shrink-0 pt-1"
+                                            style={{ color: NAVY }}
+                                        >
+                                            {label}
+                                        </div>
                                         <div className="flex flex-wrap gap-1">
                                             {items.map((it, j) => (
                                                 <span
@@ -187,18 +225,41 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
                         {custom.items.map((item) => (
                             <div key={item.id} id={`item-${item.id}`} className="break-inside-avoid">
                                 <div className="flex items-baseline justify-between gap-4">
-                                    <div className="text-[11px] font-bold flex-1 min-w-0" style={{ color: NAVY }}>
-                                        {item.title}{item.subtitle && <span className="font-normal" style={{ color: TEXT }}> · {item.subtitle}</span>}
+                                    <div
+                                        className="text-[11px] font-bold flex-1 min-w-0"
+                                        style={{ color: NAVY }}
+                                    >
+                                        {item.title}
+                                        {item.subtitle && (
+                                            <span className="font-normal" style={{ color: TEXT }}>
+                                                {' '}
+                                                · {item.subtitle}
+                                            </span>
+                                        )}
                                     </div>
-                                    {item.date && <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{item.date}</div>}
+                                    {item.date && (
+                                        <div
+                                            className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {item.date}
+                                        </div>
+                                    )}
                                 </div>
                                 {item.bullets?.length > 0 && (
                                     <ul className="list-none p-0 m-0 mt-1.5">
-                                        {item.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                        {item.bullets.map((b, i) => (
+                                            <Bullet key={i}>{b}</Bullet>
+                                        ))}
                                     </ul>
                                 )}
                                 {item.description && !item.bullets?.length && (
-                                    <p className="text-[10.5px] leading-[1.55] mt-1 whitespace-pre-line" style={{ color: TEXT }}>{item.description}</p>
+                                    <p
+                                        className="text-[10.5px] leading-[1.55] mt-1 whitespace-pre-line"
+                                        style={{ color: TEXT }}
+                                    >
+                                        {item.description}
+                                    </p>
                                 )}
                             </div>
                         ))}
@@ -216,7 +277,11 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
             style={{ padding: '14mm 16mm', color: TEXT }}
         >
             {pageIndex === 0 && (
-                <div id="section-personal" className="mb-3 pb-3" style={{ borderBottom: `1px solid ${RULE}` }}>
+                <div
+                    id="section-personal"
+                    className="mb-3 pb-3"
+                    style={{ borderBottom: `1px solid ${RULE}` }}
+                >
                     <h1
                         className="text-[28px] font-bold leading-tight tracking-tight"
                         style={{ color: NAVY }}
@@ -224,7 +289,9 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
                         {personal.fullName || 'Your Name'}
                     </h1>
                     {personal.title && (
-                        <div className="text-[13px] mt-0.5 mb-2" style={{ color: MUTED }}>{personal.title}</div>
+                        <div className="text-[13px] mt-0.5 mb-2" style={{ color: MUTED }}>
+                            {personal.title}
+                        </div>
                     )}
                     {renderContact()}
                 </div>

@@ -5,7 +5,10 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -20,13 +23,13 @@ export default async function handler(req, res) {
         const { text, type } = req.body;
         if (!text) return res.status(400).json({ error: 'No text provided' });
 
-        const prompt = type === 'bullet'
-            ? `Rewrite this resume bullet point to be more impactful, using strong action verbs and professional tone. Keep it concise. Return ONLY the rewritten text. Input: "${text}"`
-            : `Rewrite this professional summary to be more engaging and professional. Keep it under 4 sentences. Return ONLY the rewritten text. Input: "${text}"`;
+        const prompt =
+            type === 'bullet'
+                ? `Rewrite this resume bullet point to be more impactful, using strong action verbs and professional tone. Keep it concise. Return ONLY the rewritten text. Input: "${text}"`
+                : `Rewrite this professional summary to be more engaging and professional. Keep it under 4 sentences. Return ONLY the rewritten text. Input: "${text}"`;
 
         const improvedText = (await generateWithFallback(prompt)).trim();
         res.status(200).json({ improvedText });
-
     } catch (error) {
         console.error('Error improving text:', error);
         res.status(500).json({ error: 'Failed to improve text', details: error.message });

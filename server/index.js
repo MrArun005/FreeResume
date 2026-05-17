@@ -37,10 +37,10 @@ const GEMINI_TIMEOUT_MS = 45_000;
 //
 // Verified against `node list-models.js` for this API key.
 const MODEL_FALLBACK_CHAIN = [
-    'gemini-2.5-flash',         // current GA, primary choice
-    'gemini-2.5-flash-lite',    // separate quota pool, cheaper, same quality for most tasks
-    'gemini-2.0-flash-lite',    // separate quota pool, cheaper still
-    'gemini-flash-latest',      // rolling alias — last resort
+    'gemini-2.5-flash', // current GA, primary choice
+    'gemini-2.5-flash-lite', // separate quota pool, cheaper, same quality for most tasks
+    'gemini-2.0-flash-lite', // separate quota pool, cheaper still
+    'gemini-flash-latest', // rolling alias — last resort
 ];
 
 // ─── Model availability cache ─────────────────────────────────────────────
@@ -143,12 +143,12 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Helper to clean text
 function normalizeRaw(text) {
-    if (!text) return "";
-    let t = text.replace(/\u00A0/g, " ");
-    t = t.replace(/-\n\s*/g, "");
-    t = t.replace(/[ \t]{2,}/g, " ");
-    t = t.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-    t = t.replace(/\n{3,}/g, "\n\n");
+    if (!text) return '';
+    let t = text.replace(/\u00A0/g, ' ');
+    t = t.replace(/-\n\s*/g, '');
+    t = t.replace(/[ \t]{2,}/g, ' ');
+    t = t.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    t = t.replace(/\n{3,}/g, '\n\n');
     return t.trim();
 }
 
@@ -222,7 +222,9 @@ async function generateContentWithRetry(model, promptOrParts) {
             }
             if (isRetryable(error) && retries < MAX_RETRIES) {
                 const delay = INITIAL_DELAY * Math.pow(2, retries);
-                console.warn(`Gemini transient error (${error.message}). Retry ${retries + 1}/${MAX_RETRIES} in ${delay}ms`);
+                console.warn(
+                    `Gemini transient error (${error.message}). Retry ${retries + 1}/${MAX_RETRIES} in ${delay}ms`
+                );
                 await new Promise((resolve) => setTimeout(resolve, delay));
                 retries++;
             } else {
@@ -242,10 +244,15 @@ function extractJson(text) {
     }
 
     // Strip markdown code fences if present, then try a direct parse.
-    let cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    let cleaned = text
+        .replace(/```json/gi, '')
+        .replace(/```/g, '')
+        .trim();
     try {
         return JSON.parse(cleaned);
-    } catch { /* fall through to bracket extraction */ }
+    } catch {
+        /* fall through to bracket extraction */
+    }
 
     // Locate the outermost JSON object or array by matching braces.
     const firstCurly = cleaned.indexOf('{');
@@ -263,17 +270,29 @@ function extractJson(text) {
     let escape = false;
     for (let i = startIdx; i < cleaned.length; i++) {
         const ch = cleaned[i];
-        if (escape) { escape = false; continue; }
-        if (ch === '\\' && inString) { escape = true; continue; }
-        if (ch === '"') { inString = !inString; continue; }
+        if (escape) {
+            escape = false;
+            continue;
+        }
+        if (ch === '\\' && inString) {
+            escape = true;
+            continue;
+        }
+        if (ch === '"') {
+            inString = !inString;
+            continue;
+        }
         if (inString) continue;
         if (ch === openChar) depth++;
         else if (ch === closeChar) {
             depth--;
             if (depth === 0) {
                 const candidate = cleaned.slice(startIdx, i + 1);
-                try { return JSON.parse(candidate); }
-                catch (e) { throw new Error(`Found JSON-like block but parse failed: ${e.message}`); }
+                try {
+                    return JSON.parse(candidate);
+                } catch (e) {
+                    throw new Error(`Found JSON-like block but parse failed: ${e.message}`);
+                }
             }
         }
     }
@@ -309,13 +328,23 @@ function deriveResumeContext(resumeData) {
 
     // Rough years-of-experience signal from the count of distinct roles
     // (good enough as a coarse hint; we don't try to parse free-text dates).
-    const yoeHint = numRoles >= 5 ? '5+ years (senior signal)' :
-        numRoles >= 3 ? '3-5 years (mid signal)' :
-            numRoles >= 1 ? '0-3 years (entry/mid signal)' :
-                'no work history listed';
+    const yoeHint =
+        numRoles >= 5
+            ? '5+ years (senior signal)'
+            : numRoles >= 3
+              ? '3-5 years (mid signal)'
+              : numRoles >= 1
+                ? '0-3 years (entry/mid signal)'
+                : 'no work history listed';
 
-    const skillSample = skills.slice(0, 12).map((s) => (typeof s === 'string' ? s : '')).filter(Boolean).join(', ');
-    const educationTop = education[0] ? `${education[0].degree || ''} from ${education[0].school || 'unspecified'}`.trim() : 'unspecified';
+    const skillSample = skills
+        .slice(0, 12)
+        .map((s) => (typeof s === 'string' ? s : ''))
+        .filter(Boolean)
+        .join(', ');
+    const educationTop = education[0]
+        ? `${education[0].degree || ''} from ${education[0].school || 'unspecified'}`.trim()
+        : 'unspecified';
 
     return [
         `Candidate snapshot (for grounding — infer target role from this):`,
@@ -323,7 +352,9 @@ function deriveResumeContext(resumeData) {
         `- Roles listed: ${numRoles}, ${yoeHint}`,
         `- Education: ${educationTop}`,
         skillSample ? `- Skills sample: ${skillSample}` : '',
-    ].filter(Boolean).join('\n');
+    ]
+        .filter(Boolean)
+        .join('\n');
 }
 
 // Standard preamble that all full-resume prompts use. Asks Gemini to first
@@ -354,9 +385,9 @@ Use these inferences to tailor every piece of advice. Keyword suggestions, score
 const FIX_SCHEMA = {
     type: SchemaType.OBJECT,
     properties: {
-        type: { type: SchemaType.STRING },   // replace-text | append-bullet | add-keywords | normalize-skills | add-section | none
+        type: { type: SchemaType.STRING }, // replace-text | append-bullet | add-keywords | normalize-skills | add-section | none
         target: { type: SchemaType.STRING }, // dot path e.g. personal.summary, experience.0.bullets, skills
-        value: { type: SchemaType.STRING },  // new text, csv keywords, or '' for normalize-skills
+        value: { type: SchemaType.STRING }, // new text, csv keywords, or '' for normalize-skills
     },
     required: ['type', 'target', 'value'],
 };
@@ -536,17 +567,14 @@ async function parseWithGemini(fileBuffer, mimeType, textContent = null) {
             { text: systemPrompt },
             {
                 inlineData: {
-                    mimeType: "application/pdf",
-                    data: fileBuffer.toString("base64")
-                }
-            }
+                    mimeType: 'application/pdf',
+                    data: fileBuffer.toString('base64'),
+                },
+            },
         ];
     } else {
         // Text-based (DOCX converted to text, or plain text)
-        parts = [
-            { text: systemPrompt },
-            { text: `Resume Text:\n${textContent}` }
-        ];
+        parts = [{ text: systemPrompt }, { text: `Resume Text:\n${textContent}` }];
     }
 
     for (const modelName of modelsToTry) {
@@ -568,7 +596,6 @@ async function parseWithGemini(fileBuffer, mimeType, textContent = null) {
         }
     }
 }
-
 
 // Generate PDF with Puppeteer
 // DOCX export — builds a structurally clean Word document from the resume
@@ -601,7 +628,7 @@ app.post('/api/generate-pdf', async (req, res) => {
 
         browser = await puppeteer.launch({
             headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'] // Allow local file links if any
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'], // Allow local file links if any
         });
         const page = await browser.newPage();
 
@@ -610,7 +637,7 @@ app.post('/api/generate-pdf', async (req, res) => {
 
         // Set content and wait for network/fonts to load
         await page.setContent(html, {
-            waitUntil: ['load', 'networkidle0']
+            waitUntil: ['load', 'networkidle0'],
         });
 
         const pdfBuffer = await page.pdf({
@@ -618,16 +645,15 @@ app.post('/api/generate-pdf', async (req, res) => {
             printBackground: true,
             margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
             preferCSSPageSize: true, // Respect @page CSS
-            displayHeaderFooter: false
+            displayHeaderFooter: false,
         });
 
         res.set({
             'Content-Type': 'application/pdf',
             'Content-Disposition': 'attachment; filename=resume.pdf',
-            'Content-Length': pdfBuffer.length
+            'Content-Length': pdfBuffer.length,
         });
         res.send(Buffer.from(pdfBuffer));
-
     } catch (error) {
         console.error('PDF Generation Error:', error);
         sendError(res, 500, 'Failed to generate PDF', error.message);
@@ -643,7 +669,7 @@ app.post('/api/parse-resume', upload.single('file'), async (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        let rawText = "";
+        let rawText = '';
         const buffer = req.file.buffer;
         let mimeType = req.file.mimetype;
 
@@ -653,7 +679,7 @@ app.post('/api/parse-resume', upload.single('file'), async (req, res) => {
             // Ensure mimeType is correct for Gemini
             mimeType = 'application/pdf';
             // PDF is handled natively by Gemini, no local text extraction needed
-            console.log("PDF detected, passing buffer to Gemini...");
+            console.log('PDF detected, passing buffer to Gemini...');
         } else if (
             mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
             req.file.originalname.toLowerCase().endsWith('.docx')
@@ -666,13 +692,12 @@ app.post('/api/parse-resume', upload.single('file'), async (req, res) => {
         }
 
         rawText = normalizeRaw(rawText);
-        console.log("Extracted Text Length:", rawText.length);
+        console.log('Extracted Text Length:', rawText.length);
 
         // PDF is handled directly by Gemini (textContent remains null)
 
         const parsedData = await parseWithGemini(buffer, mimeType, rawText);
         res.json(parsedData);
-
     } catch (error) {
         console.error('Error parsing resume:', error);
         if (error.name === 'InvalidCharacterError' || error.message.includes('match the expected pattern')) {
@@ -740,17 +765,17 @@ app.post('/api/improve-text', async (req, res) => {
             ? `\n${INFER_CONTEXT_PREAMBLE}\n\n${deriveResumeContext(resumeData)}\n`
             : '';
 
-        const prompt = type === 'bullet'
-            ? `Rewrite this resume bullet point to be more impactful. Use strong action verbs, ideally lead with a verb in the past tense, and quantify where the original implies a number. Match the seniority of the inferred target role. Keep it concise (one line preferred, never over 250 chars).
+        const prompt =
+            type === 'bullet'
+                ? `Rewrite this resume bullet point to be more impactful. Use strong action verbs, ideally lead with a verb in the past tense, and quantify where the original implies a number. Match the seniority of the inferred target role. Keep it concise (one line preferred, never over 250 chars).
 ${contextBlock}
 Return ONLY the rewritten bullet (no quotes, no leading dash). Input: "${text}"`
-            : `Rewrite this professional summary to be engaging, specific, and ATS-friendly. Lead with the candidate's strongest signal (years + role + specialty). Keep it 2-4 sentences. Tone and depth should match the inferred seniority.
+                : `Rewrite this professional summary to be engaging, specific, and ATS-friendly. Lead with the candidate's strongest signal (years + role + specialty). Keep it 2-4 sentences. Tone and depth should match the inferred seniority.
 ${contextBlock}
 Return ONLY the rewritten summary (no quotes, no leading whitespace). Input: "${text}"`;
 
         const improvedText = (await generateWithFallback(prompt)).trim();
         res.json({ improvedText });
-
     } catch (error) {
         console.error('Error improving text:', error);
         sendError(res, 500, 'Failed to improve text', error.message);
@@ -806,7 +831,6 @@ app.post('/api/analyze-resume', async (req, res) => {
         const textResponse = await generateWithFallback(prompt, SCHEMA_ANALYZE);
         const analysis = extractJson(textResponse);
         res.json(analysis);
-
     } catch (error) {
         console.error('Error analyzing resume:', error);
         sendError(res, 500, 'Failed to analyze resume', error.message);
@@ -856,7 +880,6 @@ app.post('/api/improve-resume', async (req, res) => {
         const textResponse = await generateWithFallback(prompt);
         const improvedResume = extractJson(textResponse);
         res.json({ improvedResume });
-
     } catch (error) {
         console.error('Error improving resume:', error);
         sendError(res, 500, 'Failed to improve resume', error.message);
@@ -867,7 +890,8 @@ app.post('/api/improve-resume', async (req, res) => {
 app.post('/api/match-job', async (req, res) => {
     try {
         const { resumeData, jobDescription } = req.body;
-        if (!resumeData || !jobDescription) return res.status(400).json({ error: 'Missing resume data or job description' });
+        if (!resumeData || !jobDescription)
+            return res.status(400).json({ error: 'Missing resume data or job description' });
 
         const prompt = `
         Act as an expert Recruiter and ATS. Compare the following Resume against the Job Description (JD).
@@ -889,7 +913,6 @@ app.post('/api/match-job', async (req, res) => {
         const textResponse = await generateWithFallback(prompt, SCHEMA_MATCH);
         const matchAnalysis = extractJson(textResponse);
         res.json(matchAnalysis);
-
     } catch (error) {
         console.error('Error matching job:', error);
         sendError(res, 500, 'Failed to match job', error.message);
@@ -900,7 +923,8 @@ app.post('/api/match-job', async (req, res) => {
 app.post('/api/generate-cover-letter', async (req, res) => {
     try {
         const { resumeData, jobDescription } = req.body;
-        if (!resumeData || !jobDescription) return res.status(400).json({ error: 'Missing resume data or job description' });
+        if (!resumeData || !jobDescription)
+            return res.status(400).json({ error: 'Missing resume data or job description' });
 
         const prompt = `
         Act as a professional career coach. Write a compelling Cover Letter for the candidate based on their Resume and the target Job Description.
@@ -919,7 +943,6 @@ app.post('/api/generate-cover-letter', async (req, res) => {
 
         const coverLetter = (await generateWithFallback(prompt)).trim();
         res.json({ coverLetter });
-
     } catch (error) {
         console.error('Error generating cover letter:', error);
         sendError(res, 500, 'Failed to generate cover letter', error.message);
@@ -939,8 +962,9 @@ app.post('/api/tailor-resume', async (req, res) => {
         try {
             const { data } = await axios.get(jobUrl, {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                }
+                    'User-Agent':
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                },
             });
             const $ = cheerio.load(data);
 
@@ -948,18 +972,24 @@ app.post('/api/tailor-resume', async (req, res) => {
             $('script, style, nav, header, footer, .nav, .menu').remove();
 
             // Extract text from main content areas (heuristics)
-            jobDescription = $('main, article, .job-description, #job-description, body').text().replace(/\s+/g, ' ').trim();
+            jobDescription = $('main, article, .job-description, #job-description, body')
+                .text()
+                .replace(/\s+/g, ' ')
+                .trim();
 
             // Truncate if too long (Gemini limit)
             if (jobDescription.length > 20000) jobDescription = jobDescription.substring(0, 20000);
-
         } catch (scrapeError) {
             console.error('Scraping failed:', scrapeError.message);
-            return res.status(400).json({ error: 'Failed to fetch job details from URL. Please paste the description manually.' });
+            return res.status(400).json({
+                error: 'Failed to fetch job details from URL. Please paste the description manually.',
+            });
         }
 
         if (jobDescription.length < 100) {
-            return res.status(400).json({ error: 'Could not extract meaningful content from the URL. Please paste the description manually.' });
+            return res.status(400).json({
+                error: 'Could not extract meaningful content from the URL. Please paste the description manually.',
+            });
         }
 
         // 2. AI Tailoring
@@ -985,7 +1015,6 @@ app.post('/api/tailor-resume', async (req, res) => {
         const textResponse = await generateWithFallback(prompt);
         const tailoredResume = extractJson(textResponse);
         res.json({ tailoredResume, jobDescription }); // Return JD too so user can see what was extracted
-
     } catch (error) {
         console.error('Error tailoring resume:', error);
         sendError(res, 500, 'Failed to tailor resume', error.message);
@@ -1034,7 +1063,6 @@ app.post('/api/roast-resume', async (req, res) => {
         const textResponse = await generateWithFallback(prompt, SCHEMA_ROAST);
         const roastData = extractJson(textResponse);
         res.json(roastData);
-
     } catch (error) {
         console.error('Error roasting resume:', error);
         sendError(res, 500, 'Failed to roast resume', error.message);

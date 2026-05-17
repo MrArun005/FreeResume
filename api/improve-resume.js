@@ -5,7 +5,10 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -36,11 +39,13 @@ export default async function handler(req, res) {
         `;
 
         let textResponse = await generateWithFallback(prompt);
-        textResponse = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+        textResponse = textResponse
+            .replace(/```json/g, '')
+            .replace(/```/g, '')
+            .trim();
 
         const improvedResume = JSON.parse(textResponse);
         res.status(200).json({ improvedResume });
-
     } catch (error) {
         console.error('Error improving resume:', error);
         res.status(500).json({ error: 'Failed to improve resume', details: error.message });

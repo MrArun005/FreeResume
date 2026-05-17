@@ -1,7 +1,13 @@
 import { useState, useRef } from 'react';
 import { Plus, X } from 'lucide-react';
 
-const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPerBullet = 250, maxTotalChars = 1000 }) => {
+const BulletPointEditor = ({
+    bullets = [],
+    onChange,
+    maxBullets = 5,
+    maxCharsPerBullet = 250,
+    maxTotalChars = 1000,
+}) => {
     const [currentInput, setCurrentInput] = useState('');
     const inputRef = useRef(null);
 
@@ -101,11 +107,17 @@ const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPer
 
             {/* Character Counter */}
             <div className="flex items-center justify-between text-xs">
-                <span className={`font-medium ${totalChars > maxTotalChars ? 'text-red-600' :
-                    totalChars > maxTotalChars * 0.8 ? 'text-amber-600' :
-                        'text-slate-500'
-                    }`}>
-                    {bullets.length} bullet{bullets.length !== 1 ? 's' : ''} · {totalChars} / {maxTotalChars} chars
+                <span
+                    className={`font-medium ${
+                        totalChars > maxTotalChars
+                            ? 'text-red-600'
+                            : totalChars > maxTotalChars * 0.8
+                              ? 'text-amber-600'
+                              : 'text-slate-500'
+                    }`}
+                >
+                    {bullets.length} bullet{bullets.length !== 1 ? 's' : ''} · {totalChars} / {maxTotalChars}{' '}
+                    chars
                     {totalChars > maxTotalChars && ' — may overflow'}
                 </span>
                 {currentInput.length > maxCharsPerBullet && (

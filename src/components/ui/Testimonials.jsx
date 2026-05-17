@@ -28,7 +28,9 @@ const TestimonialCard = ({ t, featured = false }) => (
             ))}
         </div>
 
-        <p className={`text-slate-700 mb-6 leading-relaxed relative z-10 ${featured ? 'text-lg' : 'text-base'}`}>
+        <p
+            className={`text-slate-700 mb-6 leading-relaxed relative z-10 ${featured ? 'text-lg' : 'text-base'}`}
+        >
             &ldquo;{t.text}&rdquo;
         </p>
 

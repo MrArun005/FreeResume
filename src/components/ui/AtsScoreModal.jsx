@@ -6,7 +6,7 @@ import { isApplicableFix } from '../../utils/applyResumeFix';
 const scorePalette = (score) => {
     if (score >= 80) return { bg: '#DCFCE7', border: '#BBF7D0', text: '#16A34A' }; // green
     if (score >= 60) return { bg: '#FEFCE8', border: '#FEF08A', text: '#CA8A04' }; // yellow
-    return { bg: '#FEF2F2', border: '#FECACA', text: '#DC2626' };                  // red
+    return { bg: '#FEF2F2', border: '#FECACA', text: '#DC2626' }; // red
 };
 
 // Render a single finding (issue or improvement) with an inline Apply Fix
@@ -15,10 +15,7 @@ const FindingRow = ({ item, palette, onApply, applied }) => {
     const fix = item?.fix;
     const canApply = isApplicableFix(fix) && !applied;
     return (
-        <li
-            className="text-[13px] p-2.5 rounded-lg border flex items-start gap-2"
-            style={palette}
-        >
+        <li className="text-[13px] p-2.5 rounded-lg border flex items-start gap-2" style={palette}>
             <span className="mt-0.5">•</span>
             <div className="flex-1 min-w-0">
                 <div>{item.text || item}</div>
@@ -132,7 +129,10 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                     <h2 className="flex items-center gap-2 text-[20px] font-bold text-slate-800 m-0 tracking-tight">
                         <CheckCircle size={20} className="text-brand-600" /> AI Resume Audit
                     </h2>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-700 p-1 transition-colors">
+                    <button
+                        onClick={onClose}
+                        className="text-slate-400 hover:text-slate-700 p-1 transition-colors"
+                    >
                         <X size={20} />
                     </button>
                 </header>
@@ -155,26 +155,40 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                             className="w-32 h-32 mx-auto mb-4 rounded-full flex items-center justify-center"
                                             style={{ background: p.bg, border: `8px solid ${p.border}` }}
                                         >
-                                            <span className="text-4xl font-bold" style={{ color: p.text }}>{analysis.score}</span>
+                                            <span className="text-4xl font-bold" style={{ color: p.text }}>
+                                                {analysis.score}
+                                            </span>
                                         </div>
                                     );
                                 })()}
                                 <p className="text-sm text-slate-500 font-medium">ATS Compatibility Score</p>
                                 {analysis.summary && (
-                                    <p className="text-sm text-slate-500 max-w-md mx-auto mt-2 leading-relaxed">{analysis.summary}</p>
+                                    <p className="text-sm text-slate-500 max-w-md mx-auto mt-2 leading-relaxed">
+                                        {analysis.summary}
+                                    </p>
                                 )}
                             </div>
 
                             {/* Recommended keywords */}
                             {analysis.missingKeywords?.length > 0 && (
-                                <div className="mb-6 rounded-xl p-4 border" style={{ background: 'rgba(13,148,136,0.05)', borderColor: 'rgba(13,148,136,0.15)' }}>
+                                <div
+                                    className="mb-6 rounded-xl p-4 border"
+                                    style={{
+                                        background: 'rgba(13,148,136,0.05)',
+                                        borderColor: 'rgba(13,148,136,0.15)',
+                                    }}
+                                >
                                     <div className="flex items-center justify-between mb-2.5">
                                         <h3 className="flex items-center gap-1.5 text-sm font-bold text-brand-900 m-0">
                                             <Info size={16} /> Recommended Keywords
                                         </h3>
                                         {typeof onApplyFix === 'function' && (
                                             <button
-                                                onClick={missingKeywordsApplied ? undefined : handleApplyAllMissingKeywords}
+                                                onClick={
+                                                    missingKeywordsApplied
+                                                        ? undefined
+                                                        : handleApplyAllMissingKeywords
+                                                }
                                                 disabled={missingKeywordsApplied}
                                                 className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors ${
                                                     missingKeywordsApplied
@@ -199,7 +213,10 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                             <span
                                                 key={i}
                                                 className="bg-white text-brand-700 px-2.5 py-1 rounded-md text-[13px] font-medium border"
-                                                style={{ borderColor: 'rgba(13,148,136,0.15)', boxShadow: '0 1px 2px 0 rgba(15,23,42,0.05)' }}
+                                                style={{
+                                                    borderColor: 'rgba(13,148,136,0.15)',
+                                                    boxShadow: '0 1px 2px 0 rgba(15,23,42,0.05)',
+                                                }}
                                             >
                                                 {kw}
                                             </span>
@@ -214,9 +231,10 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                     <h3 className="flex items-center gap-1.5 text-sm font-bold text-red-600 mb-2.5">
                                         <AlertCircle size={16} /> Critical Issues
                                     </h3>
-                                    {(!analysis.criticalIssues || analysis.criticalIssues.length === 0) ? (
+                                    {!analysis.criticalIssues || analysis.criticalIssues.length === 0 ? (
                                         <p className="text-[13px] text-slate-500 italic flex items-center gap-1.5">
-                                            <CheckCircle size={12} className="text-emerald-500" /> Nothing critical.
+                                            <CheckCircle size={12} className="text-emerald-500" /> Nothing
+                                            critical.
                                         </p>
                                     ) : (
                                         <ul className="space-y-2 m-0 p-0 list-none">
@@ -226,7 +244,11 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                                     <FindingRow
                                                         key={id}
                                                         item={issue}
-                                                        palette={{ background: '#FEF2F2', color: '#991B1B', borderColor: '#FECACA' }}
+                                                        palette={{
+                                                            background: '#FEF2F2',
+                                                            color: '#991B1B',
+                                                            borderColor: '#FECACA',
+                                                        }}
                                                         onApply={() => handleApply(id, issue.fix)}
                                                         applied={applied.has(id)}
                                                     />
@@ -240,8 +262,10 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                     <h3 className="flex items-center gap-1.5 text-sm font-bold text-yellow-600 mb-2.5">
                                         <AlertTriangle size={16} /> Improvements
                                     </h3>
-                                    {(!analysis.improvements || analysis.improvements.length === 0) ? (
-                                        <p className="text-[13px] text-slate-500 italic">No specific tips at this time.</p>
+                                    {!analysis.improvements || analysis.improvements.length === 0 ? (
+                                        <p className="text-[13px] text-slate-500 italic">
+                                            No specific tips at this time.
+                                        </p>
                                     ) : (
                                         <ul className="space-y-2 m-0 p-0 list-none">
                                             {analysis.improvements.map((tip, idx) => {
@@ -250,7 +274,11 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                                                     <FindingRow
                                                         key={id}
                                                         item={tip}
-                                                        palette={{ background: '#FEFCE8', color: '#854D0E', borderColor: '#FEF08A' }}
+                                                        palette={{
+                                                            background: '#FEFCE8',
+                                                            color: '#854D0E',
+                                                            borderColor: '#FEF08A',
+                                                        }}
                                                         onApply={() => handleApply(id, tip.fix)}
                                                         applied={applied.has(id)}
                                                     />
@@ -274,7 +302,9 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
                         >
                             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Re-analyze
                         </button>
-                    ) : <span />}
+                    ) : (
+                        <span />
+                    )}
                     <button
                         onClick={onClose}
                         className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-medium text-sm transition-colors"

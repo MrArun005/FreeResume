@@ -16,9 +16,7 @@ const LivePreview = ({ onStartBuilding }) => {
                         <Sparkles size={16} />
                         <span>Interactive Demo</span>
                     </div>
-                    <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                        Try It Yourself
-                    </h2>
+                    <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Try It Yourself</h2>
                     <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                         See your resume update in real-time as you type. No sign-up required!
                     </p>
@@ -89,7 +87,10 @@ const LivePreview = ({ onStartBuilding }) => {
                                     className="w-full bg-gradient-to-r from-brand-600 to-emerald-600 text-white px-6 py-4 rounded-xl font-bold hover:from-brand-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group"
                                 >
                                     Continue Building My Resume
-                                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight
+                                        size={20}
+                                        className="group-hover:translate-x-1 transition-transform"
+                                    />
                                 </button>
                                 <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-3">
                                     100% Free • No Sign-Up Required
@@ -127,12 +128,16 @@ const LivePreview = ({ onStartBuilding }) => {
                                 <div className="bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-950 rounded-xl p-8 border border-gray-200 dark:border-gray-700 shadow-inner transition-colors duration-300">
                                     <div className="space-y-4">
                                         {/* Name Preview with Animation */}
-                                        <h1 className={`text-3xl font-bold text-gray-900 dark:text-white transition-all duration-300 ${name ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}>
+                                        <h1
+                                            className={`text-3xl font-bold text-gray-900 dark:text-white transition-all duration-300 ${name ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}
+                                        >
                                             {name || 'Your Name'}
                                         </h1>
 
                                         {/* Title Preview with Animation */}
-                                        <p className={`text-lg text-brand-600 dark:text-brand-400 font-medium transition-all duration-300 ${title ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}>
+                                        <p
+                                            className={`text-lg text-brand-600 dark:text-brand-400 font-medium transition-all duration-300 ${title ? 'opacity-100 scale-100' : 'opacity-50 scale-95'}`}
+                                        >
                                             {title || 'Your Job Title'}
                                         </p>
 
@@ -175,11 +180,16 @@ const LivePreview = ({ onStartBuilding }) => {
                                                 Skills
                                             </h3>
                                             <div className="flex flex-wrap gap-2">
-                                                {['Skill 1', 'Skill 2', 'Skill 3', 'Skill 4'].map((skill, i) => (
-                                                    <div key={i} className="px-3 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs font-medium rounded-full">
-                                                        {skill}
-                                                    </div>
-                                                ))}
+                                                {['Skill 1', 'Skill 2', 'Skill 3', 'Skill 4'].map(
+                                                    (skill, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="px-3 py-1 bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 text-xs font-medium rounded-full"
+                                                        >
+                                                            {skill}
+                                                        </div>
+                                                    )
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -192,26 +202,31 @@ const LivePreview = ({ onStartBuilding }) => {
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 {/* Stats Below */}
                 <div className="mt-16 grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                     <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-300">
                         <div className="text-4xl font-bold text-brand-600 mb-2">30s</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Average Build Time</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                            Average Build Time
+                        </div>
                     </div>
                     <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-300">
                         <div className="text-4xl font-bold text-emerald-600 mb-2">100%</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Free Forever</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                            Free Forever
+                        </div>
                     </div>
                     <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors duration-300">
                         <div className="text-4xl font-bold text-brand-600 mb-2">ATS</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Optimized Templates</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                            Optimized Templates
+                        </div>
                     </div>
                 </div>
             </div>
-        </section >
+        </section>
     );
 };
 

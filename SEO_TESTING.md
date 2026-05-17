@@ -3,6 +3,7 @@
 ## After You Deploy Your Site
 
 ### 1. Check if Sitemap is Accessible
+
 ```bash
 # Replace YOURDOMAIN.com with your actual domain
 curl -I https://YOURDOMAIN.com/sitemap.xml
@@ -12,6 +13,7 @@ curl -I https://YOURDOMAIN.com/sitemap.xml
 ```
 
 ### 2. Check if robots.txt is Accessible
+
 ```bash
 curl -I https://YOURDOMAIN.com/robots.txt
 
@@ -19,6 +21,7 @@ curl -I https://YOURDOMAIN.com/robots.txt
 ```
 
 ### 3. View Your Sitemap Content
+
 ```bash
 curl https://YOURDOMAIN.com/sitemap.xml
 
@@ -26,6 +29,7 @@ curl https://YOURDOMAIN.com/sitemap.xml
 ```
 
 ### 4. View Your robots.txt Content
+
 ```bash
 curl https://YOURDOMAIN.com/robots.txt
 
@@ -36,6 +40,7 @@ curl https://YOURDOMAIN.com/robots.txt
 ```
 
 ### 5. Check Meta Tags on Live Site
+
 ```bash
 curl -s https://YOURDOMAIN.com/ | grep -E '<title>|<meta name="description"|<meta property="og:'
 
@@ -47,22 +52,26 @@ curl -s https://YOURDOMAIN.com/ | grep -E '<title>|<meta name="description"|<met
 ## Testing Before Deployment (Local)
 
 ### 1. Start Your Dev Server
+
 ```bash
 cd /Users/arunmallikarjun/Downloads/youtube-channel-search/my-resume
 npm run dev
 ```
 
 ### 2. Check Local Sitemap
+
 ```bash
 curl http://localhost:5173/sitemap.xml
 ```
 
-### 3. Check Local robots.txt  
+### 3. Check Local robots.txt
+
 ```bash
 curl http://localhost:5173/robots.txt
 ```
 
 ### 4. View Page Source Locally
+
 ```bash
 curl http://localhost:5173/ | grep '<title>'
 curl http://localhost:5173/ | grep 'description'
@@ -73,21 +82,25 @@ curl http://localhost:5173/ | grep 'description'
 ## Google Testing Tools (Use in Browser)
 
 ### 1. Mobile-Friendly Test
+
 ```
 https://search.google.com/test/mobile-friendly?url=YOURDOMAIN.com
 ```
 
 ### 2. PageSpeed Insights
+
 ```
 https://pagespeed.web.dev/?url=YOURDOMAIN.com
 ```
 
 ### 3. Rich Results Test (For Structured Data)
+
 ```
 https://search.google.com/test/rich-results?url=YOURDOMAIN.com
 ```
 
 ### 4. URL Inspection Tool (Google Search Console)
+
 ```
 https://search.google.com/search-console/inspect
 ```
@@ -97,16 +110,20 @@ https://search.google.com/search-console/inspect
 ## Check if Google Has Indexed Your Site
 
 ### Method 1: site: Search
+
 Open Google and search:
+
 ```
 site:YOURDOMAIN.com
 ```
 
 **What you should see:**
+
 - If indexed: Your homepage appears in results
 - If not indexed yet: "No results found" (normal for new sites)
 
 ### Method 2: Check Specific Page
+
 ```
 site:YOURDOMAIN.com "Free Resume Builder"
 ```
@@ -118,29 +135,38 @@ site:YOURDOMAIN.com "Free Resume Builder"
 ### Important Reports to Check Weekly
 
 1. **Performance Report**
+
 ```
 Google Search Console → Performance
 ```
+
 Check:
+
 - Clicks (people visiting from Google)
 - Impressions (how often you appear)
 - Average position
 - CTR (click-through rate)
 
 2. **Coverage Report**
+
 ```
 Google Search Console → Coverage
 ```
+
 Check for:
+
 - ✅ Valid pages (should have at least 1)
 - ❌ Errors (should be 0)
 - ⚠️ Warnings (investigate if any)
 
 3. **Sitemaps Report**
+
 ```
 Google Search Console → Sitemaps
 ```
+
 Check:
+
 - Status should be "Success"
 - Discovered URLs should show your pages
 
@@ -149,7 +175,9 @@ Check:
 ## Validate Your Structured Data
 
 ### Online Validator
+
 Paste your homepage HTML or URL here:
+
 ```
 https://validator.schema.org/
 ```
@@ -161,6 +189,7 @@ https://validator.schema.org/
 ## Check Backlinks (After a Month)
 
 ### Free Backlink Checkers:
+
 ```
 https://ahrefs.com/backlink-checker
 https://www.semrush.com/analytics/backlinks/
@@ -177,14 +206,17 @@ Enter your domain to see who's linking to you.
 Use these free tools to track where you rank for keywords:
 
 **Ubersuggest**
+
 ```
 https://neilpatel.com/ubersuggest/
 ```
 
 **Google Search Console**
+
 ```
 Google Search Console → Performance → Queries
 ```
+
 Shows exact search terms people use to find you.
 
 ---
@@ -194,6 +226,7 @@ Shows exact search terms people use to find you.
 Run this checklist every week:
 
 ### Week 1-4: Foundation
+
 - [ ] Site is indexed (site:YOURDOMAIN.com)
 - [ ] Sitemap submitted in Google Search Console
 - [ ] No coverage errors in Search Console
@@ -201,6 +234,7 @@ Run this checklist every week:
 - [ ] PageSpeed score > 70
 
 ### Month 2+: Growth
+
 - [ ] Getting impressions in Search Console (>100/day)
 - [ ] Getting clicks from Google (>5/day)
 - [ ] Ranking for long-tail keywords
@@ -208,6 +242,7 @@ Run this checklist every week:
 - [ ] No technical SEO errors
 
 ### Month 3+: Optimization
+
 - [ ] First page rankings for some keywords
 - [ ] Growing organic traffic weekly
 - [ ] Good CTR (>2%)
@@ -219,28 +254,36 @@ Run this checklist every week:
 ## Common Issues & Fixes
 
 ### Issue: Site Not Indexed After 2 Weeks
+
 **Fix:**
+
 1. Check robots.txt doesn't block Google
 2. Request indexing in Search Console
 3. Submit sitemap again
 4. Check for technical errors
 
 ### Issue: Sitemap Not Found (404)
+
 **Fix:**
+
 1. Ensure sitemap.xml is in /public folder
 2. Deploy properly
 3. Check file permissions
 4. Test locally first
 
 ### Issue: Low Impressions
+
 **Fix:**
+
 1. Add more content (500+ words per page)
 2. Target long-tail keywords
 3. Build more backlinks
 4. Create blog content
 
 ### Issue: High Impressions, Low Clicks
+
 **Fix:**
+
 1. Improve title tag (make it compelling)
 2. Improve meta description
 3. Add numbers/dates ("2025")
@@ -278,16 +321,19 @@ All should return successful responses!
 ### Good SEO Metrics:
 
 **PageSpeed Insights:**
+
 - Mobile: >70 (good), >90 (excellent)
 - Desktop: >80 (good), >95 (excellent)
 
 **Search Console (Month 3+):**
+
 - Clicks: >50/day
-- Impressions: >1,000/day  
+- Impressions: >1,000/day
 - CTR: >3%
 - Average Position: <20
 
 **Google Rankings:**
+
 - Month 1: Rank 50-100 for long-tail keywords
 - Month 3: Rank 20-50 for medium keywords
 - Month 6: Rank 10-30 for competitive keywords
@@ -327,6 +373,7 @@ echo "Done! ✨"
 ```
 
 Make it executable:
+
 ```bash
 chmod +x check_seo.sh
 ./check_seo.sh

@@ -1,15 +1,16 @@
 import React from 'react';
 import {
-    Download, LayoutGrid, User, Plus, SplitSquareHorizontal, Sparkles, ArrowRight, Palette
+    Download,
+    LayoutGrid,
+    User,
+    Plus,
+    SplitSquareHorizontal,
+    Sparkles,
+    ArrowRight,
+    Palette,
 } from 'lucide-react';
-import {
-    DndContext,
-    closestCenter,
-} from '@dnd-kit/core';
-import {
-    SortableContext,
-    rectSortingStrategy,
-} from '@dnd-kit/sortable';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 
 import { SortableTag } from '../ui/SortableTag';
 import Logo from '../ui/Logo';
@@ -58,7 +59,9 @@ const EditorSidebar = ({
     onDeleteProfile,
 }) => {
     return (
-        <div className={`${mobileView === 'editor' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] bg-stone-50 border-r border-slate-200 flex-col h-full z-10 overflow-hidden no-print absolute lg:relative inset-0`}>
+        <div
+            className={`${mobileView === 'editor' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] bg-stone-50 border-r border-slate-200 flex-col h-full z-10 overflow-hidden no-print absolute lg:relative inset-0`}
+        >
             {/* Header */}
             <div className="px-6 py-5 border-b border-slate-200 bg-white sticky top-0 z-10">
                 <div className="flex items-center justify-between mb-1 gap-2">
@@ -74,11 +77,19 @@ const EditorSidebar = ({
                             <Download size={14} /> <span className="hidden sm:inline">Export</span>
                         </button>
                         {onOpenTheme && (
-                            <button onClick={onOpenTheme} className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors" title="Design & Theme">
+                            <button
+                                onClick={onOpenTheme}
+                                className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                title="Design & Theme"
+                            >
                                 <Palette size={18} />
                             </button>
                         )}
-                        <button onClick={() => setView('gallery')} className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors" title="Back to Gallery">
+                        <button
+                            onClick={() => setView('gallery')}
+                            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                            title="Back to Gallery"
+                        >
                             <LayoutGrid size={18} />
                         </button>
                     </div>
@@ -101,7 +112,6 @@ const EditorSidebar = ({
             {/* Navigation & Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 <div className="p-6 space-y-8">
-
                     {/* Section Navigation (Draggable) */}
                     <div className="flex flex-wrap gap-2">
                         <button
@@ -115,13 +125,18 @@ const EditorSidebar = ({
                             collisionDetection={closestCenter}
                             onDragEnd={(event) => handleDragEnd(event, 'sectionOrder')}
                         >
-                            <SortableContext
-                                items={resume.sectionOrder}
-                                strategy={rectSortingStrategy}
-                            >
+                            <SortableContext items={resume.sectionOrder} strategy={rectSortingStrategy}>
                                 {resume.sectionOrder.map((sectionId) => {
-                                    const isCustom = !['summary', 'experience', 'education', 'skills', 'coverLetter'].includes(sectionId);
-                                    const section = isCustom ? resume.customSections.find(s => s.id === sectionId) : null;
+                                    const isCustom = ![
+                                        'summary',
+                                        'experience',
+                                        'education',
+                                        'skills',
+                                        'coverLetter',
+                                    ].includes(sectionId);
+                                    const section = isCustom
+                                        ? resume.customSections.find((s) => s.id === sectionId)
+                                        : null;
 
                                     let label;
                                     if (sectionId === 'coverLetter') {
@@ -138,7 +153,9 @@ const EditorSidebar = ({
                                         <SortableTag
                                             key={sectionId}
                                             id={sectionId}
-                                            onRemove={isCustom ? () => removeCustomSection(sectionId) : undefined}
+                                            onRemove={
+                                                isCustom ? () => removeCustomSection(sectionId) : undefined
+                                            }
                                         >
                                             <button
                                                 onClick={() => setActiveSection(sectionId)}
@@ -175,14 +192,19 @@ const EditorSidebar = ({
                         <button
                             onClick={onOpenAts}
                             className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-brand-200 text-left transition-all hover:border-brand-300 hover:-translate-y-px"
-                            style={{ background: 'linear-gradient(135deg, rgba(20,184,166,0.10), rgba(20,184,166,0.02))' }}
+                            style={{
+                                background:
+                                    'linear-gradient(135deg, rgba(20,184,166,0.10), rgba(20,184,166,0.02))',
+                            }}
                         >
                             <div className="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center shrink-0">
                                 <Sparkles size={16} />
                             </div>
                             <div className="flex-1">
                                 <div className="text-sm font-semibold text-slate-900">Run ATS audit</div>
-                                <div className="text-[12px] text-slate-500 mt-0.5">AI score + keyword check</div>
+                                <div className="text-[12px] text-slate-500 mt-0.5">
+                                    AI score + keyword check
+                                </div>
                             </div>
                             <ArrowRight size={16} className="text-brand-700 shrink-0" />
                         </button>
@@ -210,6 +232,7 @@ const EditorSidebar = ({
                         {activeSection === 'experience' && (
                             <ExperienceSection
                                 experience={resume.experience}
+                                resume={resume}
                                 sensors={sensors}
                                 onDragEnd={handleDragEnd}
                                 onArrayChange={handleArrayChange}
@@ -223,6 +246,7 @@ const EditorSidebar = ({
                         {activeSection === 'education' && (
                             <EducationSection
                                 education={resume.education}
+                                resume={resume}
                                 sensors={sensors}
                                 onDragEnd={handleDragEnd}
                                 onArrayChange={handleArrayChange}
@@ -237,7 +261,7 @@ const EditorSidebar = ({
                             <SkillsSection
                                 skills={resume.skills}
                                 onUpdateSkills={(nextSkills) => {
-                                    setResume(prev => ({ ...prev, skills: nextSkills }));
+                                    setResume((prev) => ({ ...prev, skills: nextSkills }));
                                 }}
                             />
                         )}
@@ -251,9 +275,10 @@ const EditorSidebar = ({
                         )}
 
                         {/* Custom Section Editor */}
-                        {resume.customSections.find(s => s.id === activeSection) && (
+                        {resume.customSections.find((s) => s.id === activeSection) && (
                             <CustomSection
-                                section={resume.customSections.find(s => s.id === activeSection)}
+                                section={resume.customSections.find((s) => s.id === activeSection)}
+                                resume={resume}
                                 sensors={sensors}
                                 onDragEnd={handleDragEnd}
                                 onUpdateTitle={updateCustomSectionTitle}

@@ -12,7 +12,7 @@ class ErrorBoundary extends React.Component {
     }
 
     componentDidCatch(error, errorInfo) {
-        console.error("Uncaught error:", error, errorInfo);
+        console.error('Uncaught error:', error, errorInfo);
     }
 
     handleReset = () => {
@@ -36,7 +36,8 @@ class ErrorBoundary extends React.Component {
                         </div>
                         <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
                         <p className="text-gray-500 mb-8">
-                            The application encountered an unexpected error. We apologize for the inconvenience.
+                            The application encountered an unexpected error. We apologize for the
+                            inconvenience.
                         </p>
 
                         <div className="space-y-3">

@@ -3,7 +3,7 @@ import { ArrowLeft, Calendar, Clock, Tag, Share2, Twitter, Linkedin, Facebook } 
 import { BLOG_POSTS } from '../../constants/blogPosts';
 
 const BlogPost = ({ postId, onBack }) => {
-    const post = BLOG_POSTS.find(p => p.id === postId);
+    const post = BLOG_POSTS.find((p) => p.id === postId);
 
     if (!post) {
         return (
@@ -22,11 +22,17 @@ const BlogPost = ({ postId, onBack }) => {
     const shareTitle = post.title;
 
     const shareOnTwitter = () => {
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+        window.open(
+            `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`,
+            '_blank'
+        );
     };
 
     const shareOnLinkedIn = () => {
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
+        window.open(
+            `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+            '_blank'
+        );
     };
 
     const shareOnFacebook = () => {
@@ -59,7 +65,13 @@ const BlogPost = ({ postId, onBack }) => {
                     <div className="flex flex-wrap items-center gap-6 text-gray-600 text-sm mb-6">
                         <div className="flex items-center gap-2">
                             <Calendar size={16} />
-                            <span>{new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                            <span>
+                                {new Date(post.date).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                })}
+                            </span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Clock size={16} />
@@ -74,7 +86,10 @@ const BlogPost = ({ postId, onBack }) => {
                     <div className="flex flex-wrap items-center gap-2 mb-6">
                         <Tag size={16} className="text-gray-400" />
                         {post.tags.map((tag, idx) => (
-                            <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                            <span
+                                key={idx}
+                                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
+                            >
                                 {tag}
                             </span>
                         ))}
@@ -176,7 +191,8 @@ const BlogPost = ({ postId, onBack }) => {
                 <div className="mt-16 p-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl text-white">
                     <h3 className="text-2xl font-bold mb-4">Ready to Create Your Perfect Resume?</h3>
                     <p className="text-white/90 mb-6 text-lg">
-                        Use our free, ATS-friendly resume builder to create a professional resume in minutes. No credit card required.
+                        Use our free, ATS-friendly resume builder to create a professional resume in minutes.
+                        No credit card required.
                     </p>
                     <button
                         onClick={onBack}
@@ -188,7 +204,9 @@ const BlogPost = ({ postId, onBack }) => {
 
                 {/* Share again at bottom */}
                 <div className="mt-12 pt-8 border-t border-gray-200">
-                    <p className="text-gray-700 font-medium mb-4">Found this helpful? Share it with others:</p>
+                    <p className="text-gray-700 font-medium mb-4">
+                        Found this helpful? Share it with others:
+                    </p>
                     <div className="flex gap-3">
                         <button
                             onClick={shareOnTwitter}

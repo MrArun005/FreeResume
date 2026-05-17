@@ -198,4 +198,4 @@ const PdfClassic = ({ data }) => (
 );
 
 export default PdfClassic;
-```
+```;

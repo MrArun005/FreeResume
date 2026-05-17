@@ -17,10 +17,19 @@ const STORE_KEY = 'resumeProfiles_v1';
 const LEGACY_KEY = 'resumeData';
 
 const safeRead = (key) => {
-    try { return localStorage.getItem(key); } catch { return null; }
+    try {
+        return localStorage.getItem(key);
+    } catch {
+        return null;
+    }
 };
 const safeWrite = (key, value) => {
-    try { localStorage.setItem(key, value); return true; } catch { return false; }
+    try {
+        localStorage.setItem(key, value);
+        return true;
+    } catch {
+        return false;
+    }
 };
 
 // Cheap unique id. Date.now()+random keeps collisions unlikely without
@@ -40,7 +49,9 @@ export function loadProfilesStore() {
         try {
             const parsed = JSON.parse(raw);
             if (parsed && Array.isArray(parsed.profiles)) return parsed;
-        } catch { /* fall through to legacy migration */ }
+        } catch {
+            /* fall through to legacy migration */
+        }
     }
 
     const legacy = safeRead(LEGACY_KEY);
@@ -54,7 +65,9 @@ export function loadProfilesStore() {
             };
             safeWrite(STORE_KEY, JSON.stringify(store));
             return store;
-        } catch { /* corrupted legacy → ignore */ }
+        } catch {
+            /* corrupted legacy → ignore */
+        }
     }
 
     return blankStore();
@@ -74,9 +87,7 @@ export function patchActiveResume(store, nextResume) {
     const next = {
         ...store,
         profiles: store.profiles.map((p) =>
-            p.id === store.activeId
-                ? { ...p, resume: nextResume, updatedAt: Date.now() }
-                : p
+            p.id === store.activeId ? { ...p, resume: nextResume, updatedAt: Date.now() } : p
         ),
     };
     saveProfilesStore(next);
@@ -139,5 +150,4 @@ export function switchActive(store, id) {
 }
 
 // Convenience helpers for the UI.
-export const getActiveProfile = (store) =>
-    store?.profiles?.find((p) => p.id === store.activeId) || null;
+export const getActiveProfile = (store) => store?.profiles?.find((p) => p.id === store.activeId) || null;

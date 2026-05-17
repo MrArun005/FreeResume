@@ -5,7 +5,10 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    );
 
     if (req.method === 'OPTIONS') {
         res.status(200).end();
@@ -18,7 +21,8 @@ export default async function handler(req, res) {
 
     try {
         const { resumeData, jobDescription } = req.body;
-        if (!resumeData || !jobDescription) return res.status(400).json({ error: 'Missing resume data or job description' });
+        if (!resumeData || !jobDescription)
+            return res.status(400).json({ error: 'Missing resume data or job description' });
 
         const prompt = `
         Act as a professional career coach. Write a compelling Cover Letter for the candidate based on their Resume and the target Job Description.
@@ -37,7 +41,6 @@ export default async function handler(req, res) {
 
         const coverLetter = (await generateWithFallback(prompt)).trim();
         res.status(200).json({ coverLetter });
-
     } catch (error) {
         console.error('Error generating cover letter:', error);
         res.status(500).json({ error: 'Failed to generate cover letter', details: error.message });

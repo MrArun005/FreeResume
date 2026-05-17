@@ -9,10 +9,7 @@ const RULE = '#0F172A';
 
 const SectionTitle = ({ title }) => (
     <div className="mt-5 mb-3" style={{ pageBreakAfter: 'avoid' }}>
-        <h2
-            className="text-[12px] font-bold uppercase"
-            style={{ color: TEXT, letterSpacing: '0.10em' }}
-        >
+        <h2 className="text-[12px] font-bold uppercase" style={{ color: TEXT, letterSpacing: '0.10em' }}>
             {title}
         </h2>
         <div style={{ height: 1, background: RULE, marginTop: 4 }} />
@@ -24,7 +21,8 @@ const Bullet = ({ children }) => (
         className="text-[10.5px] leading-[1.5]"
         style={{ color: TEXT, paddingLeft: 14, textIndent: -14, marginBottom: 2 }}
     >
-        <span>•&nbsp;&nbsp;</span>{children}
+        <span>•&nbsp;&nbsp;</span>
+        {children}
     </li>
 );
 
@@ -53,7 +51,9 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
                             <SectionTitle title="Summary" />
                         </div>
                     )}
-                    <p className="text-[11px] leading-[1.55] text-justify" style={{ color: TEXT }}>{personal.summary}</p>
+                    <p className="text-[11px] leading-[1.55] text-justify" style={{ color: TEXT }}>
+                        {personal.summary}
+                    </p>
                 </section>
             );
         }
@@ -74,12 +74,25 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
                                         <span className="font-bold">{exp.company || 'Company'}</span>
                                         {exp.location && <span>, {exp.location}</span>}
                                     </div>
-                                    {exp.date && <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{exp.date}</div>}
+                                    {exp.date && (
+                                        <div
+                                            className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {exp.date}
+                                        </div>
+                                    )}
                                 </div>
-                                {exp.role && <div className="text-[11px] italic mb-1" style={{ color: TEXT }}>{exp.role}</div>}
+                                {exp.role && (
+                                    <div className="text-[11px] italic mb-1" style={{ color: TEXT }}>
+                                        {exp.role}
+                                    </div>
+                                )}
                                 {exp.bullets?.length > 0 && (
                                     <ul className="list-none p-0 m-0">
-                                        {exp.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                        {exp.bullets.map((b, i) => (
+                                            <Bullet key={i}>{b}</Bullet>
+                                        ))}
                                     </ul>
                                 )}
                             </div>
@@ -105,10 +118,25 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
                                         <span className="font-bold">{edu.school || 'School'}</span>
                                         {edu.location && <span>, {edu.location}</span>}
                                     </div>
-                                    {edu.date && <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{edu.date}</div>}
+                                    {edu.date && (
+                                        <div
+                                            className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {edu.date}
+                                        </div>
+                                    )}
                                 </div>
-                                {edu.degree && <div className="text-[11px] italic" style={{ color: TEXT }}>{edu.degree}</div>}
-                                {edu.gpa && <div className="text-[10.5px]" style={{ color: TEXT }}>GPA: {edu.gpa}</div>}
+                                {edu.degree && (
+                                    <div className="text-[11px] italic" style={{ color: TEXT }}>
+                                        {edu.degree}
+                                    </div>
+                                )}
+                                {edu.gpa && (
+                                    <div className="text-[10.5px]" style={{ color: TEXT }}>
+                                        GPA: {edu.gpa}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -119,7 +147,13 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
         if (sectionId === 'skills' && skills.length > 0) {
             const flat = skills.flatMap((s) => {
                 const idx = typeof s === 'string' ? s.indexOf(':') : -1;
-                return idx > 0 ? s.slice(idx + 1).split(',').map((x) => x.trim()).filter(Boolean) : [s];
+                return idx > 0
+                    ? s
+                          .slice(idx + 1)
+                          .split(',')
+                          .map((x) => x.trim())
+                          .filter(Boolean)
+                    : [s];
             });
             return (
                 <section key="skills" id={`section-${sectionId}`} className="break-inside-avoid">
@@ -128,7 +162,9 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
                             <SectionTitle title="Skills" />
                         </div>
                     )}
-                    <p className="text-[11px] leading-[1.6]" style={{ color: TEXT }}>{flat.join(' • ')}</p>
+                    <p className="text-[11px] leading-[1.6]" style={{ color: TEXT }}>
+                        {flat.join(' • ')}
+                    </p>
                 </section>
             );
         }
@@ -146,18 +182,38 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
                         {custom.items.map((item) => (
                             <div key={item.id} id={`item-${item.id}`} className="break-inside-avoid">
                                 <div className="flex items-baseline justify-between gap-4">
-                                    <div className="text-[11px] font-bold flex-1 min-w-0" style={{ color: TEXT }}>
-                                        {item.title}{item.subtitle && <span className="font-normal italic">, {item.subtitle}</span>}
+                                    <div
+                                        className="text-[11px] font-bold flex-1 min-w-0"
+                                        style={{ color: TEXT }}
+                                    >
+                                        {item.title}
+                                        {item.subtitle && (
+                                            <span className="font-normal italic">, {item.subtitle}</span>
+                                        )}
                                     </div>
-                                    {item.date && <div className="text-[10.5px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{item.date}</div>}
+                                    {item.date && (
+                                        <div
+                                            className="text-[10.5px] shrink-0 whitespace-nowrap"
+                                            style={{ color: MUTED }}
+                                        >
+                                            {item.date}
+                                        </div>
+                                    )}
                                 </div>
                                 {item.bullets?.length > 0 && (
                                     <ul className="list-none p-0 m-0 mt-1">
-                                        {item.bullets.map((b, i) => <Bullet key={i}>{b}</Bullet>)}
+                                        {item.bullets.map((b, i) => (
+                                            <Bullet key={i}>{b}</Bullet>
+                                        ))}
                                     </ul>
                                 )}
                                 {item.description && !item.bullets?.length && (
-                                    <p className="text-[11px] leading-[1.55] mt-1 whitespace-pre-line" style={{ color: TEXT }}>{item.description}</p>
+                                    <p
+                                        className="text-[11px] leading-[1.55] mt-1 whitespace-pre-line"
+                                        style={{ color: TEXT }}
+                                    >
+                                        {item.description}
+                                    </p>
                                 )}
                             </div>
                         ))}
@@ -172,20 +228,33 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
     return (
         <div
             className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} w-full bg-white`}
-            style={{ padding: '18mm 20mm', color: TEXT, fontFamily: 'Georgia, "Times New Roman", Times, serif' }}
+            style={{
+                padding: '18mm 20mm',
+                color: TEXT,
+                fontFamily: 'Georgia, "Times New Roman", Times, serif',
+            }}
         >
             {pageIndex === 0 && (
                 <div id="section-personal" className="text-center mb-4">
                     <h1
                         className="text-[26px]"
-                        style={{ fontWeight: 400, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}
+                        style={{
+                            fontWeight: 400,
+                            letterSpacing: '0.06em',
+                            textTransform: 'uppercase',
+                            marginBottom: 6,
+                        }}
                     >
                         {personal.fullName || 'Your Name'}
                     </h1>
                     {personal.title && (
-                        <div className="text-[12px] italic mb-2" style={{ color: MUTED }}>{personal.title}</div>
+                        <div className="text-[12px] italic mb-2" style={{ color: MUTED }}>
+                            {personal.title}
+                        </div>
                     )}
-                    <div className="text-[10.5px]" style={{ color: TEXT }}>{renderContactLine()}</div>
+                    <div className="text-[10.5px]" style={{ color: TEXT }}>
+                        {renderContactLine()}
+                    </div>
                     <div style={{ height: 1, background: RULE, marginTop: 10 }} />
                 </div>
             )}

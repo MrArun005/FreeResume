@@ -1,11 +1,13 @@
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from '../ui/SortableItem';
 import { CardChrome, FillInput, FieldLabel, BulletList } from '../ui/EditorPrimitives';
+import DateRangeInput from '../ui/DateRangeInput';
 
 const ExperienceSection = ({
     experience,
+    resume,
     sensors,
     onDragEnd,
     onArrayChange,
@@ -16,7 +18,11 @@ const ExperienceSection = ({
 }) => {
     return (
         <>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(event) => onDragEnd(event, 'experience')}>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => onDragEnd(event, 'experience')}
+            >
                 <SortableContext items={experience} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2.5">
                         {experience.map((exp) => {
@@ -35,16 +41,24 @@ const ExperienceSection = ({
                                                 <FieldLabel>Role</FieldLabel>
                                                 <FillInput
                                                     value={exp.role || ''}
-                                                    onChange={(e) => onArrayChange('experience', exp.id, 'role', e.target.value)}
+                                                    onChange={(e) =>
+                                                        onArrayChange(
+                                                            'experience',
+                                                            exp.id,
+                                                            'role',
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     placeholder="Senior Engineer"
                                                 />
                                             </div>
                                             <div>
                                                 <FieldLabel>Dates</FieldLabel>
-                                                <FillInput
+                                                <DateRangeInput
                                                     value={exp.date || ''}
-                                                    onChange={(e) => onArrayChange('experience', exp.id, 'date', e.target.value)}
-                                                    placeholder="2022 — present"
+                                                    onChange={(v) =>
+                                                        onArrayChange('experience', exp.id, 'date', v)
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -53,7 +67,14 @@ const ExperienceSection = ({
                                                 <FieldLabel>Company</FieldLabel>
                                                 <FillInput
                                                     value={exp.company || ''}
-                                                    onChange={(e) => onArrayChange('experience', exp.id, 'company', e.target.value)}
+                                                    onChange={(e) =>
+                                                        onArrayChange(
+                                                            'experience',
+                                                            exp.id,
+                                                            'company',
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     placeholder="Company name"
                                                 />
                                             </div>
@@ -61,7 +82,14 @@ const ExperienceSection = ({
                                                 <FieldLabel optional>Location</FieldLabel>
                                                 <FillInput
                                                     value={exp.location || ''}
-                                                    onChange={(e) => onArrayChange('experience', exp.id, 'location', e.target.value)}
+                                                    onChange={(e) =>
+                                                        onArrayChange(
+                                                            'experience',
+                                                            exp.id,
+                                                            'location',
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     placeholder="Bengaluru"
                                                 />
                                             </div>
@@ -70,15 +98,11 @@ const ExperienceSection = ({
                                             <FieldLabel>Highlights</FieldLabel>
                                             <BulletList
                                                 bullets={exp.bullets || []}
-                                                onChange={(newBullets) => onArrayChange('experience', exp.id, 'bullets', newBullets)}
+                                                onChange={(newBullets) =>
+                                                    onArrayChange('experience', exp.id, 'bullets', newBullets)
+                                                }
+                                                resumeData={resume}
                                             />
-                                            <button
-                                                type="button"
-                                                className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-50/60 text-brand-700 border border-brand-200 hover:bg-brand-50 transition-colors"
-                                                title="Improve writing with AI"
-                                            >
-                                                <Sparkles size={11} /> Improve with AI
-                                            </button>
                                         </div>
                                     </CardChrome>
                                 </SortableItem>

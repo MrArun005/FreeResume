@@ -6,17 +6,20 @@ const useHistory = (initialState) => {
 
     const state = history[currentIndex];
 
-    const setState = useCallback((action) => {
-        setHistory((prevHistory) => {
-            const currentHistory = prevHistory.slice(0, currentIndex + 1);
-            const currentState = currentHistory[currentHistory.length - 1];
+    const setState = useCallback(
+        (action) => {
+            setHistory((prevHistory) => {
+                const currentHistory = prevHistory.slice(0, currentIndex + 1);
+                const currentState = currentHistory[currentHistory.length - 1];
 
-            const newState = typeof action === 'function' ? action(currentState) : action;
+                const newState = typeof action === 'function' ? action(currentState) : action;
 
-            return [...currentHistory, newState];
-        });
-        setCurrentIndex((prev) => prev + 1);
-    }, [currentIndex]);
+                return [...currentHistory, newState];
+            });
+            setCurrentIndex((prev) => prev + 1);
+        },
+        [currentIndex]
+    );
 
     const undo = useCallback(() => {
         setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));

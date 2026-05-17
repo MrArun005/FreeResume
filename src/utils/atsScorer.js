@@ -1,4 +1,3 @@
-
 export const calculateAtsScore = (resume) => {
     let score = 0;
     const issues = [];
@@ -13,9 +12,16 @@ export const calculateAtsScore = (resume) => {
     else issues.push({ id: 'no-phone', text: 'Missing phone number', severity: 'critical' });
 
     if (resume?.personal?.location) contactScore += 5;
-    else tips.push({ id: 'no-location', text: 'Adding a location (City, State) helps local recruiters find you.' });
+    else
+        tips.push({
+            id: 'no-location',
+            text: 'Adding a location (City, State) helps local recruiters find you.',
+        });
 
-    if (resume?.personal?.socials && resume.personal.socials.some(s => s.network.toLowerCase().includes('linkedin'))) {
+    if (
+        resume?.personal?.socials &&
+        resume.personal.socials.some((s) => s.network.toLowerCase().includes('linkedin'))
+    ) {
         contactScore += 5;
     } else {
         tips.push({ id: 'no-linkedin', text: 'Adding a LinkedIn profile is highly recommended.' });
@@ -25,29 +31,49 @@ export const calculateAtsScore = (resume) => {
     // 2. Section Completeness (30 points)
     let sectionScore = 0;
     if (resume?.personal?.summary && resume.personal.summary.length > 50) sectionScore += 10;
-    else if (!resume?.personal?.summary) issues.push({ id: 'no-summary', text: 'Missing professional summary', severity: 'high' });
+    else if (!resume?.personal?.summary)
+        issues.push({ id: 'no-summary', text: 'Missing professional summary', severity: 'high' });
     else tips.push({ id: 'short-summary', text: 'Your summary is a bit short. Aim for 2-3 sentences.' });
 
     if (resume?.experience && resume.experience.length > 0) sectionScore += 10;
     else issues.push({ id: 'no-experience', text: 'Missing experience section', severity: 'critical' });
 
     if (resume?.skills && resume.skills.length >= 5) sectionScore += 10;
-    else if (!resume?.skills || resume.skills.length === 0) issues.push({ id: 'no-skills', text: 'Missing skills section', severity: 'high' });
+    else if (!resume?.skills || resume.skills.length === 0)
+        issues.push({ id: 'no-skills', text: 'Missing skills section', severity: 'high' });
     else tips.push({ id: 'few-skills', text: 'Add more relevant skills (aim for at least 5-10).' });
 
     score += sectionScore;
 
     // 3. Content Quality (30 points)
     let contentScore = 0;
-    const actionVerbs = ['led', 'developed', 'managed', 'created', 'implemented', 'designed', 'improved', 'increased', 'reduced', 'launched'];
+    const actionVerbs = [
+        'led',
+        'developed',
+        'managed',
+        'created',
+        'implemented',
+        'designed',
+        'improved',
+        'increased',
+        'reduced',
+        'launched',
+    ];
     let hasActionVerbs = false;
 
     if (resume?.experience) {
-        const expText = resume.experience.map(e => e.description || '').join(' ').toLowerCase();
-        hasActionVerbs = actionVerbs.some(verb => expText.includes(verb));
+        const expText = resume.experience
+            .map((e) => e.description || '')
+            .join(' ')
+            .toLowerCase();
+        hasActionVerbs = actionVerbs.some((verb) => expText.includes(verb));
 
         if (hasActionVerbs) contentScore += 15;
-        else tips.push({ id: 'no-action-verbs', text: 'Use strong action verbs (e.g., Led, Developed) in your experience descriptions.' });
+        else
+            tips.push({
+                id: 'no-action-verbs',
+                text: 'Use strong action verbs (e.g., Led, Developed) in your experience descriptions.',
+            });
 
         // Check for bullet points / length
         const avgLength = expText.length / (resume.experience.length || 1);
@@ -63,6 +89,6 @@ export const calculateAtsScore = (resume) => {
     return {
         score: Math.min(100, score),
         issues,
-        tips
+        tips,
     };
 };

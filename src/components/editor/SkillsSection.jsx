@@ -5,8 +5,14 @@ import { FieldLabel } from '../ui/EditorPrimitives';
 // Categories the user is likely to want. Quick-add chips create a new group
 // pre-named so they don't have to type the label.
 const STARTER_CATEGORIES = [
-    'Languages', 'Frameworks', 'Cloud & Big Data', 'Databases', 'DevOps & Tools',
-    'Visualization & BI', 'Machine Learning', 'Soft Skills',
+    'Languages',
+    'Frameworks',
+    'Cloud & Big Data',
+    'Databases',
+    'DevOps & Tools',
+    'Visualization & BI',
+    'Machine Learning',
+    'Soft Skills',
 ];
 
 // A "category" entry is just a string with a colon: "Label: item1, item2".
@@ -23,7 +29,9 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
     // `normalizeSkills` helper consolidates any legacy/plain skills into a
     // "Technical Skills" category at load time, so this list is always
     // category-only by the time it reaches the editor.
-    const categories = skills.map((s, idx) => ({ original: s, idx })).filter(({ original }) => isCategory(original));
+    const categories = skills
+        .map((s, idx) => ({ original: s, idx }))
+        .filter(({ original }) => isCategory(original));
 
     const updateAt = (idx, newValue) => {
         const next = [...skills];
@@ -56,7 +64,8 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
 
                 {categories.length === 0 ? (
                     <div className="text-[12px] text-slate-400 italic mb-3">
-                        No groups yet. Categories let you organize skills like <span className="not-italic font-medium text-slate-600">Languages: Python, SQL</span>.
+                        No groups yet. Categories let you organize skills like{' '}
+                        <span className="not-italic font-medium text-slate-600">Languages: Python, SQL</span>.
                     </div>
                 ) : (
                     <div className="space-y-2.5">
@@ -79,8 +88,13 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
                             Quick add
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                            {STARTER_CATEGORIES
-                                .filter((c) => !categories.some(({ original }) => parseCategory(original).label.toLowerCase() === c.toLowerCase()))
+                            {STARTER_CATEGORIES.filter(
+                                (c) =>
+                                    !categories.some(
+                                        ({ original }) =>
+                                            parseCategory(original).label.toLowerCase() === c.toLowerCase()
+                                    )
+                            )
                                 .slice(0, 6)
                                 .map((c) => (
                                     <button

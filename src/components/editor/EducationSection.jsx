@@ -3,6 +3,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from '../ui/SortableItem';
 import { CardChrome, FillInput, FieldLabel } from '../ui/EditorPrimitives';
+import DateRangeInput from '../ui/DateRangeInput';
 
 const EducationSection = ({
     education,
@@ -16,7 +17,11 @@ const EducationSection = ({
 }) => {
     return (
         <>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(event) => onDragEnd(event, 'education')}>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => onDragEnd(event, 'education')}
+            >
                 <SortableContext items={education} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2.5">
                         {education.map((edu) => {
@@ -34,7 +39,14 @@ const EducationSection = ({
                                             <FieldLabel>School</FieldLabel>
                                             <FillInput
                                                 value={edu.school || ''}
-                                                onChange={(e) => onArrayChange('education', edu.id, 'school', e.target.value)}
+                                                onChange={(e) =>
+                                                    onArrayChange(
+                                                        'education',
+                                                        edu.id,
+                                                        'school',
+                                                        e.target.value
+                                                    )
+                                                }
                                                 placeholder="Visvesvaraya Technological University"
                                             />
                                         </div>
@@ -42,24 +54,39 @@ const EducationSection = ({
                                             <FieldLabel>Degree</FieldLabel>
                                             <FillInput
                                                 value={edu.degree || ''}
-                                                onChange={(e) => onArrayChange('education', edu.id, 'degree', e.target.value)}
+                                                onChange={(e) =>
+                                                    onArrayChange(
+                                                        'education',
+                                                        edu.id,
+                                                        'degree',
+                                                        e.target.value
+                                                    )
+                                                }
                                                 placeholder="B.E. Computer Science"
                                             />
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div>
                                                 <FieldLabel>Dates</FieldLabel>
-                                                <FillInput
+                                                <DateRangeInput
                                                     value={edu.date || ''}
-                                                    onChange={(e) => onArrayChange('education', edu.id, 'date', e.target.value)}
-                                                    placeholder="2017 — 2021"
+                                                    onChange={(v) =>
+                                                        onArrayChange('education', edu.id, 'date', v)
+                                                    }
                                                 />
                                             </div>
                                             <div>
                                                 <FieldLabel optional>Location</FieldLabel>
                                                 <FillInput
                                                     value={edu.location || ''}
-                                                    onChange={(e) => onArrayChange('education', edu.id, 'location', e.target.value)}
+                                                    onChange={(e) =>
+                                                        onArrayChange(
+                                                            'education',
+                                                            edu.id,
+                                                            'location',
+                                                            e.target.value
+                                                        )
+                                                    }
                                                     placeholder="Mysuru"
                                                 />
                                             </div>

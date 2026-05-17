@@ -12,23 +12,48 @@ const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial
                 <div className="grid grid-cols-2 gap-2.5">
                     <div>
                         <FieldLabel>Full name</FieldLabel>
-                        <FillInput value={resume.personal.fullName || ''} onChange={onPersonalChange} name="fullName" placeholder="John Doe" />
+                        <FillInput
+                            value={resume.personal.fullName || ''}
+                            onChange={onPersonalChange}
+                            name="fullName"
+                            placeholder="John Doe"
+                        />
                     </div>
                     <div>
                         <FieldLabel>Headline</FieldLabel>
-                        <FillInput value={resume.personal.title || ''} onChange={onPersonalChange} name="title" placeholder="Software Engineer" />
+                        <FillInput
+                            value={resume.personal.title || ''}
+                            onChange={onPersonalChange}
+                            name="title"
+                            placeholder="Software Engineer"
+                        />
                     </div>
                     <div>
                         <FieldLabel>Email</FieldLabel>
-                        <FillInput value={resume.personal.email || ''} onChange={onPersonalChange} name="email" placeholder="john@example.com" />
+                        <FillInput
+                            value={resume.personal.email || ''}
+                            onChange={onPersonalChange}
+                            name="email"
+                            placeholder="john@example.com"
+                        />
                     </div>
                     <div>
                         <FieldLabel>Phone</FieldLabel>
-                        <FillInput value={resume.personal.phone || ''} onChange={onPersonalChange} name="phone" placeholder="+1 (555) 010-0100" />
+                        <FillInput
+                            value={resume.personal.phone || ''}
+                            onChange={onPersonalChange}
+                            name="phone"
+                            placeholder="+1 (555) 010-0100"
+                        />
                     </div>
                     <div className="col-span-2">
                         <FieldLabel optional>Location</FieldLabel>
-                        <FillInput value={resume.personal.location || ''} onChange={onPersonalChange} name="location" placeholder="New York, USA" />
+                        <FillInput
+                            value={resume.personal.location || ''}
+                            onChange={onPersonalChange}
+                            name="location"
+                            placeholder="New York, USA"
+                        />
                     </div>
                 </div>
             </div>
@@ -45,10 +70,15 @@ const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial
                 </div>
                 <div className="space-y-2.5">
                     {(resume.personal.socials || []).length === 0 && (
-                        <p className="text-[12px] text-slate-400 italic">No social links yet. Add LinkedIn, GitHub, your portfolio…</p>
+                        <p className="text-[12px] text-slate-400 italic">
+                            No social links yet. Add LinkedIn, GitHub, your portfolio…
+                        </p>
                     )}
                     {(resume.personal.socials || []).map((social) => (
-                        <div key={social.id} className="grid grid-cols-[1fr_1.6fr_auto] gap-2 items-center group">
+                        <div
+                            key={social.id}
+                            className="grid grid-cols-[1fr_1.6fr_auto] gap-2 items-center group"
+                        >
                             <FillInput
                                 value={social.network}
                                 onChange={(e) => onSocialChange(social.id, 'network', e.target.value)}

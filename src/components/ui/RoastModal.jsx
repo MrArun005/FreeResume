@@ -67,7 +67,10 @@ const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
                             </div>
                             <h2 className="text-2xl font-bold text-white">Roast My Resume</h2>
                         </div>
-                        <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                        >
                             <X className="w-5 h-5 text-gray-400" />
                         </button>
                     </div>
@@ -79,7 +82,9 @@ const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
                                     <div className="absolute inset-0 border-4 border-red-500/30 rounded-full animate-ping"></div>
                                     <div className="absolute inset-0 border-4 border-t-red-500 rounded-full animate-spin"></div>
                                 </div>
-                                <p className="text-red-400 font-medium animate-pulse">Heating up the grill...</p>
+                                <p className="text-red-400 font-medium animate-pulse">
+                                    Heating up the grill...
+                                </p>
                             </div>
                         ) : error ? (
                             <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-center">
@@ -112,7 +117,10 @@ const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
                                     </h4>
                                     <div className="grid gap-3">
                                         {roastData.burns.map((burn, i) => (
-                                            <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-lg text-gray-300 hover:border-red-500/30 transition-colors">
+                                            <div
+                                                key={i}
+                                                className="p-4 bg-white/5 border border-white/10 rounded-lg text-gray-300 hover:border-red-500/30 transition-colors"
+                                            >
                                                 🔥 {burn}
                                             </div>
                                         ))}
@@ -133,30 +141,38 @@ const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
                                             const canApply = isApplicableFix(fix) && !applied.has(i);
                                             const isApplied = applied.has(i);
                                             return (
-                                                <div key={i} className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-200">
+                                                <div
+                                                    key={i}
+                                                    className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-200"
+                                                >
                                                     <div className="flex items-start justify-between gap-3">
                                                         <span className="flex-1">⚠️ {text}</span>
-                                                        {(canApply || isApplied) && typeof onApplyFix === 'function' && (
-                                                            <button
-                                                                onClick={canApply ? () => handleApply(i, fix) : undefined}
-                                                                disabled={!canApply}
-                                                                className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors ${
-                                                                    isApplied
-                                                                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-default'
-                                                                        : 'bg-yellow-500 hover:bg-yellow-400 text-zinc-900 border border-yellow-400'
-                                                                }`}
-                                                            >
-                                                                {isApplied ? (
-                                                                    <>
-                                                                        <CheckCircle size={12} /> Fixed
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        <Wand2 size={12} /> Fix this
-                                                                    </>
-                                                                )}
-                                                            </button>
-                                                        )}
+                                                        {(canApply || isApplied) &&
+                                                            typeof onApplyFix === 'function' && (
+                                                                <button
+                                                                    onClick={
+                                                                        canApply
+                                                                            ? () => handleApply(i, fix)
+                                                                            : undefined
+                                                                    }
+                                                                    disabled={!canApply}
+                                                                    className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors ${
+                                                                        isApplied
+                                                                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-default'
+                                                                            : 'bg-yellow-500 hover:bg-yellow-400 text-zinc-900 border border-yellow-400'
+                                                                    }`}
+                                                                >
+                                                                    {isApplied ? (
+                                                                        <>
+                                                                            <CheckCircle size={12} /> Fixed
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <Wand2 size={12} /> Fix this
+                                                                        </>
+                                                                    )}
+                                                                </button>
+                                                            )}
                                                     </div>
                                                 </div>
                                             );
@@ -172,7 +188,9 @@ const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
                                             disabled={loading}
                                             className="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                         >
-                                            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                                            <RefreshCw
+                                                className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`}
+                                            />
                                             Roast again with new resume
                                         </button>
                                     )}

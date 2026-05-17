@@ -4,8 +4,8 @@
  */
 
 export async function parseResume(file) {
-    console.log("parseResume called with:", file);
-    if (!file) throw new Error("No file provided to parseResume");
+    console.log('parseResume called with:', file);
+    if (!file) throw new Error('No file provided to parseResume');
 
     const formData = new FormData();
     formData.append('file', file);
@@ -23,9 +23,8 @@ export async function parseResume(file) {
 
         const parsedData = await response.json();
         return parsedData;
-
     } catch (error) {
-        console.error("Error in parseResume:", error);
+        console.error('Error in parseResume:', error);
         throw error;
     }
 }

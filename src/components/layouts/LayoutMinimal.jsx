@@ -4,12 +4,14 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
     // ... (rest of file)
 
     {
-        (data.personal.socials || []).map(social => (
+        (data.personal.socials || []).map((social) => (
             <span key={social.id} className="font-medium text-gray-800 flex items-center gap-1">
                 <LinkIcon size={12} />
-                <a href={social.url} target="_blank" rel="noopener noreferrer" className="hover:underline">{social.network}</a>
+                <a href={social.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    {social.network}
+                </a>
             </span>
-        ))
+        ));
     }
     // Helper to render each section type
     const renderSection = (sectionId) => {
@@ -27,12 +29,18 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
         }
 
         if (sectionId === 'experience') {
-            const isFirstPageOfSection = !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
+            const isFirstPageOfSection =
+                !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
                 <div key="experience" id="section-experience" className="grid grid-cols-12 gap-4">
                     <div className="col-span-3">
                         {isFirstPageOfSection && (
-                            <h3 id="section-title-experience" className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}>Experience</h3>
+                            <h3
+                                id="section-title-experience"
+                                className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}
+                            >
+                                Experience
+                            </h3>
                         )}
                     </div>
                     <div className="col-span-9 space-y-6">
@@ -48,7 +56,9 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
                                 {exp.bullets && exp.bullets.length > 0 && (
                                     <ul className="list-disc list-outside ml-5 space-y-1">
                                         {exp.bullets.map((bullet, i) => (
-                                            <li key={i} className="text-sm text-gray-700 leading-relaxed">{bullet}</li>
+                                            <li key={i} className="text-sm text-gray-700 leading-relaxed">
+                                                {bullet}
+                                            </li>
                                         ))}
                                     </ul>
                                 )}
@@ -60,12 +70,18 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
         }
 
         if (sectionId === 'education') {
-            const isFirstPageOfSection = !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
+            const isFirstPageOfSection =
+                !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
                 <div key="education" id="section-education" className="grid grid-cols-12 gap-4">
                     <div className="col-span-3">
                         {isFirstPageOfSection && (
-                            <h3 id="section-title-education" className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}>Education</h3>
+                            <h3
+                                id="section-title-education"
+                                className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}
+                            >
+                                Education
+                            </h3>
                         )}
                     </div>
                     <div className="col-span-9 space-y-4">
@@ -85,12 +101,17 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
             return (
                 <div key="skills" id={`section-skills`} className="grid grid-cols-12 gap-4">
                     <div className="col-span-3">
-                        <h3 className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}>Skills</h3>
+                        <h3 className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}>
+                            Skills
+                        </h3>
                     </div>
                     <div className="col-span-9">
                         <div className="flex flex-wrap gap-2">
                             {data.skills.map((skill, i) => (
-                                <span key={i} className="text-xs font-medium text-gray-600">{skill}{i < data.skills.length - 1 ? ',' : ''}</span>
+                                <span key={i} className="text-xs font-medium text-gray-600">
+                                    {skill}
+                                    {i < data.skills.length - 1 ? ',' : ''}
+                                </span>
                             ))}
                         </div>
                     </div>
@@ -99,13 +120,18 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
         }
 
         // Custom sections
-        const customSection = data.customSections?.find(s => s.id === sectionId);
+        const customSection = data.customSections?.find((s) => s.id === sectionId);
         if (customSection && customSection.items.length > 0) {
             return (
                 <div key={sectionId} id={`section-${sectionId}`} className="grid grid-cols-12 gap-4">
                     <div className="col-span-3">
                         {(!data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex) && (
-                            <h3 id={`section-title-${sectionId}`} className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}>{customSection.title}</h3>
+                            <h3
+                                id={`section-title-${sectionId}`}
+                                className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}
+                            >
+                                {customSection.title}
+                            </h3>
                         )}
                     </div>
                     <div className="col-span-9 space-y-6">
@@ -114,11 +140,21 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
                                 <div className="break-inside-avoid">
                                     <div className="flex justify-between items-baseline mb-1">
                                         <h4 className="font-bold text-sm text-gray-900">{item.title}</h4>
-                                        {item.date && <span className="text-xs text-gray-400">{item.date}</span>}
+                                        {item.date && (
+                                            <span className="text-xs text-gray-400">{item.date}</span>
+                                        )}
                                     </div>
-                                    {item.subtitle && <p className="text-xs font-medium text-gray-500 mb-2">{item.subtitle}</p>}
+                                    {item.subtitle && (
+                                        <p className="text-xs font-medium text-gray-500 mb-2">
+                                            {item.subtitle}
+                                        </p>
+                                    )}
                                 </div>
-                                {item.description && <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{item.description}</p>}
+                                {item.description && (
+                                    <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                                        {item.description}
+                                    </p>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -130,7 +166,9 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
     };
 
     return (
-        <div className={`w-full p-[20mm] bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} ${theme.font}`}>
+        <div
+            className={`w-full p-[20mm] bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} ${theme.font}`}
+        >
             {pageIndex === 0 && (
                 <header id="section-personal" className="mb-12">
                     <h1 className="text-3xl font-light tracking-tight mb-4">{data.personal.fullName}</h1>
@@ -138,7 +176,7 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
                         <span>{data.personal.email}</span>
                         <span>{data.personal.phone}</span>
                         <span>{data.personal.location}</span>
-                        {(data.personal.socials || []).map(social => (
+                        {(data.personal.socials || []).map((social) => (
                             <span key={social.id} className="font-medium text-gray-800">
                                 {social.network}: {social.username}
                             </span>
@@ -148,7 +186,7 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
             )}
 
             <div className="grid grid-cols-1 gap-10">
-                {data.sectionOrder?.map(sectionId => renderSection(sectionId))}
+                {data.sectionOrder?.map((sectionId) => renderSection(sectionId))}
             </div>
         </div>
     );

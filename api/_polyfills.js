@@ -8,4 +8,4 @@ if (typeof globalThis.btoa === 'undefined') {
     globalThis.btoa = (str) => Buffer.from(str, 'binary').toString('base64');
 }
 
-console.log("Polyfills applied: atob/btoa");
+console.log('Polyfills applied: atob/btoa');

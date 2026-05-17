@@ -1,0 +1,37 @@
+# Build artifacts
+dist
+dist-ssr
+build
+
+# Dependencies
+node_modules
+server/node_modules
+
+# Server logs / pkg locks
+*.log
+package-lock.json
+server/package-lock.json
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Editor / OS files
+.DS_Store
+.vscode
+.idea
+
+# Vendored references
+_design-ref
+
+# Tooling configs
+.claude
+.husky/_
+
+# Markdown checklists that resist Prettier idempotency
+QUICK_SEO_CHECKLIST.md
+
+# Generated PDFs / DOCX
+*.pdf
+*.docx

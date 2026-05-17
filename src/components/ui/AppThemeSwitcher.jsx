@@ -14,9 +14,10 @@ const AppThemeSwitcher = () => {
                     onClick={() => setTheme(t.id)}
                     className={`
                         relative px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 flex items-center gap-1.5
-                        ${theme === t.id
-                            ? 'text-white shadow-sm'
-                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                        ${
+                            theme === t.id
+                                ? 'text-white shadow-sm'
+                                : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                         }
                     `}
                 >
@@ -24,7 +25,7 @@ const AppThemeSwitcher = () => {
                         <motion.div
                             layoutId="activeTheme"
                             className="absolute inset-0 bg-gray-900 dark:bg-brand-600 rounded-full"
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         />
                     )}
                     <span className="relative z-10 flex items-center gap-1">

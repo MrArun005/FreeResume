@@ -118,7 +118,9 @@ const ProfilesMenu = ({
                                             className="flex-1 text-[12px] bg-white border border-slate-300 rounded px-1.5 py-0.5 outline-none focus:border-brand-400"
                                         />
                                     ) : (
-                                        <span className={`flex-1 text-[12px] truncate ${isActive ? 'text-brand-900 font-semibold' : 'text-slate-700'}`}>
+                                        <span
+                                            className={`flex-1 text-[12px] truncate ${isActive ? 'text-brand-900 font-semibold' : 'text-slate-700'}`}
+                                        >
                                             {profile.name}
                                         </span>
                                     )}
@@ -146,7 +148,11 @@ const ProfilesMenu = ({
                                                 onClick={(e) => handleDelete(profile, e)}
                                                 disabled={profiles.length <= 1}
                                                 className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
-                                                title={profiles.length <= 1 ? 'Cannot delete the only profile' : 'Delete'}
+                                                title={
+                                                    profiles.length <= 1
+                                                        ? 'Cannot delete the only profile'
+                                                        : 'Delete'
+                                                }
                                             >
                                                 <Trash2 size={11} />
                                             </button>

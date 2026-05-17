@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Maximize2, Crosshair, Fingerprint } from 'lucide-react';
 
 const AutoScrollingGuide = () => {
@@ -11,36 +11,36 @@ const AutoScrollingGuide = () => {
             image: '/images/sci-fi-1.png',
             title: 'HUD TERMINAL OVERRIDE',
             metrics: 'SYS: ONLINE | SPD: 99%',
-            tag: 'CORE MODULE'
+            tag: 'CORE MODULE',
         },
         {
             id: 'sys-02',
             image: '/images/sci-fi-2.png',
             title: 'NETWORK SYNTHESIS',
             metrics: 'NODE: ACTIVE | LNC: SECURE',
-            tag: 'ROUTING'
+            tag: 'ROUTING',
         },
         {
             id: 'sys-03',
             image: '/images/sci-fi-3.png',
             title: 'HOLO-DATA PROJECTION',
             metrics: 'OPT: MAX | VSN: CLEAR',
-            tag: 'ANALYTICS'
+            tag: 'ANALYTICS',
         },
         {
             id: 'sys-04',
             image: '/images/sci-fi-1.png',
             title: 'CAREER TRAJECTORY MAPPING',
             metrics: 'TRG: LOCK | EST: 5Y',
-            tag: 'PREDICTION'
+            tag: 'PREDICTION',
         },
         {
             id: 'sys-05',
             image: '/images/sci-fi-2.png',
             title: 'NEURAL NODE INJECTION',
             metrics: 'SYNC: 100% | BRK: NONE',
-            tag: 'UPLINK'
-        }
+            tag: 'UPLINK',
+        },
     ];
 
     const targetRef = useRef(null);
@@ -48,15 +48,17 @@ const AutoScrollingGuide = () => {
         target: targetRef,
     });
 
-    // Translate horizontally based on scroll progress. 
+    // Translate horizontally based on scroll progress.
     // -60% usually works well for around ~5 items depending on window width
-    const x = useTransform(scrollYProgress, [0, 1], ["5%", "-65%"]);
+    const x = useTransform(scrollYProgress, [0, 1], ['5%', '-65%']);
 
     return (
-        <section ref={targetRef} className="relative h-[300vh] bg-[#020617] border-y border-cyan-500/20 z-10 w-full">
+        <section
+            ref={targetRef}
+            className="relative h-[300vh] bg-[#020617] border-y border-cyan-500/20 z-10 w-full"
+        >
             {/* Sticky Container locks the view for exactly 1 screen height while scrolling down the 300vh */}
             <div className="sticky top-0 h-screen w-full flex items-center overflow-hidden">
-
                 {/* Grid Background */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none z-0"></div>
 
@@ -109,7 +111,10 @@ const AutoScrollingGuide = () => {
                                     <span className="px-3 py-1 bg-cyan-950/80 border border-cyan-500/50 text-[10px] font-mono text-cyan-300 font-bold tracking-widest backdrop-blur-md shadow-[0_0_10px_rgba(6,182,212,0.3)]">
                                         [{slide.tag}]
                                     </span>
-                                    <Maximize2 size={20} className="text-cyan-400/50 group-hover/slide:text-cyan-400 transition-colors drop-shadow-md" />
+                                    <Maximize2
+                                        size={20}
+                                        className="text-cyan-400/50 group-hover/slide:text-cyan-400 transition-colors drop-shadow-md"
+                                    />
                                 </div>
 
                                 <div className="transform translate-y-4 group-hover/slide:translate-y-0 opacity-80 group-hover/slide:opacity-100 transition-all duration-300">
@@ -126,9 +131,12 @@ const AutoScrollingGuide = () => {
                             </div>
 
                             {/* Scanning Line overlay */}
-                            <div className="absolute top-0 left-0 w-full h-1 bg-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.8)] z-30 opacity-0 group-hover/slide:opacity-100 transition-opacity duration-300 pointer-events-none" style={{
-                                animation: 'scanline 2s linear infinite'
-                            }}></div>
+                            <div
+                                className="absolute top-0 left-0 w-full h-1 bg-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.8)] z-30 opacity-0 group-hover/slide:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                style={{
+                                    animation: 'scanline 2s linear infinite',
+                                }}
+                            ></div>
                         </div>
                     ))}
                 </motion.div>

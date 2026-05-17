@@ -1,8 +1,5 @@
 export default {
-    content: [
-        "./index.html",
-        "./src/**/*.{js,ts,jsx,tsx}",
-    ],
+    content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
     darkMode: 'class',
     theme: {
         extend: {
@@ -41,10 +38,10 @@ export default {
                 'zoom-in': 'zoomIn 0.6s ease-out forwards',
                 'slide-in-left': 'slideInLeft 0.8s ease-out forwards',
                 'slide-in-right': 'slideInRight 0.8s ease-out forwards',
-                'float': 'float 3s ease-in-out infinite',
-                'marquee': 'marquee 30s linear infinite',
+                float: 'float 3s ease-in-out infinite',
+                marquee: 'marquee 30s linear infinite',
                 'slow-scroll': 'slowScroll 40s linear infinite',
-                'scroll': 'scroll 30s linear infinite',
+                scroll: 'scroll 30s linear infinite',
             },
             keyframes: {
                 fadeInUp: {
@@ -86,9 +83,9 @@ export default {
                 scroll: {
                     '0%': { transform: 'translateX(0)' },
                     '100%': { transform: 'translateX(-50%)' },
-                }
-            }
+                },
+            },
         },
     },
     plugins: [],
-}
+};

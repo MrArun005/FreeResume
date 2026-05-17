@@ -43,7 +43,10 @@ function mergeKeywordsIntoSkills(skills, keywordsCsv) {
         const idx = findCategoryIdx(category);
         if (idx >= 0) {
             const [labelPart, rest] = next[idx].split(/:(.+)/);
-            const existing = (rest || '').split(',').map((s) => s.trim()).filter(Boolean);
+            const existing = (rest || '')
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean);
             if (!existing.some((e) => lcEq(e, kw))) existing.push(kw);
             next[idx] = `${labelPart}: ${existing.join(', ')}`;
         } else {
@@ -105,11 +108,7 @@ export function applyResumeFix(resume, fix) {
 // Quick check the modal can call to decide whether to render an Apply button.
 export function isApplicableFix(fix) {
     if (!fix || !fix.type || fix.type === 'none') return false;
-    return [
-        'replace-text',
-        'append-bullet',
-        'add-keywords',
-        'normalize-skills',
-        'add-section',
-    ].includes(fix.type);
+    return ['replace-text', 'append-bullet', 'add-keywords', 'normalize-skills', 'add-section'].includes(
+        fix.type
+    );
 }
