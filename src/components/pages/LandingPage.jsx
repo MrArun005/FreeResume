@@ -15,7 +15,7 @@ import {
     Star,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import TemplateThumbnail from '../ui/TemplateThumbnail';
+import TemplatePreview from '../ui/TemplatePreview';
 import Testimonials from '../ui/Testimonials';
 import ScrollToTop from '../ui/ScrollToTop';
 import Logo from '../ui/Logo';
@@ -304,7 +304,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                         className="group relative aspect-[210/297] rounded-lg overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-2xl hover:shadow-slate-900/10 transition-shadow"
                                     >
                                         <div className="absolute inset-0">
-                                            <TemplateThumbnail
+                                            <TemplatePreview
                                                 layout={t.layout}
                                                 theme={t.theme}
                                                 selected={false}
@@ -412,11 +412,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                             >
                                 <div className="aspect-[210/297] rounded-xl overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-900/10 group-hover:border-slate-300 dark:group-hover:border-slate-600 transition-all relative">
                                     <div className="absolute inset-0">
-                                        <TemplateThumbnail
-                                            layout={t.layout}
-                                            theme={t.theme}
-                                            selected={false}
-                                        />
+                                        <TemplatePreview layout={t.layout} theme={t.theme} selected={false} />
                                     </div>
                                     <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors" />
                                     <div className="absolute right-3 top-3 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 -translate-y-1 group-hover:translate-y-0 transition-all">
