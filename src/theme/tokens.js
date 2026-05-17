@@ -106,6 +106,73 @@ export const THEMES = {
 export const DEFAULT_THEME = 'teal';
 const STORAGE_KEY = 'paperjetTheme';
 
+// ─────────────────────────────────────────────────────────────────────────
+// Font family presets for the rendered resume.
+//
+// Each preset is one CSS font-family stack the user can pick from in the
+// theme modal. The active stack is written to the `--resume-font-family`
+// CSS custom property; src/index.css uses that variable on `.resume-paper`
+// and overrides Tailwind's `font-sans`/`font-serif`/`font-mono` classes
+// inside the resume so the user's choice wins regardless of which template
+// they're on.
+//
+// Fonts are chosen for ATS-friendliness: every option resolves to a
+// widely-installed system fallback, so PDF parsers handle them cleanly.
+// Inter and Instrument Serif are already preloaded via index.html.
+export const FONT_FAMILIES = {
+    inter: {
+        name: 'Inter',
+        description: 'Modern sans-serif. The default. Crisp on screen and in PDF.',
+        stack: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+    },
+    classicSans: {
+        name: 'Helvetica',
+        description: 'The recruiter-safe classic. Universally readable, ATS-favored.',
+        stack: 'Helvetica, Arial, "Liberation Sans", sans-serif',
+    },
+    instrumentSerif: {
+        name: 'Instrument Serif',
+        description: 'Editorial serif with personality. Great for design / writing roles.',
+        stack: '"Instrument Serif", Georgia, "Times New Roman", serif',
+    },
+    classicSerif: {
+        name: 'Georgia',
+        description: 'Traditional serif. Reads like a thoughtful résumé from a senior pro.',
+        stack: 'Georgia, "Times New Roman", Times, serif',
+    },
+    mono: {
+        name: 'Share Tech Mono',
+        description: 'Technical monospace. Distinctive — best for dev / engineering roles.',
+        stack: '"Share Tech Mono", "JetBrains Mono", Menlo, Consolas, monospace',
+    },
+};
+
+export const DEFAULT_FONT = 'inter';
+const FONT_STORAGE_KEY = 'paperjetFont';
+
+// ─────────────────────────────────────────────────────────────────────────
+// Size scale presets for the rendered resume.
+//
+// Each preset is a multiplier written to `--resume-font-size` as a px
+// value (computed from a 16px base). It's applied to `.resume-paper` so
+// text using inheritance (em, %, no Tailwind class) scales naturally.
+//
+// IMPORTANT — partial scope: Tailwind's `text-sm` / `text-base` etc.
+// resolve to absolute rem values against :root, not the resume wrapper.
+// So those elements don't scale with this control. The setting still has
+// real effect on layouts that use em-based sizing and on every element
+// without an explicit size class. To make it scale every text element,
+// every layout's text-* classes would need to be refactored to use em or
+// CSS calc() with `var(--resume-font-size)`. That's a follow-up.
+export const FONT_SIZES = {
+    compact: { name: 'Compact', description: 'Fit more on the page.', basePx: 14 },
+    normal: { name: 'Normal', description: 'The default. Balanced.', basePx: 16 },
+    comfortable: { name: 'Comfortable', description: 'Easier to read aloud.', basePx: 18 },
+};
+
+export const DEFAULT_SIZE = 'normal';
+const SIZE_STORAGE_KEY = 'paperjetSize';
+
 // Convert "#RRGGBB" → "R, G, B" for CSS rgba(var(--brand-500-rgb), 0.2) style use.
 function hexToRgbTuple(hex) {
     const h = hex.replace('#', '');
@@ -157,5 +224,61 @@ export function saveTheme(themeName) {
 export function initTheme() {
     const name = loadSavedTheme();
     applyTheme(name);
+    applyFont(loadSavedFont());
+    applySize(loadSavedSize());
     return name;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Font family controls — same shape as the theme helpers above.
+
+export function applyFont(fontKey) {
+    const font = FONT_FAMILIES[fontKey] || FONT_FAMILIES[DEFAULT_FONT];
+    document.documentElement.style.setProperty('--resume-font-family', font.stack);
+    document.documentElement.dataset.paperjetFont = fontKey in FONT_FAMILIES ? fontKey : DEFAULT_FONT;
+}
+
+export function loadSavedFont() {
+    try {
+        const saved = localStorage.getItem(FONT_STORAGE_KEY);
+        if (saved && FONT_FAMILIES[saved]) return saved;
+    } catch {
+        /* private mode */
+    }
+    return DEFAULT_FONT;
+}
+
+export function saveFont(fontKey) {
+    try {
+        localStorage.setItem(FONT_STORAGE_KEY, fontKey);
+    } catch {
+        /* private mode */
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Size scale controls — same shape.
+
+export function applySize(sizeKey) {
+    const size = FONT_SIZES[sizeKey] || FONT_SIZES[DEFAULT_SIZE];
+    document.documentElement.style.setProperty('--resume-font-size', `${size.basePx}px`);
+    document.documentElement.dataset.paperjetSize = sizeKey in FONT_SIZES ? sizeKey : DEFAULT_SIZE;
+}
+
+export function loadSavedSize() {
+    try {
+        const saved = localStorage.getItem(SIZE_STORAGE_KEY);
+        if (saved && FONT_SIZES[saved]) return saved;
+    } catch {
+        /* private mode */
+    }
+    return DEFAULT_SIZE;
+}
+
+export function saveSize(sizeKey) {
+    try {
+        localStorage.setItem(SIZE_STORAGE_KEY, sizeKey);
+    } catch {
+        /* private mode */
+    }
 }

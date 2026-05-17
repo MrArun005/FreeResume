@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
-import { X, Palette, Check } from 'lucide-react';
-import { THEMES, applyTheme, saveTheme, loadSavedTheme } from '../../theme/tokens';
+import { X, Palette, Check, Type, AArrowUp } from 'lucide-react';
+import {
+    THEMES,
+    applyTheme,
+    saveTheme,
+    loadSavedTheme,
+    FONT_FAMILIES,
+    applyFont,
+    saveFont,
+    loadSavedFont,
+    FONT_SIZES,
+    applySize,
+    saveSize,
+    loadSavedSize,
+} from '../../theme/tokens';
 
 // Settings panel for the design system. Shows every available theme preset
 // as a swatch row + currently-active token values so the user can both
@@ -11,6 +24,8 @@ import { THEMES, applyTheme, saveTheme, loadSavedTheme } from '../../theme/token
 // happens via saveTheme() into localStorage.
 const ThemeSettingsModal = ({ isOpen, onClose }) => {
     const [activeTheme, setActiveTheme] = useState(loadSavedTheme);
+    const [activeFont, setActiveFont] = useState(loadSavedFont);
+    const [activeSize, setActiveSize] = useState(loadSavedSize);
 
     if (!isOpen) return null;
 
@@ -18,6 +33,18 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
         setActiveTheme(themeKey);
         applyTheme(themeKey);
         saveTheme(themeKey);
+    };
+
+    const handleFontSelect = (fontKey) => {
+        setActiveFont(fontKey);
+        applyFont(fontKey);
+        saveFont(fontKey);
+    };
+
+    const handleSizeSelect = (sizeKey) => {
+        setActiveSize(sizeKey);
+        applySize(sizeKey);
+        saveSize(sizeKey);
     };
 
     const currentTheme = THEMES[activeTheme] || THEMES.teal;
@@ -46,7 +73,7 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                                 Design & Theme
                             </h2>
                             <p className="text-[12px] text-slate-500 m-0">
-                                Brand colors used across the app.
+                                Colors, fonts, and text size for your resume.
                             </p>
                         </div>
                     </div>
@@ -101,6 +128,93 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                                 );
                             })}
                         </div>
+                    </div>
+
+                    {/* Font family — applied to .resume-paper at runtime. Each
+                        preset writes its CSS stack to --resume-font-family;
+                        index.css forces it through Tailwind's font-* classes
+                        inside the resume so the user's pick always wins. */}
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                            <Type size={11} /> Font family
+                        </h3>
+                        <div className="space-y-2">
+                            {Object.entries(FONT_FAMILIES).map(([key, font]) => {
+                                const isActive = key === activeFont;
+                                return (
+                                    <button
+                                        key={key}
+                                        onClick={() => handleFontSelect(key)}
+                                        className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl border transition-all ${
+                                            isActive
+                                                ? 'border-slate-900 bg-slate-50'
+                                                : 'border-slate-200 hover:border-slate-300 bg-white'
+                                        }`}
+                                    >
+                                        {/* Specimen — "Aa" rendered in the font itself */}
+                                        <div
+                                            className="w-12 h-10 shrink-0 rounded-md border border-slate-200 flex items-center justify-center bg-white text-slate-900 text-lg font-semibold"
+                                            style={{ fontFamily: font.stack }}
+                                        >
+                                            Aa
+                                        </div>
+                                        <div className="flex-1 text-left">
+                                            <div className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+                                                {font.name}
+                                                {isActive && <Check size={14} className="text-emerald-600" />}
+                                            </div>
+                                            <div className="text-[11px] text-slate-500 mt-0.5">
+                                                {font.description}
+                                            </div>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Text size — sets a base font-size on the resume wrapper.
+                        Note: Tailwind's text-* utility classes use absolute
+                        rem and don't scale; this is the partial-scope
+                        documented in src/theme/tokens.js. */}
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                            <AArrowUp size={11} /> Text size
+                        </h3>
+                        <div className="grid grid-cols-3 gap-2">
+                            {Object.entries(FONT_SIZES).map(([key, size]) => {
+                                const isActive = key === activeSize;
+                                return (
+                                    <button
+                                        key={key}
+                                        onClick={() => handleSizeSelect(key)}
+                                        className={`px-3 py-3 rounded-xl border transition-all text-center ${
+                                            isActive
+                                                ? 'border-slate-900 bg-slate-50'
+                                                : 'border-slate-200 hover:border-slate-300 bg-white'
+                                        }`}
+                                    >
+                                        <div
+                                            className="font-semibold text-slate-900 leading-none mb-1"
+                                            style={{ fontSize: `${size.basePx}px` }}
+                                        >
+                                            Aa
+                                        </div>
+                                        <div className="text-xs font-semibold text-slate-900 flex items-center justify-center gap-1">
+                                            {size.name}
+                                            {isActive && <Check size={12} className="text-emerald-600" />}
+                                        </div>
+                                        <div className="text-[10px] text-slate-500 mt-0.5">
+                                            {size.description}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
+                            Note: text size scales elements that inherit from the resume wrapper. Some
+                            template-specific text (with fixed Tailwind sizing) won't resize here.
+                        </p>
                     </div>
 
                     {/* Token inspector — the active theme's scale, hex values, and a

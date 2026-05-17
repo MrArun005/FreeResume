@@ -323,6 +323,30 @@ html {
     --brand-800: #115e59;
     --brand-900: #134e4a;
     --brand-500-alpha-20: rgba(20, 184, 166, 0.2);
+
+    /* Resume-only typography knobs. The ThemeSettingsModal writes to these at
+       runtime via src/theme/tokens.js → applyFont() / applySize(). They are
+       scoped to .resume-paper below so the app chrome (landing page, editor
+       sidebar, modals) keeps its own typography regardless of the user's
+       resume font choice. */
+    --resume-font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --resume-font-size: 16px;
+}
+
+/* Resume typography routing. Every resume page (.resume-paper) inherits
+   the user's font choice, and the explicit `font-sans|serif|mono` Tailwind
+   classes inside it are forced to inherit too so per-template font
+   opinions don't override the user's pick. Size: see the partial-scope
+   note in src/theme/tokens.js — text using inheritance scales, Tailwind
+   absolute `text-*` classes don't until layouts are refactored to em. */
+.resume-paper {
+    font-family: var(--resume-font-family);
+    font-size: var(--resume-font-size);
+}
+.resume-paper .font-sans,
+.resume-paper .font-serif,
+.resume-paper .font-mono {
+    font-family: inherit;
 }
 
 @layer base {
