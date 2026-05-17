@@ -763,7 +763,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         </div>
                     </div>
                     <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-                        <div>© {new Date().getFullYear()} Paperjet. Made with care.</div>
+                        <div>© {new Date().getFullYear()} LandedJob. Made with care.</div>
                         <div className="flex items-center gap-4">
                             <a
                                 href="https://github.com"

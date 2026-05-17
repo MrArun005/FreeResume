@@ -308,7 +308,7 @@ html {
     animation-play-state: paused;
 }
 
-/* Brand color tokens — default Paperjet Teal. src/theme/tokens.js can
+/* Brand color tokens — default LandedJob Teal. src/theme/tokens.js can
    overwrite these at runtime to switch themes; Tailwind's `brand-*` color
    scale (in tailwind.config.js) references these vars by name. */
 :root {

@@ -147,7 +147,7 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                             <div className="text-xs text-slate-600">
                                 Link styling:{' '}
                                 <a className="text-brand-700 underline hover:text-brand-800">
-                                    resume.paperjet.app
+                                    resume.landedjob.com
                                 </a>
                             </div>
                         </div>

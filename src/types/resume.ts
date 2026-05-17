@@ -1,4 +1,4 @@
-// Canonical shape of a Paperjet resume.
+// Canonical shape of a LandedJob resume.
 //
 // The runtime data lives in localStorage (key: resumeProfiles_v1, per
 // src/utils/profilesStore.js) so any change here must stay backward-

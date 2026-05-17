@@ -8,7 +8,7 @@ const ShareModal = ({ isOpen, onClose }) => {
 
     const shareUrl = window.location.href; // Uses the current deployed URL
     const shareText =
-        'I just updated my resume using Paperjet — AI-powered, ATS-friendly, and privacy-first. Try it: ' +
+        'I just updated my resume using LandedJob — AI-powered, ATS-friendly, and privacy-first. Try it: ' +
         shareUrl;
     const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
 

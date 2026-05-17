@@ -1,4 +1,4 @@
-// Paperjet design tokens.
+// LandedJob design tokens.
 //
 // Single source of truth for the brand color scale + theme presets. The
 // scale follows Tailwind's 50–900 convention so existing utility classes
@@ -11,7 +11,7 @@
 // repaints in place. No re-render needed.
 
 const TEAL = {
-    name: 'Paperjet Teal',
+    name: 'LandedJob Teal',
     description: 'The default. Calm professional teal that pairs cleanly with slate UI.',
     scale: {
         50: '#F0FDFA',

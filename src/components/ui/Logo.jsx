@@ -1,23 +1,22 @@
 import React from 'react';
 
-// Paperjet logo. A rounded-square letter mark with a stylized "P" + a
-// subtle motion line that reads as a paper-plane trail. Both the mark and
-// the wordmark draw from CSS custom properties so a theme switch repaints
-// them automatically without touching this file.
+// LandedJob logo. A rounded-square letter mark with a downward arrow
+// landing on a strip — literal "you landed it" metaphor. The mark and
+// the wordmark draw from CSS custom properties so a theme switch
+// repaints them automatically without touching this file.
 //
 // `tone` controls the wordmark color so the logo reads cleanly on both
 // light and dark backgrounds. The brand mark itself stays the gradient
-// teal regardless of tone — only the "Paper" half of the wordmark flips.
+// teal regardless of tone — only the "Job" half of the wordmark flips.
 //
 //   tone="auto"  (default) — follows the global light/dark theme via
-//                            Tailwind's `dark:` variant. Use this on any
-//                            surface that flips with the user toggle
-//                            (landing nav, editor sidebar header).
-//   tone="light"           — always light text. Use on surfaces that are
-//                            designed dark in *both* modes — the footer,
-//                            the editor's top header chrome.
-//   tone="dark"            — always dark text. Rare; use on permanently
-//                            light surfaces.
+//                            Tailwind's `dark:` variant. Use on any
+//                            surface that flips with the user toggle.
+//   tone="light"           — always light text. Use on surfaces that
+//                            are designed dark in *both* modes (footer,
+//                            editor top header chrome).
+//   tone="dark"            — always dark text. Rare; permanently light
+//                            surfaces only.
 const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' }) => {
     const wordmarkClass =
         tone === 'light'
@@ -36,7 +35,7 @@ const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' 
                 >
                     <defs>
                         <linearGradient
-                            id="paperjet-grad"
+                            id="landedjob-grad"
                             x1="2"
                             y1="2"
                             x2="38"
@@ -49,26 +48,28 @@ const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' 
                     </defs>
 
                     {/* Rounded square mark */}
-                    <rect x="2" y="2" width="36" height="36" rx="11" fill="url(#paperjet-grad)" />
+                    <rect x="2" y="2" width="36" height="36" rx="11" fill="url(#landedjob-grad)" />
 
-                    {/* Letterform: stylized P drawn with two stroked paths
-                        so it sits cleanly at every size without font-loading risk. */}
-                    <path d="M14 12 L14 28" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                    {/* Downward arrow shaft — the descent */}
+                    <path d="M20 10 L20 24" stroke="white" strokeWidth="3" strokeLinecap="round" />
+
+                    {/* Arrowhead — the impact point */}
                     <path
-                        d="M14 12 H22 C25.5 12 27.5 14 27.5 17 C27.5 20 25.5 22 22 22 H14"
+                        d="M14 19 L20 25 L26 19"
                         stroke="white"
                         strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         fill="none"
                     />
-                    {/* Paper-plane / motion line — short underbar to the right of the bowl */}
+
+                    {/* Landing strip — the destination */}
                     <path
-                        d="M19 28 H30"
+                        d="M10 31 H30"
                         stroke="white"
-                        strokeWidth="2"
+                        strokeWidth="2.5"
                         strokeLinecap="round"
-                        opacity="0.75"
+                        opacity="0.85"
                     />
                 </svg>
 
@@ -79,9 +80,9 @@ const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' 
                 />
             </div>
 
-            {/* Wordmark — "Paper" in surface text color, "jet" in brand gradient. */}
+            {/* Wordmark — "Landed" in brand gradient (the verb, the promise),
+                "Job" in surface text (the noun, the object). */}
             <div className={`font-bold tracking-tight ${textClassName}`}>
-                <span className={`${wordmarkClass} transition-colors`}>Paper</span>
                 <span
                     className="bg-clip-text text-transparent transition-colors"
                     style={{
@@ -89,8 +90,9 @@ const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' 
                             'linear-gradient(90deg, var(--brand-600, #0D9488), var(--brand-500, #14B8A6))',
                     }}
                 >
-                    jet
+                    Landed
                 </span>
+                <span className={`${wordmarkClass} transition-colors`}>Job</span>
             </div>
         </div>
     );

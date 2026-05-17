@@ -18,7 +18,7 @@ const TutorialModal = ({ onClose }) => {
 
     const steps = [
         {
-            title: 'Welcome to Paperjet! 🎉',
+            title: 'Welcome to LandedJob! 🎉',
             icon: <Sparkles className="w-12 h-12" />,
             iconColor: 'from-yellow-400 to-orange-500',
             description: "Let's take a quick tour to help you create your perfect resume in minutes.",
