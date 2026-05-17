@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { X, Flame, Share2, AlertTriangle, ThumbsDown } from 'lucide-react';
+import { X, Flame, Share2, AlertTriangle, ThumbsDown, Wand2, CheckCircle, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { isApplicableFix } from '../../utils/applyResumeFix';
 
-const RoastModal = ({ isOpen, onClose, resumeData }) => {
+const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
     const [loading, setLoading] = useState(false);
     const [roastData, setRoastData] = useState(null);
     const [error, setError] = useState(null);
+    // Indices of red flags the user has applied this session.
+    const [applied, setApplied] = useState(() => new Set());
 
     const handleRoast = React.useCallback(async () => {
         setLoading(true);
@@ -21,6 +24,7 @@ const RoastModal = ({ isOpen, onClose, resumeData }) => {
 
             const data = await response.json();
             setRoastData(data);
+            setApplied(new Set());
         } catch (err) {
             setError(err.message);
         } finally {
@@ -36,6 +40,15 @@ const RoastModal = ({ isOpen, onClose, resumeData }) => {
     }, [isOpen, handleRoast]);
 
     if (!isOpen) return null;
+
+    const handleApply = (idx, fix) => {
+        if (typeof onApplyFix === 'function') onApplyFix(fix);
+        setApplied((prev) => {
+            const next = new Set(prev);
+            next.add(idx);
+            return next;
+        });
+    };
 
     return (
         <AnimatePresence>
@@ -106,26 +119,68 @@ const RoastModal = ({ isOpen, onClose, resumeData }) => {
                                     </div>
                                 </div>
 
-                                {/* Red Flags */}
+                                {/* Red Flags — actionable */}
                                 <div className="space-y-4">
                                     <h4 className="text-lg font-semibold text-white flex items-center gap-2">
                                         <AlertTriangle className="w-5 h-5 text-yellow-500" />
                                         Major Red Flags
                                     </h4>
                                     <div className="grid gap-3">
-                                        {roastData.redFlags.map((flag, i) => (
-                                            <div key={i} className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-200">
-                                                ⚠️ {flag}
-                                            </div>
-                                        ))}
+                                        {roastData.redFlags.map((flag, i) => {
+                                            // Backwards-compat: tolerate older string-shaped redFlags
+                                            const text = typeof flag === 'string' ? flag : flag?.text;
+                                            const fix = typeof flag === 'object' ? flag.fix : null;
+                                            const canApply = isApplicableFix(fix) && !applied.has(i);
+                                            const isApplied = applied.has(i);
+                                            return (
+                                                <div key={i} className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-200">
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <span className="flex-1">⚠️ {text}</span>
+                                                        {(canApply || isApplied) && typeof onApplyFix === 'function' && (
+                                                            <button
+                                                                onClick={canApply ? () => handleApply(i, fix) : undefined}
+                                                                disabled={!canApply}
+                                                                className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors ${
+                                                                    isApplied
+                                                                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-default'
+                                                                        : 'bg-yellow-500 hover:bg-yellow-400 text-zinc-900 border border-yellow-400'
+                                                                }`}
+                                                            >
+                                                                {isApplied ? (
+                                                                    <>
+                                                                        <CheckCircle size={12} /> Fixed
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Wand2 size={12} /> Fix this
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
-                                {/* Share Button */}
-                                <button className="w-full py-4 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-red-900/20 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
-                                    <Share2 className="w-5 h-5" />
-                                    Share My Shame
-                                </button>
+                                {/* Action row */}
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    {applied.size > 0 && (
+                                        <button
+                                            onClick={handleRoast}
+                                            disabled={loading}
+                                            className="flex-1 py-4 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                        >
+                                            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                                            Roast again with new resume
+                                        </button>
+                                    )}
+                                    <button className="flex-1 py-4 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold rounded-xl shadow-lg shadow-red-900/20 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                                        <Share2 className="w-5 h-5" />
+                                        Share My Shame
+                                    </button>
+                                </div>
                             </div>
                         ) : null}
                     </div>

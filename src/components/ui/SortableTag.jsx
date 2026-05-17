@@ -23,7 +23,7 @@ export function SortableTag({ id, children, onRemove }) {
             style={style}
             {...attributes}
             {...listeners}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900/60 text-teal-300 rounded-lg text-sm font-semibold tracking-wide shadow-sm border border-white/10 cursor-grab active:cursor-grabbing hover:bg-slate-800/80 hover:border-teal-500/50 hover:text-teal-200 transition-all duration-300 group"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-slate-700 rounded-lg text-sm font-medium border border-slate-200 cursor-grab active:cursor-grabbing hover:border-slate-300 hover:bg-slate-50 transition-colors group"
         >
             {children}
             <button
@@ -31,7 +31,7 @@ export function SortableTag({ id, children, onRemove }) {
                     e.stopPropagation(); // Prevent drag start
                     onRemove();
                 }}
-                className="p-1 hover:bg-red-500/20 rounded-md text-red-400 hover:text-red-300 transition-all duration-300 ml-1 opacity-70 group-hover:opacity-100"
+                className="p-1 hover:bg-red-50 rounded-md text-slate-400 hover:text-red-600 transition-colors ml-1 opacity-60 group-hover:opacity-100"
                 onPointerDown={(e) => e.stopPropagation()} // Prevent drag start
             >
                 <X size={14} />

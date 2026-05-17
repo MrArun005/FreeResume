@@ -1,99 +1,72 @@
-import React from 'react';
 import { User, Plus, Trash2 } from 'lucide-react';
+import { FillInput, FieldLabel } from '../ui/EditorPrimitives';
 
 const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial, onRemoveSocial }) => {
     return (
-        <div className="space-y-6">
-            <h2 className="text-lg font-bold text-gray-200 flex items-center gap-2 tracking-wide">
-                <User size={20} className="text-teal-400" /> Personal Details
+        <div className="space-y-5">
+            <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 tracking-tight">
+                <User size={18} className="text-teal-700" /> Personal details
             </h2>
-            <div className="grid grid-cols-2 gap-5">
-                <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Full Name</label>
-                    <input
-                        value={resume.personal.fullName}
-                        onChange={onPersonalChange}
-                        name="fullName"
-                        className="w-full p-3.5 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all font-medium text-base text-white placeholder-gray-500 shadow-inner"
-                        placeholder="John Doe"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Job Title</label>
-                    <input
-                        value={resume.personal.title}
-                        onChange={onPersonalChange}
-                        name="title"
-                        className="w-full p-3.5 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all font-medium text-base text-white placeholder-gray-500 shadow-inner"
-                        placeholder="Software Engineer"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Phone</label>
-                    <input
-                        value={resume.personal.phone}
-                        onChange={onPersonalChange}
-                        name="phone"
-                        className="w-full p-3.5 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all font-medium text-base text-white placeholder-gray-500 shadow-inner"
-                        placeholder="+1 234 567 890"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Email</label>
-                    <input
-                        value={resume.personal.email}
-                        onChange={onPersonalChange}
-                        name="email"
-                        className="w-full p-3.5 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all font-medium text-base text-white placeholder-gray-500 shadow-inner"
-                        placeholder="john@example.com"
-                    />
-                </div>
-                <div className="col-span-2 space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1">Location / Address</label>
-                    <input
-                        value={resume.personal.location}
-                        onChange={onPersonalChange}
-                        name="location"
-                        className="w-full p-3.5 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all font-medium text-base text-white placeholder-gray-500 shadow-inner"
-                        placeholder="New York, USA"
-                    />
-                </div>
 
-                {/* Social Links Editor */}
-                <div className="col-span-2 mt-6 border-t border-white/5 pt-6">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-3 block">Social Links & Portfolio</label>
-                    <div className="space-y-4">
-                        {(resume.personal.socials || []).map(social => (
-                            <div key={social.id} className="flex gap-2 items-start group">
-                                <div className="flex-1 space-y-2">
-                                    <input
-                                        value={social.network}
-                                        onChange={(e) => onSocialChange(social.id, 'network', e.target.value)}
-                                        className="w-full p-3 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all font-bold text-sm text-teal-300 placeholder-teal-800 shadow-inner"
-                                        placeholder="Network (e.g. LinkedIn)"
-                                    />
-                                    <input
-                                        value={social.url}
-                                        onChange={(e) => onSocialChange(social.id, 'url', e.target.value)}
-                                        className="w-full p-3 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all text-sm text-gray-300 placeholder-gray-600 shadow-inner"
-                                        placeholder="URL (e.g. https://linkedin.com/...)"
-                                    />
-                                </div>
-                                <button
-                                    onClick={() => onRemoveSocial(social.id)}
-                                    className="p-3 text-red-400 hover:text-red-300 border border-transparent hover:border-red-500/30 hover:bg-red-500/10 rounded-xl mt-1 opacity-0 group-hover:opacity-100 transition-all duration-300"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                        ))}
-                        <button
-                            onClick={onAddSocial}
-                            className="text-xs uppercase tracking-wider text-teal-400 font-bold hover:text-teal-300 flex items-center gap-1.5 transition-colors pl-1"
-                        >
-                            <Plus size={14} /> Add Social Link
-                        </button>
+            <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
+                <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <FieldLabel>Full name</FieldLabel>
+                        <FillInput value={resume.personal.fullName || ''} onChange={onPersonalChange} name="fullName" placeholder="John Doe" />
                     </div>
+                    <div>
+                        <FieldLabel>Headline</FieldLabel>
+                        <FillInput value={resume.personal.title || ''} onChange={onPersonalChange} name="title" placeholder="Software Engineer" />
+                    </div>
+                    <div>
+                        <FieldLabel>Email</FieldLabel>
+                        <FillInput value={resume.personal.email || ''} onChange={onPersonalChange} name="email" placeholder="john@example.com" />
+                    </div>
+                    <div>
+                        <FieldLabel>Phone</FieldLabel>
+                        <FillInput value={resume.personal.phone || ''} onChange={onPersonalChange} name="phone" placeholder="+1 (555) 010-0100" />
+                    </div>
+                    <div className="col-span-2">
+                        <FieldLabel optional>Location</FieldLabel>
+                        <FillInput value={resume.personal.location || ''} onChange={onPersonalChange} name="location" placeholder="New York, USA" />
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white border border-slate-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                    <FieldLabel>Social links & portfolio</FieldLabel>
+                    <button
+                        onClick={onAddSocial}
+                        className="text-teal-700 hover:text-teal-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                    >
+                        <Plus size={12} /> Add link
+                    </button>
+                </div>
+                <div className="space-y-2.5">
+                    {(resume.personal.socials || []).length === 0 && (
+                        <p className="text-[12px] text-slate-400 italic">No social links yet. Add LinkedIn, GitHub, your portfolio…</p>
+                    )}
+                    {(resume.personal.socials || []).map((social) => (
+                        <div key={social.id} className="grid grid-cols-[1fr_1.6fr_auto] gap-2 items-center group">
+                            <FillInput
+                                value={social.network}
+                                onChange={(e) => onSocialChange(social.id, 'network', e.target.value)}
+                                placeholder="LinkedIn"
+                            />
+                            <FillInput
+                                value={social.url}
+                                onChange={(e) => onSocialChange(social.id, 'url', e.target.value)}
+                                placeholder="https://linkedin.com/in/you"
+                            />
+                            <button
+                                onClick={() => onRemoveSocial(social.id)}
+                                className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                            >
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

@@ -20,10 +20,13 @@ const paginateGold = (data, heights, maxPageHeight) => {
     let currentPage = createPage(data);
 
     // STRICT DISCIPLINE CONSTANTS
-    const PADDING = 40;        // 1cm top/bottom padding
-    const ITEM_MARGIN = 32;    // space-y-8
-    const SECTION_MARGIN = 40; // gap-10
-    const TITLE_HEIGHT = 40;   // Estimated title height
+    // PADDING reflects the *top* padding of the layout — it is added to
+    // currentHeight once and never released, so the effective fill budget
+    // for content on each page is (maxPageHeight - PADDING).
+    const PADDING = 32;        // tightened from 40 so page 1 fills more before overflow
+    const ITEM_MARGIN = 24;    // tightened from 32 (real CSS space-y-8 measures less in practice)
+    const SECTION_MARGIN = 32; // tightened from 40
+    const TITLE_HEIGHT = 40;
 
     let currentHeight = 0;
 
@@ -150,11 +153,11 @@ const paginateExecutive = (data, heights, maxPageHeight) => {
     const pages = [];
     let currentPage = createPage(data);
 
-    // EXECUTIVE CONSTANTS
-    const PADDING = 48;        // Corrected to match CSS py-12 (48px)
-    const ITEM_MARGIN = 32;    // space-y-8
-    const SECTION_MARGIN = 32; // gap-8
-    const TITLE_HEIGHT = 40;
+    // EXECUTIVE CONSTANTS — tightened to reduce trailing whitespace on page 1
+    const PADDING = 40;        // was 48; better matches measured fill
+    const ITEM_MARGIN = 24;    // was 32
+    const SECTION_MARGIN = 24; // was 32
+    const TITLE_HEIGHT = 36;
 
     let currentHeight = 0;
 
@@ -252,11 +255,11 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
     // 1. Setup Pages Array
     const pages = [createPage(data)];
 
-    // CONFIG
-    const PADDING = 80;
-    const ITEM_MARGIN = 32; // Corrected to match CSS (mb-8 = 32px)
-    const SECTION_MARGIN = 24; // gap-6 = 24px
-    const TITLE_HEIGHT = 30;
+    // CONFIG — was over-conservative (PADDING 80 wasted ~80px per page)
+    const PADDING = 48;
+    const ITEM_MARGIN = 20;
+    const SECTION_MARGIN = 16;
+    const TITLE_HEIGHT = 28;
 
     // Define Columns
     let mainCol = 1;
@@ -500,11 +503,13 @@ const paginateStandard = (data, heights, maxPageHeight) => {
     const pages = [];
     let currentPage = createPage(data);
 
-    // CONFIG
-    const PADDING = 60;
+    // CONFIG — tightened so page 1 fills closer to A4 (1123px) before forcing a new page.
+    // Most "standard" layouts (Classic, Minimal, ATS, Jakes) use p-10 or p-12 = 40-48px CSS padding.
+    // PADDING here is the *top* reservation; effective fill budget = (maxPageHeight - PADDING).
+    const PADDING = 40;
     const ITEM_MARGIN = 12;
-    const SECTION_MARGIN = 20;
-    const TITLE_HEIGHT = 30;
+    const SECTION_MARGIN = 16;
+    const TITLE_HEIGHT = 28;
 
     let currentHeight = 0;
 

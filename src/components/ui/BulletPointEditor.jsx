@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Plus, X } from 'lucide-react';
 
 const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPerBullet = 250, maxTotalChars = 1000 }) => {
@@ -45,27 +45,27 @@ const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPer
     };
 
     return (
-        <div className="space-y-4 bg-slate-900/40 p-4 rounded-xl border border-white/5">
+        <div className="space-y-3 bg-stone-50 p-4 rounded-lg border border-slate-200">
             {/* Existing Bullets */}
             {bullets.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                     {bullets.map((bullet, index) => (
-                        <div key={index} className="flex items-start gap-3 group relative">
-                            <span className="text-teal-500 mt-2 shrink-0 text-lg leading-none">•</span>
+                        <div key={index} className="flex items-start gap-2 group relative">
+                            <span className="text-teal-600 mt-2.5 shrink-0 leading-none">•</span>
                             <div className="flex-1 relative">
                                 <input
                                     type="text"
                                     value={bullet}
                                     onChange={(e) => editBullet(index, e.target.value)}
-                                    className="w-full p-2.5 pl-3 pr-10 text-sm bg-slate-950/50 border border-white/10 rounded-lg hover:border-white/20 focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/50 outline-none text-gray-200 transition-all duration-300 shadow-inner"
+                                    className="w-full py-2 pl-2.5 pr-9 text-sm bg-white border border-slate-200 rounded-md hover:border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none text-slate-900 transition-colors"
                                     placeholder="Bullet point"
                                 />
                                 <button
                                     onClick={() => removeBullet(index)}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 hover:bg-red-500/20 p-1.5 rounded-md transition-all duration-300"
+                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-600 hover:bg-red-50 p-1 rounded-md transition-all"
                                     title="Remove bullet"
                                 >
-                                    <X size={14} />
+                                    <X size={13} />
                                 </button>
                             </div>
                         </div>
@@ -75,25 +75,25 @@ const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPer
 
             {/* Add New Bullet */}
             {!isAtMaxBullets && (
-                <div className="flex items-start gap-3">
-                    <span className="text-gray-600 mt-2 shrink-0 text-lg leading-none">•</span>
-                    <div className="flex-1 relative flex gap-2">
+                <div className="flex items-start gap-2">
+                    <span className="text-slate-400 mt-2.5 shrink-0 leading-none">•</span>
+                    <div className="flex-1 flex gap-2">
                         <input
                             ref={inputRef}
                             type="text"
                             value={currentInput}
                             onChange={(e) => setCurrentInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="flex-1 p-2.5 pl-3 text-sm bg-transparent border-2 border-dashed border-white/10 rounded-lg hover:border-white/20 focus:border-teal-500/50 outline-none text-gray-200 placeholder-gray-500 transition-all duration-300"
-                            placeholder="Add bullet point (press Enter)"
+                            className="flex-1 py-2 pl-2.5 text-sm bg-white border border-dashed border-slate-300 rounded-md hover:border-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none text-slate-900 placeholder-slate-400 transition-colors"
+                            placeholder="Add bullet point — press Enter"
                         />
                         <button
                             onClick={addBullet}
                             disabled={!currentInput.trim()}
-                            className="text-teal-400 bg-teal-500/10 border border-teal-500/20 hover:bg-teal-500/20 px-3 py-2 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-sm"
+                            className="text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 px-2.5 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                             title="Add bullet"
                         >
-                            <Plus size={18} />
+                            <Plus size={16} />
                         </button>
                     </div>
                 </div>
@@ -101,16 +101,16 @@ const BulletPointEditor = ({ bullets = [], onChange, maxBullets = 5, maxCharsPer
 
             {/* Character Counter */}
             <div className="flex items-center justify-between text-xs">
-                <span className={`font-medium ${totalChars > maxTotalChars ? 'text-red-500' :
-                    totalChars > maxTotalChars * 0.8 ? 'text-amber-500' :
-                        'text-gray-400'
+                <span className={`font-medium ${totalChars > maxTotalChars ? 'text-red-600' :
+                    totalChars > maxTotalChars * 0.8 ? 'text-amber-600' :
+                        'text-slate-500'
                     }`}>
-                    {bullets.length} bullet{bullets.length !== 1 ? 's' : ''} • {totalChars} / {maxTotalChars} characters
-                    {totalChars > maxTotalChars && ' ⚠️ Too long - may overflow page!'}
+                    {bullets.length} bullet{bullets.length !== 1 ? 's' : ''} · {totalChars} / {maxTotalChars} chars
+                    {totalChars > maxTotalChars && ' — may overflow'}
                 </span>
                 {currentInput.length > maxCharsPerBullet && (
-                    <span className="text-red-500 font-medium">
-                        Current: {currentInput.length} / {maxCharsPerBullet} ⚠️
+                    <span className="text-red-600 font-medium">
+                        {currentInput.length} / {maxCharsPerBullet}
                     </span>
                 )}
             </div>

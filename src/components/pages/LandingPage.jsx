@@ -76,11 +76,11 @@ const STEPS = [
     },
 ];
 
+// Category filter list is derived from the registered TEMPLATES so adding/renaming
+// categories in src/constants/layouts.js is automatically reflected here.
 const CATEGORIES = [
     { id: 'all', label: 'All' },
-    { id: 'Professional', label: 'Professional' },
-    { id: 'ATS Friendly', label: 'ATS Friendly' },
-    { id: 'Entry Level', label: 'Entry Level' },
+    ...[...new Set(TEMPLATES.map(t => t.category))].map(c => ({ id: c, label: c })),
 ];
 
 // ---- component ----------------------------------------------------------

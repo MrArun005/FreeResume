@@ -1,52 +1,141 @@
-import React from 'react';
-import { DndContext, closestCenter } from '@dnd-kit/core';
-import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
-import { SortableTag } from '../ui/SortableTag';
+import { useState } from 'react';
+import { Plus, X, FolderPlus } from 'lucide-react';
+import { FieldLabel } from '../ui/EditorPrimitives';
 
-const SkillsSection = ({ skills, sensors, onDragEnd, onRemoveSkill, onAddSkill }) => {
+// Categories the user is likely to want. Quick-add chips create a new group
+// pre-named so they don't have to type the label.
+const STARTER_CATEGORIES = [
+    'Languages', 'Frameworks', 'Cloud & Big Data', 'Databases', 'DevOps & Tools',
+    'Visualization & BI', 'Machine Learning', 'Soft Skills',
+];
+
+// A "category" entry is just a string with a colon: "Label: item1, item2".
+// All consumers (Bold Recruit layout, PDF, etc.) split on the first colon.
+const isCategory = (s) => typeof s === 'string' && s.indexOf(':') > 0;
+const parseCategory = (s) => {
+    const idx = s.indexOf(':');
+    return { label: s.slice(0, idx).trim(), items: s.slice(idx + 1).trim() };
+};
+const buildCategory = (label, items) => `${label.trim()}: ${items.trim()}`;
+
+const SkillsSection = ({ skills, onUpdateSkills }) => {
+    // Only category-shaped entries are surfaced here. The App-level
+    // `normalizeSkills` helper consolidates any legacy/plain skills into a
+    // "Technical Skills" category at load time, so this list is always
+    // category-only by the time it reaches the editor.
+    const categories = skills.map((s, idx) => ({ original: s, idx })).filter(({ original }) => isCategory(original));
+
+    const updateAt = (idx, newValue) => {
+        const next = [...skills];
+        if (newValue === null) next.splice(idx, 1);
+        else next[idx] = newValue;
+        onUpdateSkills?.(next);
+    };
+
+    const addCategory = (label = 'New Category') => {
+        onUpdateSkills?.([...skills, `${label}: `]);
+    };
+
     return (
-        <div className="bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-inner">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1 mb-3">Skills List (Drag to Reorder)</label>
+        <div className="space-y-3">
+            <div className="bg-white border border-slate-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                    <FieldLabel>
+                        Skill Categories
+                        <span className="ml-2 text-[10px] text-slate-400 font-normal normal-case tracking-normal">
+                            {categories.length} {categories.length === 1 ? 'group' : 'groups'}
+                        </span>
+                    </FieldLabel>
+                    <button
+                        onClick={() => addCategory()}
+                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-teal-700 hover:text-teal-800 transition-colors"
+                    >
+                        <FolderPlus size={13} /> Add group
+                    </button>
+                </div>
 
-            <div className="mb-5 flex gap-2">
-                <input
-                    type="text"
-                    placeholder="Add a skill (e.g. React)"
-                    className="flex-1 p-3.5 bg-slate-950/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 outline-none transition-all font-medium text-sm text-white placeholder-gray-500 shadow-inner"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            const val = e.target.value.trim();
-                            if (val && !skills.includes(val)) {
-                                onAddSkill(val);
-                                e.target.value = '';
-                            }
-                        }
-                    }}
-                />
-            </div>
-
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event) => onDragEnd(event, 'skills')}
-            >
-                <SortableContext
-                    items={skills}
-                    strategy={rectSortingStrategy}
-                >
-                    <div className="flex flex-wrap gap-2">
-                        {skills.map((skill) => (
-                            <SortableTag
-                                key={skill}
-                                id={skill}
-                                onRemove={() => onRemoveSkill(skill)}
-                            >
-                                {skill}
-                            </SortableTag>
+                {categories.length === 0 ? (
+                    <div className="text-[12px] text-slate-400 italic mb-3">
+                        No groups yet. Categories let you organize skills like <span className="not-italic font-medium text-slate-600">Languages: Python, SQL</span>.
+                    </div>
+                ) : (
+                    <div className="space-y-2.5">
+                        {categories.map(({ original, idx }) => (
+                            <CategoryRow
+                                key={idx}
+                                label={parseCategory(original).label}
+                                items={parseCategory(original).items}
+                                onChange={(label, items) => updateAt(idx, buildCategory(label, items))}
+                                onRemove={() => updateAt(idx, null)}
+                            />
                         ))}
                     </div>
-                </SortableContext>
-            </DndContext>
+                )}
+
+                {/* Starter-category chips (one tap → adds a pre-named group) */}
+                {categories.length < 4 && (
+                    <div className="mt-3 pt-3 border-t border-slate-100">
+                        <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-2">
+                            Quick add
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {STARTER_CATEGORIES
+                                .filter((c) => !categories.some(({ original }) => parseCategory(original).label.toLowerCase() === c.toLowerCase()))
+                                .slice(0, 6)
+                                .map((c) => (
+                                    <button
+                                        key={c}
+                                        onClick={() => addCategory(c)}
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-600 bg-slate-50 border border-dashed border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-colors"
+                                    >
+                                        <Plus size={10} /> {c}
+                                    </button>
+                                ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// Inline editor for one category. Two fields: label + comma-separated items.
+// State is local until blur to avoid a parent rerender thrash while typing.
+const CategoryRow = ({ label, items, onChange, onRemove }) => {
+    const [localLabel, setLocalLabel] = useState(label);
+    const [localItems, setLocalItems] = useState(items);
+
+    const commit = () => {
+        if (localLabel !== label || localItems !== items) {
+            onChange(localLabel, localItems);
+        }
+    };
+
+    return (
+        <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/40 group">
+            <div className="flex items-center gap-2 mb-2">
+                <input
+                    value={localLabel}
+                    onChange={(e) => setLocalLabel(e.target.value)}
+                    onBlur={commit}
+                    placeholder="Category name"
+                    className="flex-1 text-[12px] font-bold text-slate-900 bg-transparent border-0 border-b border-transparent hover:border-slate-300 focus:border-slate-400 focus:bg-white px-1 py-0.5 outline-none transition-colors"
+                />
+                <button
+                    onClick={onRemove}
+                    className="text-slate-400 hover:text-red-600 p-1 rounded transition-colors opacity-0 group-hover:opacity-100"
+                    title="Remove group"
+                >
+                    <X size={14} />
+                </button>
+            </div>
+            <input
+                value={localItems}
+                onChange={(e) => setLocalItems(e.target.value)}
+                onBlur={commit}
+                placeholder="Python, SQL, JavaScript…"
+                className="w-full text-[12px] text-slate-700 bg-white border border-slate-200 rounded-md px-2.5 py-1.5 focus:border-slate-400 outline-none"
+            />
         </div>
     );
 };

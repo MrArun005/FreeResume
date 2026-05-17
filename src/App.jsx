@@ -47,6 +47,10 @@ import LayoutExecutive from './components/layouts/LayoutExecutive';
 import LayoutLeaf from './components/layouts/LayoutLeaf';
 import LayoutGold from './components/layouts/LayoutGold';
 import LayoutGoogle from './components/layouts/LayoutGoogle';
+import LayoutBoldRecruit from './components/layouts/LayoutBoldRecruit';
+import LayoutExecutiveSerif from './components/layouts/LayoutExecutiveSerif';
+import LayoutNavyModern from './components/layouts/LayoutNavyModern';
+import LayoutMinimalMono from './components/layouts/LayoutMinimalMono';
 
 // Editor Section Components
 import PersonalSection from './components/editor/PersonalSection';
@@ -64,10 +68,14 @@ import EditorSidebar from './components/editor/EditorSidebar';
 import PreviewPanel from './components/editor/PreviewPanel';
 import JobAssistantModal from './components/ui/JobAssistantModal';
 import RoastModal from './components/ui/RoastModal';
+import ImproveResumeModal from './components/ui/ImproveResumeModal';
 
 
 import { parseResume } from './utils/resumeParser';
 import { paginateResume } from './utils/pagination';
+import { normalizeSkills, forceCategorize } from './utils/skillTaxonomy';
+import { applyResumeFix } from './utils/applyResumeFix';
+import { exportResumePdf } from './utils/exportPdf';
 
 const App = () => {
   const [view, setView] = useState('gallery'); // 'gallery' | 'editor'
@@ -121,6 +129,7 @@ const App = () => {
           ...parsed,
           experience: migratedExperience,
           customSections: migratedCustomSections,
+          skills: normalizeSkills(parsed.skills || []),
           sectionOrder: parsed.sectionOrder || ['summary', 'experience', 'education', 'skills'],
           pageBreaks: parsed.pageBreaks || {} // Add pageBreaks with default empty object
         };
@@ -144,10 +153,18 @@ const App = () => {
 
   const [resume, setResume, undo, redo, canUndo, canRedo] = useHistory(getInitialResume());
 
-  const handleImproveResume = async () => {
-    if (!window.confirm("This will use AI to rewrite your ENTIRE resume. It might take a few seconds. You can undo this change. Continue?")) return;
+  // Modal-driven flow for the full-resume AI rewrite. States: closed → confirm
+  // → loading → success | error. `isImproving` stays in sync for the header
+  // button's disabled/loading visual.
+  const [improveModalStage, setImproveModalStage] = useState(null); // null | 'confirm' | 'loading' | 'success' | 'error'
+  const [improveError, setImproveError] = useState('');
 
+  const handleImproveResume = () => setImproveModalStage('confirm');
+
+  const runImproveResume = async () => {
+    setImproveModalStage('loading');
     setIsImproving(true);
+    setImproveError('');
     try {
       const response = await fetch('/api/improve-resume', {
         method: 'POST',
@@ -156,13 +173,24 @@ const App = () => {
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data?.details || data?.error || `HTTP ${response.status}`);
+
       if (data.improvedResume) {
-        setResume(data.improvedResume);
-        alert("Resume improved successfully! Use Undo if you don't like the changes.");
+        // Force re-bucket skills via the taxonomy regardless of what the AI
+        // returned — this guarantees the mega-bucket case can never survive
+        // an "Improve Writing" even if the model ignores the prompt.
+        setResume({
+          ...data.improvedResume,
+          skills: forceCategorize(data.improvedResume.skills || []),
+        });
+        setImproveModalStage('success');
+      } else {
+        throw new Error('No improved resume returned');
       }
     } catch (error) {
-      console.error("Failed to improve resume:", error);
-      alert("Failed to improve resume. Please try again.");
+      console.error('Failed to improve resume:', error);
+      setImproveError(error?.message || String(error));
+      setImproveModalStage('error');
     } finally {
       setIsImproving(false);
     }
@@ -204,9 +232,25 @@ const App = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Autosave to localStorage whenever resume changes
+  // Autosave to localStorage whenever resume changes.
+  // Wrapped in try/catch so a storage failure (quota exceeded, private mode,
+  // disabled storage) surfaces in the console instead of silently dropping
+  // the user's edits. We also keep a flag so we only warn once per session —
+  // a repeated failure would otherwise spam the console on every keystroke.
+  const autosaveFailedRef = React.useRef(false);
   useEffect(() => {
-    localStorage.setItem('resumeData', JSON.stringify(resume));
+    try {
+      localStorage.setItem('resumeData', JSON.stringify(resume));
+      autosaveFailedRef.current = false;
+    } catch (err) {
+      if (!autosaveFailedRef.current) {
+        autosaveFailedRef.current = true;
+        console.warn('[Autosave] localStorage write failed — your changes will NOT persist across refreshes.', {
+          reason: err?.name === 'QuotaExceededError' ? 'Storage quota exceeded' : err?.message,
+          tip: 'If you are in private/incognito mode, your data is held in memory only.',
+        });
+      }
+    }
   }, [resume]);
 
   // Dynamic Pagination Logic
@@ -279,15 +323,37 @@ const App = () => {
         }
       });
 
-      const maxPageHeight = selectedTemplate.layout === 'gold' ? 1080 : 1050;
+      // Per-layout fill ceiling (A4 ≈ 1123px). The pagination engine reserves
+      // PADDING off the top, so effective content budget = ceiling - PADDING.
+      // Pushed close to the literal A4 boundary; any minor spillover is clipped
+      // by `overflow: hidden` on .resume-paper, which is fine — better than
+      // leaving 200-500px of empty space at the bottom of a page.
+      const ceilingByLayout = {
+        gold: 1130,
+        executive: 1120,
+        'sidebar-left': 1120,
+        'sidebar-right': 1120,
+        creative: 1120,
+        google: 1115,
+        'bold-recruit': 1115,
+        'executive-serif': 1110,
+        'navy-modern': 1115,
+        'minimal-mono': 1120,
+      };
+      const maxPageHeight = ceilingByLayout[selectedTemplate.layout] || 1115;
       const pages = paginateResume(resume, heights, maxPageHeight, selectedTemplate.layout);
       setPagedData(pages);
       setIsCalculatingLayout(false);
     };
 
-    // Debounce the heavy DOM calculations by 500ms to prevent lag while typing
+    // Debounce the heavy DOM calculations by 500ms to prevent lag while typing.
+    // Wrap in two rAF frames so fonts + layout have committed before we read
+    // offsetHeight — otherwise measurements skew tall (web-font fallback) and
+    // pagination forces premature page breaks, leaving big bottom whitespace.
     timeoutId = setTimeout(() => {
-      calculatePages();
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => calculatePages());
+      });
     }, 500);
 
     return () => clearTimeout(timeoutId);
@@ -506,7 +572,7 @@ const App = () => {
         setResume(prev => ({
           ...prev,
           personal: { ...prev.personal, ...parsedData.personal },
-          skills: parsedData.skills && parsedData.skills.length ? parsedData.skills : prev.skills,
+          skills: parsedData.skills && parsedData.skills.length ? normalizeSkills(parsedData.skills) : prev.skills,
           experience: parsedData.experience && parsedData.experience.length ? parsedData.experience : prev.experience,
           education: parsedData.education && parsedData.education.length ? parsedData.education : prev.education,
         }));
@@ -529,32 +595,24 @@ const App = () => {
 
   const contentRef = React.useRef(null);
 
-  // Client-side PDF generation via @react-pdf/renderer.
-  // The downloaded PDF uses a clean ATS-friendly layout regardless of which
-  // preview template the user is editing — the preview is for design,
-  // the PDF is for recruiters/bots.
+  // True-WYSIWYG PDF export. Sends the rendered preview HTML to the
+  // server's Puppeteer endpoint so the downloaded PDF is pixel-identical
+  // to what the user sees. If the server is offline (no /api/generate-pdf),
+  // the helper falls back to window.print() — the @media print rules in
+  // index.css already force only the resume pages to render at A4, so the
+  // visual output still matches the preview.
   const handleDownloadPDF = async () => {
-    try {
-      const { pdf } = await import('@react-pdf/renderer');
-      const { default: ResumePDF } = await import('./components/pdf/ResumePDF');
+    const fileName = `${(resume.personal.fullName || 'Resume').replace(/\s+/g, '_')}_Resume.pdf`;
+    const result = await exportResumePdf({ filename: fileName });
 
-      const variant = selectedTemplate.layout === 'google' ? 'google' : 'standard';
-      const blob = await pdf(<ResumePDF data={resume} variant={variant} />).toBlob();
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const fileName = (resume.personal.fullName || 'Resume').replace(/\s+/g, '_');
-      a.href = url;
-      a.download = `${fileName}_Resume.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-
+    if (result.ok && result.method === 'server') {
       setShowShareModal(true);
-    } catch (error) {
-      console.error('PDF Generation Error:', error);
-      alert('Failed to generate PDF. Please try again.');
+    } else if (result.ok && result.method === 'print') {
+      // Server was unreachable — user is now in the browser's print dialog.
+      // No share modal here; they may cancel out of "Save as PDF".
+      console.info('[Export] Used browser print fallback because:', result.reason);
+    } else {
+      alert(`Failed to generate PDF: ${result.reason || 'unknown error'}`);
     }
   };
 
@@ -613,6 +671,10 @@ const App = () => {
       case 'leaf': return <LayoutLeaf {...props} />;
       case 'gold': return <LayoutGold {...props} />;
       case 'google': return <LayoutGoogle {...props} />;
+      case 'bold-recruit': return <LayoutBoldRecruit {...props} />;
+      case 'executive-serif': return <LayoutExecutiveSerif {...props} />;
+      case 'navy-modern': return <LayoutNavyModern {...props} />;
+      case 'minimal-mono': return <LayoutMinimalMono {...props} />;
       default: return <LayoutClassic {...props} />;
     }
   };
@@ -679,13 +741,9 @@ const App = () => {
   // --- VIEW: EDITOR ---
 
   return (
-    <div className="min-h-screen bg-transparent text-gray-800 dark:text-gray-100 font-sans flex flex-col h-screen transition-colors duration-300 overflow-x-hidden relative">
-      {/* Background gradients for a premium feel */}
-      <div className="fixed inset-0 z-[-2] bg-slate-900"></div>
-      <div className="fixed inset-0 z-[-1] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-900/20 via-slate-900 to-slate-950"></div>
-
-      {/* Global Grain Overlay (Subtle) */}
-      <div className="pointer-events-none fixed inset-0 z-0 opacity-[0.015] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+    <div className="min-h-screen bg-stone-100 text-slate-900 font-sans flex flex-col h-screen overflow-x-hidden relative">
+      {/* Subtle background tint for the editor workspace */}
+      <div className="fixed inset-0 z-[-1] bg-stone-100"></div>
       {/* Print Styles */}
 
 
@@ -714,9 +772,9 @@ const App = () => {
         }}
       />
 
-      {/* Editor Header (Premium Glassmorphism) */}
-      <header className="h-16 flex items-center justify-between px-6 flex-shrink-0 z-50 no-print 
-        bg-slate-950/60 backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+      {/* Editor Header (dark chrome over light workspace) */}
+      <header className="h-16 flex items-center justify-between px-6 flex-shrink-0 z-50 no-print
+        bg-slate-950 border-b border-white/10">
         <div className="flex items-center gap-4">
           <div onClick={() => setView('gallery')} className="cursor-pointer group flex items-center justify-center p-2 rounded-xl hover:bg-white/5 transition-colors mr-2">
             <Logo className="w-8 h-8" textClassName="text-xl text-white hidden md:block" />
@@ -930,9 +988,10 @@ const App = () => {
           updateCustomItem={updateCustomItem}
           removeCustomItem={removeCustomItem}
           addCustomItem={addCustomItem}
+          onOpenAts={() => setShowAtsModal(true)}
         />
 
-        <div className={`${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-gray-200 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isSidebarOpen ? 'xl:pr-[340px]' : 'xl:pr-12'}`}>
+        <div className={`${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isSidebarOpen ? 'xl:pr-[340px]' : 'xl:pr-12'}`}>
 
           {/* Template Sidebar Toggle (When Closed) */}
           <button
@@ -956,7 +1015,7 @@ const App = () => {
               </div>
             </div>
 
-            {['Professional', 'Creative', 'Entry Level', 'ATS Friendly'].map(category => (
+            {[...new Set(TEMPLATES.map(t => t.category))].map(category => (
               <div key={category} className="space-y-4">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 sticky top-0 bg-white/95 backdrop-blur z-10 py-2">{category}</h4>
                 <div className="space-y-6">
@@ -968,7 +1027,7 @@ const App = () => {
                       title={t.name}
                     >
                       <div className="absolute inset-0 pointer-events-none">
-                        <TemplateThumbnail layout={t.layout} theme={t.theme} selected={false} />
+                        <TemplateThumbnail layout={t.layout} theme={t.theme} selected={false} personal={resume.personal} />
                       </div>
 
                       {/* Hover Overlay with Name */}
@@ -1038,12 +1097,29 @@ const App = () => {
         isOpen={isRoastModalOpen}
         onClose={() => setIsRoastModalOpen(false)}
         resumeData={resume}
+        onApplyFix={(fix) => setResume((prev) => applyResumeFix(prev, fix))}
       />
+
+      {improveModalStage && (
+        <ImproveResumeModal
+          stage={improveModalStage}
+          errorMessage={improveError}
+          onConfirm={runImproveResume}
+          onRetry={runImproveResume}
+          onClose={() => {
+            // Don't allow closing during the network call — only after.
+            if (improveModalStage !== 'loading') setImproveModalStage(null);
+          }}
+        />
+      )}
 
       <JobAssistantModal
         isOpen={showJobAssistant}
         onClose={() => setShowJobAssistant(false)}
-        onResumeUpdate={setResume}
+        onResumeUpdate={(updated) => setResume({
+          ...updated,
+          skills: normalizeSkills(updated.skills || []),
+        })}
       />
 
       <FeatureTourModal
@@ -1053,7 +1129,13 @@ const App = () => {
           localStorage.setItem('hasSeenFeatureTour', 'true');
         }}
       />
-      {showAtsModal && <AtsScoreModal resume={resume} onClose={() => setShowAtsModal(false)} />}
+      {showAtsModal && (
+        <AtsScoreModal
+          resume={resume}
+          onClose={() => setShowAtsModal(false)}
+          onApplyFix={(fix) => setResume((prev) => applyResumeFix(prev, fix))}
+        />
+      )}
       {showTutorial && <TutorialModal onClose={() => setShowTutorial(false)} />}
       <ShareModal isOpen={showShareModal} onClose={() => setShowShareModal(false)} />
 

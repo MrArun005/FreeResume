@@ -240,20 +240,9 @@ html {
 
 @layer base {
     html {
-        font-family: 'Rajdhani', sans-serif;
-        background-color: #020617;
-        /* Slate 950 deeply dark */
-        color: #f1f5f9;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        font-family: 'Orbitron', sans-serif;
-        letter-spacing: 0.05em;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: #fafaf9;
+        color: #0f172a;
     }
 }
 
@@ -356,16 +345,36 @@ html {
         display: none !important;
     }
 
-    .resume-paper {
+    /* Reset the preview-scale wrapper so the page renders at 1:1 instead of
+       the user's chosen zoom level. The preview container in PreviewPanel
+       applies `transform: scale(X)` — we override here for print. */
+    .print-area > div,
+    [id^="resume-page-"] {
+        transform: none !important;
+    }
+
+    /* Both the legacy .resume-paper class and the actual rendered page divs
+       (#resume-page-N) get the same A4 normalization. */
+    .resume-paper,
+    [id^="resume-page-"] {
         box-shadow: none !important;
         margin: 0 !important;
         padding: 0 !important;
         width: 210mm !important;
         height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
         page-break-after: always !important;
         page-break-inside: avoid !important;
         break-after: page !important;
-        transform: scale(1) !important;
+        overflow: hidden !important;
+        background: #ffffff !important;
+    }
+
+    .resume-paper:last-child,
+    [id^="resume-page-"]:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
     }
 
     .mesh-bg-light,

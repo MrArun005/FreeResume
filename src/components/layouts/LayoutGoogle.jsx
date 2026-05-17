@@ -14,7 +14,7 @@ const SectionTitle = ({ title }) => (
     </div>
 );
 
-const LayoutGoogle = ({ data, pageIndex }) => {
+const LayoutGoogle = ({ data, pageIndex, isMeasurement }) => {
     const { personal, experience, education, skills, customSections } = data;
 
     const shouldRenderTitle = (sectionId) => {
@@ -72,9 +72,9 @@ const LayoutGoogle = ({ data, pageIndex }) => {
                     <div className="space-y-3">
                         {experience.map((exp) => (
                             <div key={exp.id} id={`item-${exp.id}`} className="break-inside-avoid">
-                                <div className="flex justify-between items-baseline gap-3">
-                                    <div className="text-[12px] font-semibold" style={{ color: ACCENT }}>{exp.role || 'Role'}</div>
-                                    <div className="text-[10px]" style={{ color: MUTED }}>{exp.date}</div>
+                                <div className="flex justify-between items-baseline gap-4">
+                                    <div className="text-[12px] font-semibold flex-1 min-w-0" style={{ color: ACCENT }}>{exp.role || 'Role'}</div>
+                                    <div className="text-[10px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{exp.date}</div>
                                 </div>
                                 <div className="text-[10.5px] font-medium mt-0.5" style={{ color: TEXT }}>
                                     {exp.company}{exp.location && ` · ${exp.location}`}
@@ -107,9 +107,9 @@ const LayoutGoogle = ({ data, pageIndex }) => {
                     <div className="space-y-2.5">
                         {education.map((edu) => (
                             <div key={edu.id} id={`item-${edu.id}`} className="break-inside-avoid">
-                                <div className="flex justify-between items-baseline gap-3">
-                                    <div className="text-[12px] font-semibold" style={{ color: ACCENT }}>{edu.school || 'School'}</div>
-                                    <div className="text-[10px]" style={{ color: MUTED }}>{edu.date}</div>
+                                <div className="flex justify-between items-baseline gap-4">
+                                    <div className="text-[12px] font-semibold flex-1 min-w-0" style={{ color: ACCENT }}>{edu.school || 'School'}</div>
+                                    <div className="text-[10px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{edu.date}</div>
                                 </div>
                                 <div className="text-[10.5px] mt-0.5" style={{ color: TEXT }}>
                                     {edu.degree}{edu.location && ` · ${edu.location}`}
@@ -156,9 +156,9 @@ const LayoutGoogle = ({ data, pageIndex }) => {
                     <div className="space-y-3">
                         {customSection.items.map((item) => (
                             <div key={item.id} id={`item-${item.id}`} className="break-inside-avoid">
-                                <div className="flex justify-between items-baseline gap-3">
-                                    <div className="text-[12px] font-semibold" style={{ color: ACCENT }}>{item.title}</div>
-                                    {item.date && <div className="text-[10px]" style={{ color: MUTED }}>{item.date}</div>}
+                                <div className="flex justify-between items-baseline gap-4">
+                                    <div className="text-[12px] font-semibold flex-1 min-w-0" style={{ color: ACCENT }}>{item.title}</div>
+                                    {item.date && <div className="text-[10px] shrink-0 whitespace-nowrap" style={{ color: MUTED }}>{item.date}</div>}
                                 </div>
                                 {item.subtitle && (
                                     <div className="text-[10.5px] font-medium mt-0.5" style={{ color: TEXT }}>{item.subtitle}</div>
@@ -178,7 +178,7 @@ const LayoutGoogle = ({ data, pageIndex }) => {
 
     return (
         <div
-            className="h-[297mm] w-full bg-white overflow-hidden font-clean"
+            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} w-full bg-white font-clean`}
             style={{ padding: '14mm 16mm', color: TEXT }}
         >
             {/* Header */}
