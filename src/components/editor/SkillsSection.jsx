@@ -46,26 +46,29 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
 
     return (
         <div className="space-y-3">
-            <div className="bg-white border border-slate-200 rounded-lg p-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                     <FieldLabel>
                         Skill Categories
-                        <span className="ml-2 text-[10px] text-slate-400 font-normal normal-case tracking-normal">
+                        <span className="ml-2 text-[10px] text-slate-400 dark:text-stone-500 font-normal normal-case tracking-normal">
                             {categories.length} {categories.length === 1 ? 'group' : 'groups'}
                         </span>
                     </FieldLabel>
                     <button
                         onClick={() => addCategory()}
-                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:text-brand-800 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-brand-700 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 transition-colors"
                     >
                         <FolderPlus size={13} /> Add group
                     </button>
                 </div>
 
                 {categories.length === 0 ? (
-                    <div className="text-[12px] text-slate-400 italic mb-3">
+                    <div className="text-[12px] text-slate-400 dark:text-stone-500 italic mb-3">
                         No groups yet. Categories let you organize skills like{' '}
-                        <span className="not-italic font-medium text-slate-600">Languages: Python, SQL</span>.
+                        <span className="not-italic font-medium text-slate-600 dark:text-stone-300">
+                            Languages: Python, SQL
+                        </span>
+                        .
                     </div>
                 ) : (
                     <div className="space-y-2.5">
@@ -83,8 +86,8 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
 
                 {/* Starter-category chips (one tap → adds a pre-named group) */}
                 {categories.length < 4 && (
-                    <div className="mt-3 pt-3 border-t border-slate-100">
-                        <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-2">
+                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                        <div className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-stone-500 font-bold mb-2">
                             Quick add
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -100,7 +103,7 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
                                     <button
                                         key={c}
                                         onClick={() => addCategory(c)}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-600 bg-slate-50 border border-dashed border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-colors"
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-600 dark:text-stone-300 bg-slate-50 dark:bg-slate-700/60 border border-dashed border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
                                     >
                                         <Plus size={10} /> {c}
                                     </button>
@@ -126,18 +129,18 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
     };
 
     return (
-        <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/40 group">
+        <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3 bg-slate-50/40 dark:bg-slate-900/40 group">
             <div className="flex items-center gap-2 mb-2">
                 <input
                     value={localLabel}
                     onChange={(e) => setLocalLabel(e.target.value)}
                     onBlur={commit}
                     placeholder="Category name"
-                    className="flex-1 text-[12px] font-bold text-slate-900 bg-transparent border-0 border-b border-transparent hover:border-slate-300 focus:border-slate-400 focus:bg-white px-1 py-0.5 outline-none transition-colors"
+                    className="flex-1 text-[12px] font-bold text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-transparent border-0 border-b border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-slate-400 dark:focus:border-slate-500 focus:bg-white dark:focus:bg-slate-800 px-1 py-0.5 outline-none transition-colors"
                 />
                 <button
                     onClick={onRemove}
-                    className="text-slate-400 hover:text-red-600 p-1 rounded transition-colors opacity-0 group-hover:opacity-100"
+                    className="text-slate-400 dark:text-stone-500 hover:text-red-600 dark:hover:text-red-400 p-1 rounded transition-colors opacity-0 group-hover:opacity-100"
                     title="Remove group"
                 >
                     <X size={14} />
@@ -148,7 +151,7 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
                 onChange={(e) => setLocalItems(e.target.value)}
                 onBlur={commit}
                 placeholder="Python, SQL, JavaScript…"
-                className="w-full text-[12px] text-slate-700 bg-white border border-slate-200 rounded-md px-2.5 py-1.5 focus:border-slate-400 outline-none"
+                className="w-full text-[12px] text-slate-700 dark:text-stone-200 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1.5 focus:border-slate-400 dark:focus:border-slate-500 outline-none"
             />
         </div>
     );

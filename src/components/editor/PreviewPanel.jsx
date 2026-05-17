@@ -109,7 +109,7 @@ const PreviewPanel = ({
 
     return (
         <div
-            className={`${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-gray-200 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isSidebarOpen ? 'xl:pr-[340px]' : 'xl:pr-12'}`}
+            className={`${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-gray-200 dark:bg-slate-900 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isSidebarOpen ? 'xl:pr-[340px]' : 'xl:pr-12'}`}
         >
             {/* Toolbar (Glassmorphic) */}
             <div className="fixed top-24 right-6 flex flex-col gap-3 z-30 no-print">

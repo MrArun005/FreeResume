@@ -33,7 +33,7 @@ const PageOverflowIndicator = ({ pageId }) => {
     return (
         <div className="absolute -right-16 top-4 flex flex-col items-center gap-2 no-print z-30">
             {/* Fill Gauge */}
-            <div className="relative w-6 h-32 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+            <div className="relative w-6 h-32 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
                 <div
                     className={`absolute bottom-0 w-full transition-all duration-300 ${
                         fillPercentage > 95
@@ -50,10 +50,10 @@ const PageOverflowIndicator = ({ pageId }) => {
             <div
                 className={`text-xs font-bold ${
                     fillPercentage > 95
-                        ? 'text-red-600'
+                        ? 'text-red-600 dark:text-red-400'
                         : fillPercentage > 90
-                          ? 'text-amber-600'
-                          : 'text-emerald-600'
+                          ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-emerald-600 dark:text-emerald-400'
                 }`}
             >
                 {Math.round(fillPercentage)}%

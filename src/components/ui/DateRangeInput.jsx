@@ -133,24 +133,24 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
                 onClick={() => setOpen((v) => !v)}
                 className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md text-[13px] outline-none transition-all border ${
                     open
-                        ? 'bg-white border-slate-300'
-                        : 'bg-stone-50 border-transparent hover:border-slate-200'
-                } ${displayValue ? 'text-slate-900' : 'text-slate-400'}`}
+                        ? 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600'
+                        : 'bg-stone-50 dark:bg-slate-800/60 border-transparent hover:border-slate-200 dark:hover:border-slate-700'
+                } ${displayValue ? 'text-slate-900 dark:text-stone-100' : 'text-slate-400 dark:text-stone-500'}`}
             >
                 <span className="truncate text-left">{displayValue || placeholder}</span>
-                <Calendar size={14} className="text-slate-400 shrink-0" />
+                <Calendar size={14} className="text-slate-400 dark:text-stone-500 shrink-0" />
             </button>
 
             {open && (
                 // Anchored to the input's right edge so it extends leftward
                 // and stays inside the narrow editor sidebar even when the
                 // input itself sits in a 2-col grid cell.
-                <div className="absolute right-0 top-full mt-1 w-[280px] bg-white rounded-xl border border-slate-200 shadow-xl z-50 p-3">
+                <div className="absolute right-0 top-full mt-1 w-[280px] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl dark:shadow-black/40 z-50 p-3">
                     {state.unparsed ? (
                         <div className="space-y-2">
-                            <p className="text-[12px] text-slate-600">
+                            <p className="text-[12px] text-slate-600 dark:text-stone-300">
                                 Existing value{' '}
-                                <span className="font-mono text-[11px] bg-slate-50 px-1.5 py-0.5 rounded">
+                                <span className="font-mono text-[11px] bg-slate-50 dark:bg-slate-700 px-1.5 py-0.5 rounded text-slate-700 dark:text-stone-200">
                                     {state.raw}
                                 </span>{' '}
                                 doesn't match a known format.
@@ -165,7 +165,7 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
                                         present: false,
                                     })
                                 }
-                                className="w-full px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-[12px] font-medium transition-colors"
+                                className="w-full px-3 py-1.5 bg-slate-900 dark:bg-stone-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-md text-[12px] font-medium transition-colors"
                             >
                                 Clear and use the picker
                             </button>
@@ -174,7 +174,7 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
                         <div className="space-y-3">
                             {/* Start picker */}
                             <div>
-                                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">
+                                <div className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-stone-400 font-bold mb-1">
                                     Start
                                 </div>
                                 <DatePicker
@@ -184,7 +184,7 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
                                     showMonthYearPicker
                                     showFullMonthYearPicker
                                     placeholderText="Pick a month"
-                                    className="w-full px-2.5 py-1.5 text-[13px] border border-slate-200 rounded-md outline-none focus:border-brand-400 bg-white text-slate-900"
+                                    className="w-full px-2.5 py-1.5 text-[13px] border border-slate-200 dark:border-slate-600 rounded-md outline-none focus:border-brand-400 bg-white dark:bg-slate-900 text-slate-900 dark:text-stone-100"
                                     wrapperClassName="w-full"
                                     isClearable
                                     popperPlacement="bottom-start"
@@ -193,7 +193,7 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
 
                             {/* End picker */}
                             <div>
-                                <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">
+                                <div className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-stone-400 font-bold mb-1">
                                     End
                                 </div>
                                 <DatePicker
@@ -205,7 +205,7 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
                                     placeholderText={state.present ? 'Present' : 'Pick a month'}
                                     disabled={state.present}
                                     minDate={state.start || undefined}
-                                    className="w-full px-2.5 py-1.5 text-[13px] border border-slate-200 rounded-md outline-none focus:border-brand-400 bg-white text-slate-900 disabled:bg-slate-50 disabled:text-slate-400"
+                                    className="w-full px-2.5 py-1.5 text-[13px] border border-slate-200 dark:border-slate-600 rounded-md outline-none focus:border-brand-400 bg-white dark:bg-slate-900 text-slate-900 dark:text-stone-100 disabled:bg-slate-50 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-stone-500"
                                     wrapperClassName="w-full"
                                     isClearable={!state.present}
                                     popperPlacement="bottom-start"
@@ -213,7 +213,7 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
                             </div>
 
                             {allowPresent && (
-                                <label className="inline-flex items-center gap-1.5 text-[12px] text-slate-700 cursor-pointer select-none">
+                                <label className="inline-flex items-center gap-1.5 text-[12px] text-slate-700 dark:text-stone-300 cursor-pointer select-none">
                                     <input
                                         type="checkbox"
                                         checked={!!state.present}
@@ -229,18 +229,18 @@ const DateRangeInput = ({ value, onChange, allowPresent = true, placeholder = 'C
                                 </label>
                             )}
 
-                            <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                            <div className="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-700">
                                 <button
                                     type="button"
                                     onClick={() => commit({ start: null, end: null, present: false })}
-                                    className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-900 transition-colors"
+                                    className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 transition-colors"
                                 >
                                     <X size={11} /> Clear
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setOpen(false)}
-                                    className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-[11px] font-medium transition-colors"
+                                    className="px-3 py-1.5 bg-slate-900 dark:bg-stone-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-md text-[11px] font-medium transition-colors"
                                 >
                                     Done
                                 </button>

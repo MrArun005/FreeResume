@@ -22,7 +22,7 @@ const CustomSection = ({
                 <input
                     value={section.title}
                     onChange={(e) => onUpdateTitle(section.id, e.target.value)}
-                    className="text-base font-semibold text-slate-900 border-b-2 border-transparent focus:border-brand-500 outline-none bg-transparent w-full pb-1 transition-colors placeholder-slate-400"
+                    className="text-base font-semibold text-slate-900 dark:text-stone-100 border-b-2 border-transparent focus:border-brand-500 outline-none bg-transparent w-full pb-1 transition-colors placeholder-slate-400 dark:placeholder-stone-500"
                     placeholder="Section title (e.g. Certifications)"
                 />
             </div>
@@ -106,7 +106,7 @@ const CustomSection = ({
             </DndContext>
             <button
                 onClick={() => onAddItem(section.id)}
-                className="w-full py-2.5 border border-dashed border-slate-300 rounded-lg text-slate-600 font-medium text-[13px] hover:border-slate-400 hover:bg-stone-50 transition-colors inline-flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-600 dark:text-stone-300 font-medium text-[13px] hover:border-slate-400 dark:hover:border-slate-500 hover:bg-stone-50 dark:hover:bg-slate-800 transition-colors inline-flex items-center justify-center gap-1.5"
             >
                 <Plus size={14} /> Add item
             </button>

@@ -68,16 +68,16 @@ const ProfilesMenu = ({
         <div ref={containerRef} className="relative">
             <button
                 onClick={() => setOpen((v) => !v)}
-                className="inline-flex items-center gap-1.5 max-w-[200px] px-2.5 py-1 rounded-md text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors"
+                className="inline-flex items-center gap-1.5 max-w-[200px] px-2.5 py-1 rounded-md text-xs font-medium text-slate-700 dark:text-stone-300 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors"
                 title="Switch resume profile"
             >
                 <span className="truncate">{active?.name || 'My Resume'}</span>
-                <ChevronDown size={12} className="text-slate-500 shrink-0" />
+                <ChevronDown size={12} className="text-slate-500 dark:text-stone-400 shrink-0" />
             </button>
 
             {open && (
-                <div className="absolute left-0 top-full mt-1 w-64 bg-white rounded-lg border border-slate-200 shadow-lg z-50 overflow-hidden">
-                    <div className="px-3 py-2 text-[10px] uppercase tracking-wider text-slate-400 font-bold border-b border-slate-100">
+                <div className="absolute left-0 top-full mt-1 w-64 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-lg dark:shadow-black/40 z-50 overflow-hidden">
+                    <div className="px-3 py-2 text-[10px] uppercase tracking-wider text-slate-400 dark:text-stone-500 font-bold border-b border-slate-100 dark:border-slate-700">
                         Resumes ({profiles.length})
                     </div>
                     <ul className="max-h-72 overflow-y-auto py-1">
@@ -88,7 +88,9 @@ const ProfilesMenu = ({
                                 <li
                                     key={profile.id}
                                     className={`group flex items-center gap-1.5 px-2 py-1.5 mx-1 rounded-md cursor-pointer transition-colors ${
-                                        isActive ? 'bg-brand-50' : 'hover:bg-slate-50'
+                                        isActive
+                                            ? 'bg-brand-50 dark:bg-brand-500/15'
+                                            : 'hover:bg-slate-50 dark:hover:bg-slate-700'
                                     }`}
                                     onClick={() => {
                                         if (isRenaming) return;
@@ -97,7 +99,10 @@ const ProfilesMenu = ({
                                     }}
                                 >
                                     {isActive ? (
-                                        <Check size={13} className="text-brand-600 shrink-0" />
+                                        <Check
+                                            size={13}
+                                            className="text-brand-600 dark:text-brand-400 shrink-0"
+                                        />
                                     ) : (
                                         <span className="w-[13px] shrink-0" />
                                     )}
@@ -115,11 +120,11 @@ const ProfilesMenu = ({
                                                 }
                                             }}
                                             onClick={(e) => e.stopPropagation()}
-                                            className="flex-1 text-[12px] bg-white border border-slate-300 rounded px-1.5 py-0.5 outline-none focus:border-brand-400"
+                                            className="flex-1 text-[12px] bg-white dark:bg-slate-900 text-slate-900 dark:text-stone-100 border border-slate-300 dark:border-slate-600 rounded px-1.5 py-0.5 outline-none focus:border-brand-400"
                                         />
                                     ) : (
                                         <span
-                                            className={`flex-1 text-[12px] truncate ${isActive ? 'text-brand-900 font-semibold' : 'text-slate-700'}`}
+                                            className={`flex-1 text-[12px] truncate ${isActive ? 'text-brand-900 dark:text-brand-200 font-semibold' : 'text-slate-700 dark:text-stone-300'}`}
                                         >
                                             {profile.name}
                                         </span>
@@ -128,7 +133,7 @@ const ProfilesMenu = ({
                                         <span className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button
                                                 onClick={(e) => beginRename(profile, e)}
-                                                className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"
+                                                className="p-1 text-slate-400 dark:text-stone-500 hover:text-slate-700 dark:hover:text-stone-200 hover:bg-slate-100 dark:hover:bg-slate-600 rounded"
                                                 title="Rename"
                                             >
                                                 <Pencil size={11} />
@@ -139,7 +144,7 @@ const ProfilesMenu = ({
                                                     if (onDuplicateProfile) onDuplicateProfile(profile.id);
                                                     setOpen(false);
                                                 }}
-                                                className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"
+                                                className="p-1 text-slate-400 dark:text-stone-500 hover:text-slate-700 dark:hover:text-stone-200 hover:bg-slate-100 dark:hover:bg-slate-600 rounded"
                                                 title="Duplicate"
                                             >
                                                 <Copy size={11} />
@@ -147,7 +152,7 @@ const ProfilesMenu = ({
                                             <button
                                                 onClick={(e) => handleDelete(profile, e)}
                                                 disabled={profiles.length <= 1}
-                                                className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                                                className="p-1 text-slate-400 dark:text-stone-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400 dark:disabled:hover:text-stone-500"
                                                 title={
                                                     profiles.length <= 1
                                                         ? 'Cannot delete the only profile'
@@ -162,10 +167,10 @@ const ProfilesMenu = ({
                             );
                         })}
                     </ul>
-                    <div className="border-t border-slate-100 p-1">
+                    <div className="border-t border-slate-100 dark:border-slate-700 p-1">
                         <button
                             onClick={handleCreate}
-                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-brand-700 hover:bg-brand-50 transition-colors font-medium"
+                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors font-medium"
                         >
                             <Plus size={13} /> New resume
                         </button>

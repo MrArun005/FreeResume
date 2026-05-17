@@ -35,11 +35,11 @@ const SummarySection = ({ summary, onChange, resume }) => {
 
     return (
         <div className="space-y-3">
-            <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 tracking-tight">
-                <FileText size={18} className="text-brand-700" /> Professional summary
+            <h2 className="text-base font-semibold text-slate-900 dark:text-stone-100 flex items-center gap-2 tracking-tight">
+                <FileText size={18} className="text-brand-700 dark:text-brand-400" /> Professional summary
             </h2>
 
-            <div className="bg-white border border-slate-200 rounded-lg p-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
                 <FieldLabel>Summary</FieldLabel>
                 <FillTextarea
                     value={summary || ''}
@@ -62,12 +62,12 @@ const SummarySection = ({ summary, onChange, resume }) => {
                     const tooShort = len > 0 && len < 150;
                     const tooLong = len > 400;
                     const color = tooLong
-                        ? 'text-red-600'
+                        ? 'text-red-600 dark:text-red-400'
                         : tooShort
-                          ? 'text-amber-600'
+                          ? 'text-amber-600 dark:text-amber-400'
                           : sweetSpot
-                            ? 'text-emerald-600'
-                            : 'text-slate-400';
+                            ? 'text-emerald-600 dark:text-emerald-400'
+                            : 'text-slate-400 dark:text-stone-500';
                     const hint =
                         len === 0
                             ? 'Aim for 150–400 characters.'
@@ -81,14 +81,14 @@ const SummarySection = ({ summary, onChange, resume }) => {
                             className={`mt-1.5 text-[11px] ${color} transition-colors flex items-center gap-2`}
                         >
                             <span className="font-medium">{len} / 400</span>
-                            {hint && <span className="text-slate-500">· {hint}</span>}
+                            {hint && <span className="text-slate-500 dark:text-stone-400">· {hint}</span>}
                         </div>
                     );
                 })()}
                 <button
                     onClick={handleImprove}
                     disabled={improving || !summary}
-                    className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-50/60 text-brand-700 border border-brand-200 hover:bg-brand-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-50/60 dark:bg-brand-500/10 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-500/30 hover:bg-brand-50 dark:hover:bg-brand-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {improving ? (
                         <>

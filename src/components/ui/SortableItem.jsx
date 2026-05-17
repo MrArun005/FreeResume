@@ -17,7 +17,7 @@ export function SortableItem(props) {
             <div
                 {...attributes}
                 {...listeners}
-                className="absolute -left-8 top-1/2 -translate-y-1/2 p-2 cursor-grab text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity touch-none"
+                className="absolute -left-8 top-1/2 -translate-y-1/2 p-2 cursor-grab text-gray-400 dark:text-stone-500 hover:text-gray-600 dark:hover:text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity touch-none"
             >
                 <GripVertical size={20} />
             </div>

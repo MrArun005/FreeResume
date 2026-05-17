@@ -51,24 +51,26 @@ const BulletPointEditor = ({
     };
 
     return (
-        <div className="space-y-3 bg-stone-50 p-4 rounded-lg border border-slate-200">
+        <div className="space-y-3 bg-stone-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
             {/* Existing Bullets */}
             {bullets.length > 0 && (
                 <div className="space-y-2">
                     {bullets.map((bullet, index) => (
                         <div key={index} className="flex items-start gap-2 group relative">
-                            <span className="text-brand-600 mt-2.5 shrink-0 leading-none">•</span>
+                            <span className="text-brand-600 dark:text-brand-400 mt-2.5 shrink-0 leading-none">
+                                •
+                            </span>
                             <div className="flex-1 relative">
                                 <input
                                     type="text"
                                     value={bullet}
                                     onChange={(e) => editBullet(index, e.target.value)}
-                                    className="w-full py-2 pl-2.5 pr-9 text-sm bg-white border border-slate-200 rounded-md hover:border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none text-slate-900 transition-colors"
+                                    className="w-full py-2 pl-2.5 pr-9 text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:border-slate-300 dark:hover:border-slate-600 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 transition-colors"
                                     placeholder="Bullet point"
                                 />
                                 <button
                                     onClick={() => removeBullet(index)}
-                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-600 hover:bg-red-50 p-1 rounded-md transition-all"
+                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-400 dark:text-stone-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 p-1 rounded-md transition-all"
                                     title="Remove bullet"
                                 >
                                     <X size={13} />
@@ -82,7 +84,7 @@ const BulletPointEditor = ({
             {/* Add New Bullet */}
             {!isAtMaxBullets && (
                 <div className="flex items-start gap-2">
-                    <span className="text-slate-400 mt-2.5 shrink-0 leading-none">•</span>
+                    <span className="text-slate-400 dark:text-stone-500 mt-2.5 shrink-0 leading-none">•</span>
                     <div className="flex-1 flex gap-2">
                         <input
                             ref={inputRef}
@@ -90,13 +92,13 @@ const BulletPointEditor = ({
                             value={currentInput}
                             onChange={(e) => setCurrentInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            className="flex-1 py-2 pl-2.5 text-sm bg-white border border-dashed border-slate-300 rounded-md hover:border-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none text-slate-900 placeholder-slate-400 transition-colors"
+                            className="flex-1 py-2 pl-2.5 text-sm bg-white dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 rounded-md hover:border-slate-400 dark:hover:border-slate-500 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 transition-colors"
                             placeholder="Add bullet point — press Enter"
                         />
                         <button
                             onClick={addBullet}
                             disabled={!currentInput.trim()}
-                            className="text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100 px-2.5 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                            className="text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-500/15 border border-brand-200 dark:border-brand-500/30 hover:bg-brand-100 dark:hover:bg-brand-500/25 px-2.5 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                             title="Add bullet"
                         >
                             <Plus size={16} />
@@ -110,10 +112,10 @@ const BulletPointEditor = ({
                 <span
                     className={`font-medium ${
                         totalChars > maxTotalChars
-                            ? 'text-red-600'
+                            ? 'text-red-600 dark:text-red-400'
                             : totalChars > maxTotalChars * 0.8
-                              ? 'text-amber-600'
-                              : 'text-slate-500'
+                              ? 'text-amber-600 dark:text-amber-400'
+                              : 'text-slate-500 dark:text-stone-400'
                     }`}
                 >
                     {bullets.length} bullet{bullets.length !== 1 ? 's' : ''} · {totalChars} / {maxTotalChars}{' '}
@@ -121,7 +123,7 @@ const BulletPointEditor = ({
                     {totalChars > maxTotalChars && ' — may overflow'}
                 </span>
                 {currentInput.length > maxCharsPerBullet && (
-                    <span className="text-red-600 font-medium">
+                    <span className="text-red-600 dark:text-red-400 font-medium">
                         {currentInput.length} / {maxCharsPerBullet}
                     </span>
                 )}

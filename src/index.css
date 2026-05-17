@@ -48,6 +48,45 @@
     color: #0f172a !important;
 }
 
+/* Dark mode overrides for the popup calendar. We can't toggle these via
+   the .dark class on <html> alone because react-datepicker renders its
+   popper outside the React tree, but the css class still cascades down
+   when the popper is attached as a sibling of the dark root. */
+.dark .react-datepicker {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+    color: #e2e8f0 !important;
+}
+.dark .react-datepicker__header {
+    background-color: #0f172a !important;
+    border-bottom: 1px solid #334155 !important;
+}
+.dark .react-datepicker__current-year,
+.dark .react-datepicker__current-month,
+.dark .react-datepicker__day-name {
+    color: #e2e8f0 !important;
+}
+.dark .react-datepicker__month-text,
+.dark .react-datepicker__year-text,
+.dark .react-datepicker__day {
+    color: #cbd5e1 !important;
+}
+.dark .react-datepicker__month-text:hover,
+.dark .react-datepicker__year-text:hover,
+.dark .react-datepicker__day:hover {
+    background-color: rgba(20, 184, 166, 0.18) !important;
+    color: var(--brand-300) !important;
+}
+.dark .react-datepicker__navigation-icon::before {
+    border-color: #cbd5e1 !important;
+}
+.dark .react-datepicker__month-text--disabled,
+.dark .react-datepicker__year-text--disabled,
+.dark .react-datepicker__day--disabled {
+    color: #475569 !important;
+}
+
 @media print {
     @page {
         margin: 0;

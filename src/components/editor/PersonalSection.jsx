@@ -4,11 +4,11 @@ import { FillInput, FieldLabel } from '../ui/EditorPrimitives';
 const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial, onRemoveSocial }) => {
     return (
         <div className="space-y-5">
-            <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 tracking-tight">
-                <User size={18} className="text-brand-700" /> Personal details
+            <h2 className="text-base font-semibold text-slate-900 dark:text-stone-100 flex items-center gap-2 tracking-tight">
+                <User size={18} className="text-brand-700 dark:text-brand-400" /> Personal details
             </h2>
 
-            <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 space-y-3">
                 <div className="grid grid-cols-2 gap-2.5">
                     <div>
                         <FieldLabel>Full name</FieldLabel>
@@ -58,19 +58,19 @@ const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial
                 </div>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-lg p-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                     <FieldLabel>Social links & portfolio</FieldLabel>
                     <button
                         onClick={onAddSocial}
-                        className="text-brand-700 hover:text-brand-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                        className="text-brand-700 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
                     >
                         <Plus size={12} /> Add link
                     </button>
                 </div>
                 <div className="space-y-2.5">
                     {(resume.personal.socials || []).length === 0 && (
-                        <p className="text-[12px] text-slate-400 italic">
+                        <p className="text-[12px] text-slate-400 dark:text-stone-500 italic">
                             No social links yet. Add LinkedIn, GitHub, your portfolio…
                         </p>
                     )}
@@ -91,7 +91,7 @@ const PersonalSection = ({ resume, onPersonalChange, onSocialChange, onAddSocial
                             />
                             <button
                                 onClick={() => onRemoveSocial(social.id)}
-                                className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                                className="text-slate-400 dark:text-stone-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 p-2 rounded-md opacity-0 group-hover:opacity-100 transition-all"
                             >
                                 <Trash2 size={14} />
                             </button>

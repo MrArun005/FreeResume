@@ -113,7 +113,7 @@ const ExperienceSection = ({
             </DndContext>
             <button
                 onClick={() => onAddItem('experience')}
-                className="mt-3 w-full py-2.5 border border-dashed border-slate-300 rounded-lg text-slate-600 font-medium text-[13px] hover:border-slate-400 hover:bg-stone-50 transition-colors inline-flex items-center justify-center gap-1.5"
+                className="mt-3 w-full py-2.5 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-600 dark:text-stone-300 font-medium text-[13px] hover:border-slate-400 dark:hover:border-slate-500 hover:bg-stone-50 dark:hover:bg-slate-800 transition-colors inline-flex items-center justify-center gap-1.5"
             >
                 <Plus size={14} /> Add experience
             </button>

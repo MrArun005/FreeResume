@@ -1044,21 +1044,23 @@ const App = () => {
                         </button>
 
                         {showExportMenu && (
-                            <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                            <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-2xl dark:shadow-black/40 border border-gray-100 dark:border-slate-700 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                                 <div className="p-2 space-y-1">
                                     <button
                                         onClick={() => {
                                             setIsRoastModalOpen(true);
                                             setShowExportMenu(false);
                                         }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-red-50 text-gray-700 hover:text-red-700 rounded-lg transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-700 dark:text-stone-200 hover:text-red-700 dark:hover:text-red-300 rounded-lg transition-colors text-left"
                                     >
-                                        <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+                                        <div className="p-2 bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-lg">
                                             <Flame size={18} />
                                         </div>
                                         <div>
                                             <div className="font-bold text-sm">Roast My Resume</div>
-                                            <div className="text-xs text-gray-500">Get brutal feedback</div>
+                                            <div className="text-xs text-gray-500 dark:text-stone-400">
+                                                Get brutal feedback
+                                            </div>
                                         </div>
                                     </button>
 
@@ -1067,14 +1069,16 @@ const App = () => {
                                             setShowAtsModal(true);
                                             setShowExportMenu(false);
                                         }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 text-gray-700 hover:text-brand-700 rounded-lg transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 dark:hover:bg-brand-500/10 text-gray-700 dark:text-stone-200 hover:text-brand-700 dark:hover:text-brand-300 rounded-lg transition-colors text-left"
                                     >
-                                        <div className="p-2 bg-brand-100 text-brand-600 rounded-lg">
+                                        <div className="p-2 bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded-lg">
                                             <Sparkles size={18} />
                                         </div>
                                         <div>
                                             <div className="font-bold text-sm">Check ATS Score</div>
-                                            <div className="text-xs text-gray-500">Optimize for bots</div>
+                                            <div className="text-xs text-gray-500 dark:text-stone-400">
+                                                Optimize for bots
+                                            </div>
                                         </div>
                                     </button>
 
@@ -1083,14 +1087,14 @@ const App = () => {
                                             handleDownloadPDF();
                                             setShowExportMenu(false);
                                         }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 text-gray-700 hover:text-brand-700 rounded-lg transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 dark:hover:bg-brand-500/10 text-gray-700 dark:text-stone-200 hover:text-brand-700 dark:hover:text-brand-300 rounded-lg transition-colors text-left"
                                     >
-                                        <div className="p-2 bg-brand-100 text-brand-600 rounded-lg">
+                                        <div className="p-2 bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded-lg">
                                             <Download size={18} />
                                         </div>
                                         <div>
                                             <div className="font-bold text-sm">Download PDF</div>
-                                            <div className="text-xs text-gray-500">
+                                            <div className="text-xs text-gray-500 dark:text-stone-400">
                                                 Pixel-match to preview
                                             </div>
                                         </div>
@@ -1101,14 +1105,14 @@ const App = () => {
                                             handleDownloadDOCX();
                                             setShowExportMenu(false);
                                         }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-blue-50 text-gray-700 hover:text-blue-700 rounded-lg transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-blue-50 dark:hover:bg-blue-500/10 text-gray-700 dark:text-stone-200 hover:text-blue-700 dark:hover:text-blue-300 rounded-lg transition-colors text-left"
                                     >
-                                        <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
+                                        <div className="p-2 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-lg">
                                             <FileText size={18} />
                                         </div>
                                         <div>
                                             <div className="font-bold text-sm">Download DOCX</div>
-                                            <div className="text-xs text-gray-500">
+                                            <div className="text-xs text-gray-500 dark:text-stone-400">
                                                 Editable Word document
                                             </div>
                                         </div>
@@ -1119,14 +1123,14 @@ const App = () => {
                                             setShowCoverLetterModal(true);
                                             setShowExportMenu(false);
                                         }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-purple-50 text-gray-700 hover:text-purple-700 rounded-lg transition-colors text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-purple-50 dark:hover:bg-purple-500/10 text-gray-700 dark:text-stone-200 hover:text-purple-700 dark:hover:text-purple-300 rounded-lg transition-colors text-left"
                                     >
-                                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                                        <div className="p-2 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-lg">
                                             <FileText size={18} />
                                         </div>
                                         <div>
                                             <div className="font-bold text-sm">Cover Letter (PDF)</div>
-                                            <div className="text-xs text-gray-500">
+                                            <div className="text-xs text-gray-500 dark:text-stone-400">
                                                 AI-generated from your resume + JD
                                             </div>
                                         </div>
@@ -1139,17 +1143,17 @@ const App = () => {
             </header>
 
             {/* Mobile Navigation Bar (Bottom) */}
-            <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-50 flex justify-around items-center h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+            <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700 z-50 flex justify-around items-center h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.4)]">
                 <button
                     onClick={() => setMobileView('editor')}
-                    className={`flex flex-col items-center gap-1 p-2 ${mobileView === 'editor' ? 'text-brand-600' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 p-2 ${mobileView === 'editor' ? 'text-brand-600 dark:text-brand-400' : 'text-gray-500 dark:text-stone-400'}`}
                 >
                     <FileText size={20} />
                     <span className="text-xs font-bold">Edit</span>
                 </button>
                 <button
                     onClick={() => setMobileView('preview')}
-                    className={`flex flex-col items-center gap-1 p-2 ${mobileView === 'preview' ? 'text-brand-600' : 'text-gray-500'}`}
+                    className={`flex flex-col items-center gap-1 p-2 ${mobileView === 'preview' ? 'text-brand-600 dark:text-brand-400' : 'text-gray-500 dark:text-stone-400'}`}
                 >
                     <Layout size={20} />
                     <span className="text-xs font-bold">Preview</span>
