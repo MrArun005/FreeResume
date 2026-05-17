@@ -23,22 +23,19 @@ export const LAYOUTS = [
     { id: 'gold', name: 'The Gold Standard' },
 ];
 
-// Gallery is curated to ATS-safe templates only (estimated parse rate ≥ ~85%).
-// The remaining layout files in src/components/layouts/ are intentionally retained
-// on disk — they're hidden from the picker but available if we ever choose to
-// re-surface them (e.g. behind a "Creative / Visual" gallery tab).
+// Gallery groups templates by visual character. ATS-safe templates lead each
+// category (Modern, Bold, Minimal, Classical). The "Sidebar" and "Creative"
+// categories add visual variety for candidates whose roles benefit from
+// design signaling (designers, marketers, ICs at startups). Layouts that
+// stay hidden:
+//   - glitch (cyberpunk gimmick — too niche for a default gallery)
+//   - freeform (too unstructured for most resumes)
 //
-// ATS audit summary at curation time:
-//  ✅ google           — 88-93%  (Google Style)            modern blue accent
-//  ✅ ats              — 90-95%  (Standard ATS)            plain sans, icons + text
-//  ✅ bold-recruit     — 82-88%  (Bold Recruit)            red accent, recruiter scan
-//  ✅ executive-serif  — 92-95%  (Executive Serif)         B&W Georgia serif, centered
-//  ✅ navy-modern      — 88-92%  (Navy Modern)             corporate navy, sans-serif
-//  ✅ minimal-mono     — 93-96%  (Minimal Mono)            extreme minimal, B&W
-//  ❌ classic, jakes, modern-grid, executive, minimal, gold, sidebar-*, creative,
-//     deedy, leaf, glitch, freeform, canvas — all under threshold, hidden from gallery.
+// All listed layouts are wired through PreviewPanel + TemplatePreview, so
+// adding one here automatically makes it pickable in the gallery and
+// renderable in the editor.
 export const TEMPLATES = [
-    // Modern recruiter-friendly with subtle color accents
+    // ─── Modern ─────────────────────────────────────────────────────────
     {
         id: 'google-1',
         name: 'Google Style',
@@ -53,8 +50,15 @@ export const TEMPLATES = [
         theme: THEMES.find((t) => t.id === 'black'),
         category: 'Modern',
     },
+    {
+        id: 'modern-grid-1',
+        name: 'Modern Grid',
+        layout: 'modern-grid',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Modern',
+    },
 
-    // Bold / high-contrast
+    // ─── Bold ───────────────────────────────────────────────────────────
     {
         id: 'bold-recruit-1',
         name: 'Bold Recruit',
@@ -62,8 +66,15 @@ export const TEMPLATES = [
         theme: THEMES.find((t) => t.id === 'black'),
         category: 'Bold',
     },
+    {
+        id: 'jakes-1',
+        name: "Engineer (Jake's)",
+        layout: 'jakes',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Bold',
+    },
 
-    // Pure black-and-white, maximum ATS parseability
+    // ─── Minimal ────────────────────────────────────────────────────────
     {
         id: 'ats-1',
         name: 'Standard ATS',
@@ -78,13 +89,87 @@ export const TEMPLATES = [
         theme: THEMES.find((t) => t.id === 'black'),
         category: 'Minimal',
     },
+    {
+        id: 'minimal-1',
+        name: 'Minimalist',
+        layout: 'minimal',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Minimal',
+    },
+    {
+        id: 'classic-1',
+        name: 'Classic Stack',
+        layout: 'classic',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Minimal',
+    },
 
-    // Classical / professional
+    // ─── Classical ──────────────────────────────────────────────────────
     {
         id: 'executive-serif-1',
         name: 'Executive Serif',
         layout: 'executive-serif',
         theme: THEMES.find((t) => t.id === 'black'),
         category: 'Classical',
+    },
+    {
+        id: 'executive-1',
+        name: 'The Executive',
+        layout: 'executive',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Classical',
+    },
+
+    // ─── Sidebar ────────────────────────────────────────────────────────
+    {
+        id: 'sidebar-left-1',
+        name: 'Left Sidebar',
+        layout: 'sidebar-left',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Sidebar',
+    },
+    {
+        id: 'sidebar-right-1',
+        name: 'Right Sidebar',
+        layout: 'sidebar-right',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Sidebar',
+    },
+    {
+        id: 'deedy-1',
+        name: 'Designer (Deedy)',
+        layout: 'deedy',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Sidebar',
+    },
+
+    // ─── Creative ───────────────────────────────────────────────────────
+    {
+        id: 'creative-1',
+        name: 'The Creative',
+        layout: 'creative',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Creative',
+    },
+    {
+        id: 'leaf-1',
+        name: 'Leaf (Organic)',
+        layout: 'leaf',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Creative',
+    },
+    {
+        id: 'canvas-1',
+        name: 'Canvas (Pro)',
+        layout: 'canvas',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Creative',
+    },
+    {
+        id: 'gold-1',
+        name: 'Gold Standard',
+        layout: 'gold',
+        theme: THEMES.find((t) => t.id === 'black'),
+        category: 'Creative',
     },
 ];
