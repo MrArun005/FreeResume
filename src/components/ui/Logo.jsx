@@ -4,18 +4,27 @@ import React from 'react';
 // subtle motion line that reads as a paper-plane trail. Both the mark and
 // the wordmark draw from CSS custom properties so a theme switch repaints
 // them automatically without touching this file.
+//
 // `tone` controls the wordmark color so the logo reads cleanly on both
 // light and dark backgrounds. The brand mark itself stays the gradient
 // teal regardless of tone — only the "Paper" half of the wordmark flips.
 //
-// Default is `'dark'` (dark text on light surface) because every page that
-// renders the Logo today uses a light surface (landing nav stone-50,
-// editor sidebar stone-50). The footer + any future dark surfaces opt in
-// with `tone="light"`. We intentionally don't tie the tone to the global
-// `.dark` class because those backgrounds are hardcoded light and the
-// app-wide dark mode toggle doesn't affect them.
-const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'dark' }) => {
-    const wordmarkClass = tone === 'light' ? 'text-stone-50' : 'text-slate-900';
+//   tone="auto"  (default) — follows the global light/dark theme via
+//                            Tailwind's `dark:` variant. Use this on any
+//                            surface that flips with the user toggle
+//                            (landing nav, editor sidebar header).
+//   tone="light"           — always light text. Use on surfaces that are
+//                            designed dark in *both* modes — the footer,
+//                            the editor's top header chrome.
+//   tone="dark"            — always dark text. Rare; use on permanently
+//                            light surfaces.
+const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' }) => {
+    const wordmarkClass =
+        tone === 'light'
+            ? 'text-stone-50'
+            : tone === 'dark'
+              ? 'text-slate-900'
+              : 'text-slate-900 dark:text-stone-100';
     return (
         <div className="flex items-center gap-2.5 group cursor-pointer">
             <div className={`relative ${className} transition-transform duration-300 group-hover:scale-110`}>
