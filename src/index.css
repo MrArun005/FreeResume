@@ -333,20 +333,22 @@ html {
     --resume-font-size: 16px;
 }
 
-/* Resume typography routing. Every resume page (.resume-paper) inherits
-   the user's font choice, and the explicit `font-sans|serif|mono` Tailwind
-   classes inside it are forced to inherit too so per-template font
-   opinions don't override the user's pick. Size: see the partial-scope
-   note in src/theme/tokens.js — text using inheritance scales, Tailwind
-   absolute `text-*` classes don't until layouts are refactored to em. */
+/* Resume typography routing. Every element inside a resume page
+   (.resume-paper) uses the user's chosen font, beating both Tailwind's
+   font-sans/serif/mono utility classes AND inline `style={{fontFamily}}`
+   declarations on individual elements (which several templates use for
+   headings like Playfair Display). The `!important` is intentional:
+   when the user explicitly picks a font in the theme modal, their
+   choice is the authoritative source — no template should override it.
+   Size: see the partial-scope note in src/theme/tokens.js — text using
+   inheritance scales, Tailwind absolute `text-*` classes don't until
+   layouts are refactored to em. */
 .resume-paper {
-    font-family: var(--resume-font-family);
     font-size: var(--resume-font-size);
 }
-.resume-paper .font-sans,
-.resume-paper .font-serif,
-.resume-paper .font-mono {
-    font-family: inherit;
+.resume-paper,
+.resume-paper * {
+    font-family: var(--resume-font-family) !important;
 }
 
 @layer base {
