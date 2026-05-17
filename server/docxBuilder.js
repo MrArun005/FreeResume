@@ -340,9 +340,13 @@ function buildBody(resume, theme) {
         if (!referenced.has(sec.id)) blocks.push(...buildCustomSection(sec, theme));
     }
 
-    if (t(resume.coverLetter)) {
+    // Cover letter is an object ({ title, body, bullets }), not a string —
+    // String(obj) is truthy so a naive `t(coverLetter)` guard passes for an
+    // empty {}, then .split() crashes. Read the `body` field explicitly.
+    const coverBody = t(resume.coverLetter?.body);
+    if (coverBody) {
         blocks.push(sectionTitle('Cover Letter', theme));
-        for (const para of resume.coverLetter.split(/\n+/)) {
+        for (const para of coverBody.split(/\n+/)) {
             if (t(para)) blocks.push(body(para, theme));
         }
     }
