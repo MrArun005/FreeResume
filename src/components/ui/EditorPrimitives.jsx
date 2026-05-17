@@ -22,9 +22,11 @@ import {
 export const BULLET_SOFT_LIMIT = 200;
 
 export const FieldLabel = ({ children, optional }) => (
-    <label className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 mb-1">
+    <label className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-stone-400 mb-1">
         {children}
-        {optional && <span className="text-[10px] text-slate-400 font-normal">· optional</span>}
+        {optional && (
+            <span className="text-[10px] text-slate-400 dark:text-stone-500 font-normal">· optional</span>
+        )}
     </label>
 );
 
@@ -42,8 +44,12 @@ export const FillInput = React.forwardRef(function FillInput({ className = '', .
                 setFocused(false);
                 props.onBlur?.(e);
             }}
-            className={`w-full px-3 py-2 rounded-md text-[13px] text-slate-900 outline-none font-inherit transition-all
-                ${focused ? 'bg-white border border-slate-300' : 'bg-stone-50 border border-transparent'}
+            className={`w-full px-3 py-2 rounded-md text-[13px] text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 outline-none font-inherit transition-all
+                ${
+                    focused
+                        ? 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600'
+                        : 'bg-stone-50 dark:bg-slate-800/60 border border-transparent'
+                }
                 ${className}`}
         />
     );
@@ -67,8 +73,12 @@ export const FillTextarea = React.forwardRef(function FillTextarea(
                 setFocused(false);
                 props.onBlur?.(e);
             }}
-            className={`w-full px-3 py-2 rounded-md text-[13px] text-slate-900 outline-none leading-relaxed transition-all
-                ${focused ? 'bg-white border border-slate-300' : 'bg-stone-50 border border-transparent'}
+            className={`w-full px-3 py-2 rounded-md text-[13px] text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 outline-none leading-relaxed transition-all
+                ${
+                    focused
+                        ? 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600'
+                        : 'bg-stone-50 dark:bg-slate-800/60 border border-transparent'
+                }
                 ${className}`}
         />
     );
@@ -97,7 +107,9 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
 
     return (
         <div className="flex gap-1.5 items-start group">
-            <span className="text-slate-400 mt-1.5 leading-none text-sm shrink-0 select-none">•</span>
+            <span className="text-slate-400 dark:text-stone-500 mt-1.5 leading-none text-sm shrink-0 select-none">
+                •
+            </span>
             <div className="flex-1 min-w-0">
                 <div className="relative">
                     <textarea
@@ -109,9 +121,13 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
                         onBlur={() => setFocused(false)}
                         disabled={improving}
                         className={`w-full px-2 py-1.5 pr-14 rounded-md text-[13px] leading-snug resize-none outline-none transition-all
-                            ${focused ? 'bg-white border border-slate-300' : 'bg-transparent border border-transparent'}
+                            ${
+                                focused
+                                    ? 'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600'
+                                    : 'bg-transparent border border-transparent'
+                            }
                             ${improving ? 'opacity-50' : ''}
-                            text-slate-900`}
+                            text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500`}
                     />
                     {/* Controls sit inside the textarea on the right so they
                         don't steal horizontal space in the narrow sidebar. */}
@@ -120,7 +136,7 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
                             <button
                                 onClick={handleImprove}
                                 disabled={improving || !value?.trim()}
-                                className="text-slate-300 hover:text-brand-700 hover:bg-brand-50 p-1 rounded transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-30"
+                                className="text-slate-300 dark:text-stone-600 hover:text-brand-700 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 p-1 rounded transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-30"
                                 title="Rewrite with AI"
                             >
                                 {improving ? (
@@ -133,7 +149,7 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
                         {onRemove && (
                             <button
                                 onClick={onRemove}
-                                className="text-slate-300 hover:text-red-600 hover:bg-red-50 p-1 rounded transition-colors opacity-0 group-hover:opacity-100"
+                                className="text-slate-300 dark:text-stone-600 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 p-1 rounded transition-colors opacity-0 group-hover:opacity-100"
                                 title="Remove bullet"
                             >
                                 <X size={12} />
@@ -143,7 +159,7 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
                 </div>
                 {nearLimit && (
                     <div
-                        className={`text-[10px] mt-0.5 px-2 transition-colors ${over ? 'text-red-600' : 'text-amber-600'}`}
+                        className={`text-[10px] mt-0.5 px-2 transition-colors ${over ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}
                     >
                         {len} / {BULLET_SOFT_LIMIT} chars{over ? ' · consider trimming' : ''}
                     </div>
@@ -197,11 +213,11 @@ export const BulletList = ({ bullets, onChange, maxBullets = 5, resumeData }) =>
                 <button
                     onClick={add}
                     disabled={bullets.length >= maxBullets}
-                    className="text-slate-500 hover:text-slate-900 text-xs font-medium inline-flex items-center gap-1 transition-colors disabled:opacity-40"
+                    className="text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 text-xs font-medium inline-flex items-center gap-1 transition-colors disabled:opacity-40"
                 >
                     <Plus size={12} /> Add highlight
                 </button>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-slate-400 dark:text-stone-500">
                     {bullets.length} / {maxBullets}
                 </span>
             </div>
@@ -222,7 +238,7 @@ export const CardChrome = ({
     const [open, setOpen] = useState(defaultOpen);
 
     return (
-        <div className="bg-white border border-slate-200 rounded-lg transition-colors hover:border-slate-300">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors hover:border-slate-300 dark:hover:border-slate-600">
             <div
                 className="flex items-center gap-1 px-2 py-2.5 cursor-pointer select-none"
                 onClick={() => setOpen((o) => !o)}
@@ -231,18 +247,22 @@ export const CardChrome = ({
                     <button
                         {...dragHandleProps}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing p-1 transition-colors"
+                        className="text-slate-300 dark:text-stone-600 hover:text-slate-500 dark:hover:text-stone-400 cursor-grab active:cursor-grabbing p-1 transition-colors"
                         title="Drag to reorder"
                     >
                         <GripVertical size={14} />
                     </button>
                 )}
                 <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-semibold text-slate-900 leading-tight truncate">
-                        {title || <span className="text-slate-400 italic font-normal">Untitled</span>}
+                    <div className="text-[13px] font-semibold text-slate-900 dark:text-stone-100 leading-tight truncate">
+                        {title || (
+                            <span className="text-slate-400 dark:text-stone-500 italic font-normal">
+                                Untitled
+                            </span>
+                        )}
                     </div>
                     {subtitle && (
-                        <div className="text-[11px] text-slate-500 leading-tight truncate mt-0.5">
+                        <div className="text-[11px] text-slate-500 dark:text-stone-400 leading-tight truncate mt-0.5">
                             {subtitle}
                         </div>
                     )}
@@ -253,7 +273,7 @@ export const CardChrome = ({
                             e.stopPropagation();
                             onTogglePageBreak();
                         }}
-                        className={`p-1.5 rounded transition-colors ${isPageBreak ? 'bg-orange-50 text-orange-600' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'}`}
+                        className={`p-1.5 rounded transition-colors ${isPageBreak ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400' : 'text-slate-400 dark:text-stone-500 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10'}`}
                         title={isPageBreak ? 'Remove page break' : 'Force new page'}
                     >
                         <SplitSquareHorizontal size={13} />
@@ -265,20 +285,20 @@ export const CardChrome = ({
                             e.stopPropagation();
                             onDelete();
                         }}
-                        className="text-slate-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors"
+                        className="text-slate-400 dark:text-stone-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 p-1.5 rounded transition-colors"
                         title="Delete"
                     >
                         <Trash2 size={13} />
                     </button>
                 )}
                 <span
-                    className="text-slate-400 p-1 transition-transform"
+                    className="text-slate-400 dark:text-stone-500 p-1 transition-transform"
                     style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
                 >
                     <ChevronDown size={14} />
                 </span>
             </div>
-            {open && <div className="border-t border-slate-100 p-3.5">{children}</div>}
+            {open && <div className="border-t border-slate-100 dark:border-slate-700 p-3.5">{children}</div>}
         </div>
     );
 };

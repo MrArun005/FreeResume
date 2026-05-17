@@ -79,6 +79,7 @@ import EditorSidebar from './components/editor/EditorSidebar';
 import PreviewPanel from './components/editor/PreviewPanel';
 import JobAssistantModal from './components/ui/JobAssistantModal';
 import RoastModal from './components/ui/RoastModal';
+import CoverLetterModal from './components/ui/CoverLetterModal';
 import ImproveResumeModal from './components/ui/ImproveResumeModal';
 
 import { parseResume } from './utils/resumeParser';
@@ -112,6 +113,7 @@ const App = () => {
     const [showAiMenu, setShowAiMenu] = useState(false);
     const [showExportMenu, setShowExportMenu] = useState(false);
     const [isRoastModalOpen, setIsRoastModalOpen] = useState(false);
+    const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
 
     // Normalize a single resume blob — handles the description→bullets
     // migration and the legacy skills mega-bucket case. Used both for loading
@@ -835,9 +837,9 @@ const App = () => {
     // --- VIEW: EDITOR ---
 
     return (
-        <div className="min-h-screen bg-stone-100 text-slate-900 font-sans flex flex-col h-screen overflow-x-hidden relative">
+        <div className="min-h-screen bg-stone-100 dark:bg-slate-950 text-slate-900 dark:text-stone-100 font-sans flex flex-col h-screen overflow-x-hidden relative">
             {/* Subtle background tint for the editor workspace */}
-            <div className="fixed inset-0 z-[-1] bg-stone-100"></div>
+            <div className="fixed inset-0 z-[-1] bg-stone-100 dark:bg-slate-950"></div>
             {/* Print Styles */}
 
             {/* Overflow Warning Banner */}
@@ -1111,6 +1113,24 @@ const App = () => {
                                             </div>
                                         </div>
                                     </button>
+
+                                    <button
+                                        onClick={() => {
+                                            setShowCoverLetterModal(true);
+                                            setShowExportMenu(false);
+                                        }}
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-purple-50 text-gray-700 hover:text-purple-700 rounded-lg transition-colors text-left"
+                                    >
+                                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                                            <FileText size={18} />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-sm">Cover Letter (PDF)</div>
+                                            <div className="text-xs text-gray-500">
+                                                AI-generated from your resume + JD
+                                            </div>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -1343,6 +1363,12 @@ const App = () => {
                         skills: normalizeSkills(updated.skills || []),
                     })
                 }
+            />
+
+            <CoverLetterModal
+                isOpen={showCoverLetterModal}
+                onClose={() => setShowCoverLetterModal(false)}
+                resume={resume}
             />
 
             <FeatureTourModal

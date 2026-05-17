@@ -183,6 +183,131 @@ export async function exportResumePdf({ filename = 'Resume.pdf' } = {}) {
     }
 }
 
+// ─── Cover letter PDF export ──────────────────────────────────────────────
+//
+// Separate pipeline from the resume PDF. The cover letter is a plain block
+// of body text (no react preview to clone), so we synthesize the HTML here:
+//   - Header block: candidate name + contact line + city, location
+//   - Date
+//   - Body paragraphs (split on blank lines)
+//
+// Then round-trip through the same Puppeteer endpoint the resume uses, so
+// styling stays consistent and we don't add a second PDF dependency.
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function formatTodayLong() {
+    const now = new Date();
+    return now.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+}
+
+function buildCoverLetterHtml({ coverLetter, resumeData }) {
+    const personal = resumeData?.personal || {};
+    const name = personal.fullName || personal.name || '';
+    const title = personal.title || '';
+    const contactLine = [personal.email, personal.phone, personal.location]
+        .filter(Boolean)
+        .map(escapeHtml)
+        .join(' · ');
+
+    const paragraphs = (coverLetter || '')
+        .split(/\n{2,}/)
+        .map((p) => p.trim())
+        .filter(Boolean)
+        .map((p) => `<p>${escapeHtml(p).replace(/\n/g, '<br/>')}</p>`)
+        .join('\n');
+
+    return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+<style>
+  @page { size: A4; margin: 0; }
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #111827;
+    line-height: 1.55;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page { width: 210mm; min-height: 297mm; padding: 22mm 24mm; box-sizing: border-box; }
+  .header { border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 24px; }
+  .name { font-size: 22pt; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+  .title { font-size: 10.5pt; color: #475569; margin-top: 4px; }
+  .contact { font-size: 9.5pt; color: #475569; margin-top: 6px; }
+  .date { font-size: 10.5pt; color: #1f2937; margin-bottom: 22px; }
+  .salutation { margin-bottom: 14px; }
+  .body p { margin: 0 0 12px 0; }
+  .closing { margin-top: 22px; }
+  .signature { margin-top: 26px; font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1 class="name">${escapeHtml(name || 'Your Name')}</h1>
+      ${title ? `<div class="title">${escapeHtml(title)}</div>` : ''}
+      ${contactLine ? `<div class="contact">${contactLine}</div>` : ''}
+    </div>
+    <div class="date">${escapeHtml(formatTodayLong())}</div>
+    <div class="salutation">Dear Hiring Manager,</div>
+    <div class="body">
+      ${paragraphs || '<p>(empty cover letter)</p>'}
+    </div>
+    <div class="closing">Sincerely,</div>
+    <div class="signature">${escapeHtml(name || '')}</div>
+  </div>
+</body>
+</html>`;
+}
+
+export async function exportCoverLetterPdf({ coverLetter, resumeData, filename = 'CoverLetter.pdf' } = {}) {
+    if (!coverLetter || !coverLetter.trim()) return { ok: false, reason: 'No cover letter content.' };
+
+    const html = buildCoverLetterHtml({ coverLetter, resumeData });
+
+    try {
+        const response = await fetch('/api/generate-pdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html }),
+        });
+
+        if (!response.ok) {
+            let detail = '';
+            try {
+                detail = (await response.json())?.details || (await response.text());
+            } catch {
+                /* empty */
+            }
+            return { ok: false, reason: `Server PDF failed (${response.status}): ${detail || 'no detail'}` };
+        }
+
+        const blob = await response.blob();
+        if (blob.size === 0) return { ok: false, reason: 'Server returned an empty PDF.' };
+        downloadBlob(blob, filename);
+        return { ok: true };
+    } catch (error) {
+        return { ok: false, reason: error?.message || String(error) };
+    }
+}
+
 // DOCX export — completely separate pipeline from PDF. The server's
 // /api/generate-docx endpoint builds a structurally clean Word document
 // from the resume data (not the HTML), which gives recruiters something

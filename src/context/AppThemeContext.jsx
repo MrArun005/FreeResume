@@ -1,5 +1,16 @@
 import { createContext, useContext, useLayoutEffect, useState } from 'react';
 
+// Light / dark mode for the whole app (editor + landing page). The selected
+// resume template itself always renders on a white surface — recruiters
+// expect a white-background resume — so the dark mode only affects the
+// surrounding UI chrome, never the resume preview.
+//
+// Persisted under the `app-theme` localStorage key. We migrate the legacy
+// `app-white` / `app-black` values left over from an earlier multi-variant
+// version of this context: see CLAUDE notes in PRs from early 2026.
+
+const STORAGE_KEY = 'app-theme';
+
 const AppThemeContext = createContext();
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -11,54 +22,46 @@ export const useAppTheme = () => {
     return context;
 };
 
-export const AppThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('app-theme');
-            if (saved === 'app-white' || saved === 'app-black') return saved;
-            return 'app-black';
+const readInitialTheme = () => {
+    if (typeof window === 'undefined') return 'light';
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved === 'light' || saved === 'dark') return saved;
+        // Migrate the older two-value scheme so existing users don't get reset.
+        if (saved === 'app-white') return 'light';
+        if (saved === 'app-black') return 'dark';
+        // First-time visit: respect the user's OS preference rather than
+        // forcing a default — a dark-mode user shouldn't see a flashbang.
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
         }
-        return 'app-black';
-    });
+        return 'light';
+    } catch {
+        return 'light';
+    }
+};
+
+export const AppThemeProvider = ({ children }) => {
+    const [theme, setTheme] = useState(readInitialTheme);
 
     useLayoutEffect(() => {
         const root = window.document.documentElement;
-
-        // Remove all theme classes
         root.classList.remove('light', 'dark', 'app-white', 'app-black');
-
-        // Handle Dark/Light Mode
-        if (theme === 'app-white') {
-            root.classList.add('light');
-            root.classList.remove('dark');
-        } else {
-            root.classList.add('dark');
-            root.classList.remove('light');
-        }
-
-        // Add specific variant class
         root.classList.add(theme);
-
-        // Save to local storage
-        localStorage.setItem('app-theme', theme);
+        try {
+            localStorage.setItem(STORAGE_KEY, theme);
+        } catch {
+            /* localStorage disabled — theme still applies for the session */
+        }
     }, [theme]);
 
     const value = {
         theme,
         setTheme,
+        toggleTheme: () => setTheme((t) => (t === 'dark' ? 'light' : 'dark')),
         themes: [
-            {
-                id: 'app-white',
-                name: 'White',
-                icon: '☀️',
-                color: 'bg-white text-black border border-gray-300',
-            },
-            {
-                id: 'app-black',
-                name: 'Black',
-                icon: '🌙',
-                color: 'bg-black text-white border border-gray-700',
-            },
+            { id: 'light', name: 'Light' },
+            { id: 'dark', name: 'Dark' },
         ],
     };
 

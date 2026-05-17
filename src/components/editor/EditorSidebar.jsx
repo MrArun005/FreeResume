@@ -14,6 +14,7 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 
 import { SortableTag } from '../ui/SortableTag';
 import Logo from '../ui/Logo';
+import AppThemeSwitcher from '../ui/AppThemeSwitcher';
 import PersonalSection from '../editor/PersonalSection';
 import SummarySection from '../editor/SummarySection';
 import ExperienceSection from '../editor/ExperienceSection';
@@ -60,10 +61,10 @@ const EditorSidebar = ({
 }) => {
     return (
         <div
-            className={`${mobileView === 'editor' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] bg-stone-50 border-r border-slate-200 flex-col h-full z-10 overflow-hidden no-print absolute lg:relative inset-0`}
+            className={`${mobileView === 'editor' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] bg-stone-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col h-full z-10 overflow-hidden no-print absolute lg:relative inset-0`}
         >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-slate-200 bg-white sticky top-0 z-10">
+            <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
                 <div className="flex items-center justify-between mb-1 gap-2">
                     <div className="min-w-0">
                         <Logo className="w-8 h-8" textClassName="text-lg" />
@@ -79,15 +80,16 @@ const EditorSidebar = ({
                         {onOpenTheme && (
                             <button
                                 onClick={onOpenTheme}
-                                className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                className="p-2 text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                                 title="Design & Theme"
                             >
                                 <Palette size={18} />
                             </button>
                         )}
+                        <AppThemeSwitcher className="!p-2" />
                         <button
                             onClick={() => setView('gallery')}
-                            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                            className="p-2 text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                             title="Back to Gallery"
                         >
                             <LayoutGrid size={18} />
@@ -116,7 +118,7 @@ const EditorSidebar = ({
                     <div className="flex flex-wrap gap-2">
                         <button
                             onClick={() => setActiveSection('personal')}
-                            className={`px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-colors flex items-center gap-1.5 ${activeSection === 'personal' ? 'bg-brand-50 text-brand-700 border-brand-200' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'}`}
+                            className={`px-3 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-colors flex items-center gap-1.5 ${activeSection === 'personal' ? 'bg-brand-50 dark:bg-brand-500/15 text-brand-700 dark:text-brand-300 border-brand-200 dark:border-brand-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-stone-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-stone-100'}`}
                         >
                             <User size={14} /> Personal
                         </button>
@@ -159,7 +161,7 @@ const EditorSidebar = ({
                                         >
                                             <button
                                                 onClick={() => setActiveSection(sectionId)}
-                                                className={`text-xs font-semibold tracking-wide transition-colors ${activeSection === sectionId ? 'text-brand-700' : 'text-slate-600 group-hover:text-slate-900'}`}
+                                                className={`text-xs font-semibold tracking-wide transition-colors ${activeSection === sectionId ? 'text-brand-700 dark:text-brand-300' : 'text-slate-600 dark:text-stone-300 group-hover:text-slate-900 dark:group-hover:text-stone-100'}`}
                                             >
                                                 {label}
                                             </button>
@@ -168,7 +170,7 @@ const EditorSidebar = ({
                                                     e.stopPropagation();
                                                     togglePageBreak(sectionId);
                                                 }}
-                                                className={`ml-2 p-1 rounded-md transition-colors ${hasPageBreak ? 'bg-orange-50 text-orange-600 hover:bg-orange-100' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'}`}
+                                                className={`ml-2 p-1 rounded-md transition-colors ${hasPageBreak ? 'bg-orange-50 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-500/25' : 'text-slate-400 dark:text-stone-500 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10'}`}
                                                 title={hasPageBreak ? 'Remove page break' : 'Force new page'}
                                             >
                                                 <SplitSquareHorizontal size={14} />
@@ -181,7 +183,7 @@ const EditorSidebar = ({
 
                         <button
                             onClick={addCustomSection}
-                            className="px-3 py-1.5 bg-white text-slate-600 rounded-full text-xs font-semibold tracking-wide border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-1.5"
+                            className="px-3 py-1.5 bg-white dark:bg-slate-800 text-slate-600 dark:text-stone-300 rounded-full text-xs font-semibold tracking-wide border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-stone-100 transition-colors flex items-center gap-1.5"
                         >
                             <Plus size={14} /> Add Section
                         </button>
@@ -191,7 +193,7 @@ const EditorSidebar = ({
                     {onOpenAts && (
                         <button
                             onClick={onOpenAts}
-                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-brand-200 text-left transition-all hover:border-brand-300 hover:-translate-y-px"
+                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-brand-200 dark:border-brand-500/30 text-left transition-all hover:border-brand-300 dark:hover:border-brand-400/50 hover:-translate-y-px"
                             style={{
                                 background:
                                     'linear-gradient(135deg, rgba(20,184,166,0.10), rgba(20,184,166,0.02))',
@@ -201,12 +203,14 @@ const EditorSidebar = ({
                                 <Sparkles size={16} />
                             </div>
                             <div className="flex-1">
-                                <div className="text-sm font-semibold text-slate-900">Run ATS audit</div>
-                                <div className="text-[12px] text-slate-500 mt-0.5">
+                                <div className="text-sm font-semibold text-slate-900 dark:text-stone-100">
+                                    Run ATS audit
+                                </div>
+                                <div className="text-[12px] text-slate-500 dark:text-stone-400 mt-0.5">
                                     AI score + keyword check
                                 </div>
                             </div>
-                            <ArrowRight size={16} className="text-brand-700 shrink-0" />
+                            <ArrowRight size={16} className="text-brand-700 dark:text-brand-400 shrink-0" />
                         </button>
                     )}
 

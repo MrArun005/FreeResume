@@ -920,29 +920,52 @@ app.post('/api/match-job', async (req, res) => {
 });
 
 // 5. Generate Cover Letter
+//
+// Accepts an optional `tone` ('professional' | 'enthusiastic' | 'concise').
+// Defaults to 'professional' when missing or unrecognized so callers that
+// pre-date this param keep working.
 app.post('/api/generate-cover-letter', async (req, res) => {
     try {
-        const { resumeData, jobDescription } = req.body;
+        const { resumeData, jobDescription, tone } = req.body;
         if (!resumeData || !jobDescription)
             return res.status(400).json({ error: 'Missing resume data or job description' });
 
+        const TONE_BRIEFS = {
+            professional: 'Confident, polished, and warm. Conservative phrasing. Default for most roles.',
+            enthusiastic:
+                'Energetic and personal. Show genuine excitement for the role and company. Still grounded in concrete experience — no fluff.',
+            concise:
+                'Tight and direct. Three short paragraphs maximum. No filler. Every sentence carries weight.',
+        };
+        const toneKey = TONE_BRIEFS[tone] ? tone : 'professional';
+        const toneBrief = TONE_BRIEFS[toneKey];
+
         const prompt = `
-        Act as a professional career coach. Write a compelling Cover Letter for the candidate based on their Resume and the target Job Description.
-        
+        Act as a professional career coach. Write a compelling cover letter for the candidate based on their Resume and the target Job Description.
+
+        ${INFER_CONTEXT_PREAMBLE}
+
+        ${deriveResumeContext(resumeData)}
+
+        Tone: ${toneKey} — ${toneBrief}
+
         Resume: ${JSON.stringify(resumeData)}
-        
+
         Job Description:
         "${jobDescription}"
 
         Requirements:
-        - Professional, enthusiastic tone.
-        - Connect specific past achievements to JD requirements.
-        - Keep it concise (3-4 paragraphs).
-        - Return ONLY the cover letter text (no markdown, no "Here is your cover letter").
+        - 3–4 paragraphs (use the "concise" tone for the shorter 3-paragraph version).
+        - Open with a hook that names the role and one credibility signal (years + specialty, or a relevant standout).
+        - Middle paragraphs connect 2–3 specific achievements from the resume to JD requirements — quote real bullet content where it lands cleanly. DO NOT fabricate metrics.
+        - Close with a forward-looking line + a low-friction call to action.
+        - No salutation block ("Dear Hiring Manager,"), no signature line, no contact info — the PDF template adds those.
+        - Separate paragraphs with a SINGLE blank line.
+        - Return ONLY the body paragraphs as plain text (no markdown, no "Here is your cover letter", no quotes).
         `;
 
         const coverLetter = (await generateWithFallback(prompt)).trim();
-        res.json({ coverLetter });
+        res.json({ coverLetter, tone: toneKey });
     } catch (error) {
         console.error('Error generating cover letter:', error);
         sendError(res, 500, 'Failed to generate cover letter', error.message);

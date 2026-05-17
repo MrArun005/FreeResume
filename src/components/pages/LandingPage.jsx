@@ -19,6 +19,7 @@ import TemplateThumbnail from '../ui/TemplateThumbnail';
 import Testimonials from '../ui/Testimonials';
 import ScrollToTop from '../ui/ScrollToTop';
 import Logo from '../ui/Logo';
+import AppThemeSwitcher from '../ui/AppThemeSwitcher';
 import { TEMPLATES } from '../../constants/layouts';
 import { BLOG_POSTS } from '../../constants/blogPosts';
 
@@ -112,41 +113,54 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
     const featuredPost = BLOG_POSTS[0];
 
     return (
-        <div className="min-h-screen bg-stone-50 text-slate-900 font-clean antialiased selection:bg-brand-600/15 selection:text-brand-900">
+        <div className="min-h-screen bg-stone-50 dark:bg-slate-950 text-slate-900 dark:text-stone-100 font-clean antialiased selection:bg-brand-600/15 selection:text-brand-900">
             {/* ─────────── NAV ─────────── */}
-            <nav className="sticky top-0 z-50 bg-stone-50/80 backdrop-blur-xl border-b border-slate-200/60">
+            <nav className="sticky top-0 z-50 bg-stone-50/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
                     <a href="#top" className="group">
                         <Logo className="w-7 h-7" textClassName="text-base" />
                     </a>
 
                     {/* desktop links */}
-                    <div className="hidden md:flex items-center gap-8 text-sm text-slate-600">
-                        <a href="#templates" className="hover:text-slate-900 transition-colors">
+                    <div className="hidden md:flex items-center gap-8 text-sm text-slate-600 dark:text-stone-400">
+                        <a
+                            href="#templates"
+                            className="hover:text-slate-900 dark:hover:text-stone-100 transition-colors"
+                        >
                             Templates
                         </a>
-                        <a href="#features" className="hover:text-slate-900 transition-colors">
+                        <a
+                            href="#features"
+                            className="hover:text-slate-900 dark:hover:text-stone-100 transition-colors"
+                        >
                             Features
                         </a>
-                        <a href="#how" className="hover:text-slate-900 transition-colors">
+                        <a
+                            href="#how"
+                            className="hover:text-slate-900 dark:hover:text-stone-100 transition-colors"
+                        >
                             How it works
                         </a>
-                        <a href="#blog" className="hover:text-slate-900 transition-colors">
+                        <a
+                            href="#blog"
+                            className="hover:text-slate-900 dark:hover:text-stone-100 transition-colors"
+                        >
                             Blog
                         </a>
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <AppThemeSwitcher />
                         <button
                             onClick={() => onSelectTemplate(TEMPLATES[0])}
-                            className="hidden md:inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-stone-50 text-sm font-medium px-4 py-2 rounded-full transition-all hover:gap-2"
+                            className="hidden md:inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-slate-900 text-sm font-medium px-4 py-2 rounded-full transition-all hover:gap-2"
                         >
                             Start building
                             <ArrowRight size={14} />
                         </button>
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="md:hidden p-2 text-slate-700"
+                            className="md:hidden p-2 text-slate-700 dark:text-stone-200"
                             aria-label="Open menu"
                         >
                             <Menu size={22} />
@@ -156,18 +170,18 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
 
                 {/* mobile menu */}
                 {mobileMenuOpen && (
-                    <div className="fixed inset-0 bg-stone-50 z-50 md:hidden flex flex-col">
-                        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200/60">
+                    <div className="fixed inset-0 bg-stone-50 dark:bg-slate-950 z-50 md:hidden flex flex-col">
+                        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200/60 dark:border-slate-800/60">
                             <Logo className="w-7 h-7" textClassName="text-base" />
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="p-2"
+                                className="p-2 text-slate-700 dark:text-stone-200"
                                 aria-label="Close menu"
                             >
                                 <X size={22} />
                             </button>
                         </div>
-                        <div className="flex-1 px-6 py-10 flex flex-col gap-6 text-2xl font-serif-display text-slate-900">
+                        <div className="flex-1 px-6 py-10 flex flex-col gap-6 text-2xl font-serif-display text-slate-900 dark:text-stone-100">
                             <a href="#templates" onClick={() => setMobileMenuOpen(false)}>
                                 Templates
                             </a>
@@ -181,13 +195,13 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                 Blog
                             </a>
                         </div>
-                        <div className="p-6 border-t border-slate-200/60">
+                        <div className="p-6 border-t border-slate-200/60 dark:border-slate-800/60">
                             <button
                                 onClick={() => {
                                     setMobileMenuOpen(false);
                                     onSelectTemplate(TEMPLATES[0]);
                                 }}
-                                className="w-full inline-flex items-center justify-center gap-1.5 bg-slate-900 text-stone-50 text-base font-medium px-5 py-3 rounded-full"
+                                className="w-full inline-flex items-center justify-center gap-1.5 bg-slate-900 dark:bg-stone-100 text-stone-50 dark:text-slate-900 text-base font-medium px-5 py-3 rounded-full"
                             >
                                 Start building <ArrowRight size={16} />
                             </button>
@@ -203,7 +217,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
-                        className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-full mb-8 shadow-sm"
+                        className="inline-flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-stone-300 text-xs font-medium px-3 py-1.5 rounded-full mb-8 shadow-sm"
                     >
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         New: AI roast & ATS score
@@ -213,17 +227,17 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7, delay: 0.05, ease: [0.21, 0.47, 0.32, 0.98] }}
-                        className="font-serif-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] tracking-tight text-slate-900 max-w-4xl"
+                        className="font-serif-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] tracking-tight text-slate-900 dark:text-stone-100 max-w-4xl"
                     >
-                        The résumé you&rsquo;d actually <em className="italic text-brand-700">hire</em>{' '}
-                        someone for.
+                        The résumé you&rsquo;d actually{' '}
+                        <em className="italic text-brand-700 dark:text-brand-400">hire</em> someone for.
                     </motion.h1>
 
                     <motion.p
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.15 }}
-                        className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed"
+                        className="mt-6 text-lg sm:text-xl text-slate-600 dark:text-stone-400 max-w-2xl leading-relaxed"
                     >
                         Build a polished, ATS-friendly resume in minutes. AI helps tailor it to the job.
                         It&rsquo;s free, no signup, and your data never leaves your browser.
@@ -237,7 +251,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                     >
                         <button
                             onClick={() => onSelectTemplate(TEMPLATES[0])}
-                            className="group inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-stone-50 text-base font-medium px-7 py-3.5 rounded-full transition-all shadow-lg shadow-slate-900/10 hover:shadow-xl hover:shadow-slate-900/20 hover:-translate-y-0.5"
+                            className="group inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-slate-900 text-base font-medium px-7 py-3.5 rounded-full transition-all shadow-lg shadow-slate-900/10 hover:shadow-xl hover:shadow-slate-900/20 hover:-translate-y-0.5"
                         >
                             Start building
                             <ArrowRight
@@ -247,7 +261,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         </button>
                         <a
                             href="#templates"
-                            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-900 text-base font-medium px-7 py-3.5 rounded-full border border-slate-200 transition-colors"
+                            className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-stone-100 text-base font-medium px-7 py-3.5 rounded-full border border-slate-200 dark:border-slate-700 transition-colors"
                         >
                             See templates
                         </a>
@@ -257,11 +271,11 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.6, delay: 0.4 }}
-                        className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500"
+                        className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-stone-500"
                     >
                         {TRUST_POINTS.map((p) => (
                             <span key={p} className="inline-flex items-center gap-1.5">
-                                <Check size={14} className="text-brand-600" />
+                                <Check size={14} className="text-brand-600 dark:text-brand-400" />
                                 {p}
                             </span>
                         ))}
@@ -276,8 +290,8 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                     className="mt-20 lg:mt-28 relative"
                 >
                     <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-white to-stone-100 border border-slate-200/60 shadow-sm">
-                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-white to-stone-100 dark:from-slate-900 dark:to-slate-950 border border-slate-200/60 dark:border-slate-800/60 shadow-sm">
+                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
                             <div className="px-6 sm:px-10 pt-10 pb-12 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                                 {TEMPLATES.slice(0, 5).map((t, i) => (
                                     <motion.button
@@ -287,7 +301,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.6, delay: 0.5 + i * 0.07 }}
                                         whileHover={{ y: -6 }}
-                                        className="group relative aspect-[210/297] rounded-lg overflow-hidden bg-white border border-slate-200 shadow-md hover:shadow-2xl hover:shadow-slate-900/10 transition-shadow"
+                                        className="group relative aspect-[210/297] rounded-lg overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-2xl hover:shadow-slate-900/10 transition-shadow"
                                     >
                                         <div className="absolute inset-0">
                                             <TemplateThumbnail
@@ -308,33 +322,40 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             </section>
 
             {/* ─────────── FEATURES ─────────── */}
-            <section id="features" className="py-24 lg:py-32 bg-white border-y border-slate-200/60">
+            <section
+                id="features"
+                className="py-24 lg:py-32 bg-white dark:bg-slate-900 border-y border-slate-200/60 dark:border-slate-800/60"
+            >
                 <div className="max-w-6xl mx-auto px-6 lg:px-8">
                     <motion.div {...fadeUp} className="max-w-2xl mb-16">
-                        <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">
+                        <div className="text-xs font-semibold text-brand-700 dark:text-brand-400 tracking-wide uppercase mb-3">
                             Features
                         </div>
-                        <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900">
+                        <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900 dark:text-stone-100">
                             Quiet on the outside.
                             <br />
-                            <em className="italic text-slate-400">Smart on the inside.</em>
+                            <em className="italic text-slate-400 dark:text-stone-500">
+                                Smart on the inside.
+                            </em>
                         </h2>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 rounded-2xl overflow-hidden border border-slate-200">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
                         {FEATURES.map((f) => (
                             <motion.div
                                 key={f.title}
                                 {...fadeUp}
-                                className="bg-white p-8 lg:p-10 hover:bg-stone-50 transition-colors group"
+                                className="bg-white dark:bg-slate-900 p-8 lg:p-10 hover:bg-stone-50 dark:hover:bg-slate-800 transition-colors group"
                             >
-                                <div className="w-10 h-10 rounded-lg bg-slate-900 text-stone-50 flex items-center justify-center mb-6 group-hover:bg-brand-600 transition-colors">
+                                <div className="w-10 h-10 rounded-lg bg-slate-900 dark:bg-stone-100 text-stone-50 dark:text-slate-900 flex items-center justify-center mb-6 group-hover:bg-brand-600 dark:group-hover:bg-brand-500 group-hover:text-stone-50 transition-colors">
                                     <f.icon size={18} strokeWidth={1.8} />
                                 </div>
-                                <h3 className="text-lg font-semibold text-slate-900 mb-2 tracking-tight">
+                                <h3 className="text-lg font-semibold text-slate-900 dark:text-stone-100 mb-2 tracking-tight">
                                     {f.title}
                                 </h3>
-                                <p className="text-sm text-slate-600 leading-relaxed">{f.body}</p>
+                                <p className="text-sm text-slate-600 dark:text-stone-400 leading-relaxed">
+                                    {f.body}
+                                </p>
                             </motion.div>
                         ))}
                     </div>
@@ -349,13 +370,15 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12"
                     >
                         <div className="max-w-2xl">
-                            <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">
+                            <div className="text-xs font-semibold text-brand-700 dark:text-brand-400 tracking-wide uppercase mb-3">
                                 Templates
                             </div>
-                            <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900">
+                            <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900 dark:text-stone-100">
                                 Pick a starting point.
                                 <br />
-                                <em className="italic text-slate-400">Change anything later.</em>
+                                <em className="italic text-slate-400 dark:text-stone-500">
+                                    Change anything later.
+                                </em>
                             </h2>
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -365,8 +388,8 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                     onClick={() => setActiveCategory(c.id)}
                                     className={`text-sm px-4 py-2 rounded-full border transition-all ${
                                         activeCategory === c.id
-                                            ? 'bg-slate-900 text-stone-50 border-slate-900'
-                                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                                            ? 'bg-slate-900 dark:bg-stone-100 text-stone-50 dark:text-slate-900 border-slate-900 dark:border-stone-100'
+                                            : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-stone-300 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'
                                     }`}
                                 >
                                     {c.label}
@@ -387,7 +410,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                 whileHover={{ y: -4 }}
                                 className="group text-left"
                             >
-                                <div className="aspect-[210/297] rounded-xl overflow-hidden bg-white border border-slate-200 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-900/10 group-hover:border-slate-300 transition-all relative">
+                                <div className="aspect-[210/297] rounded-xl overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-900/10 group-hover:border-slate-300 dark:group-hover:border-slate-600 transition-all relative">
                                     <div className="absolute inset-0">
                                         <TemplateThumbnail
                                             layout={t.layout}
@@ -401,10 +424,12 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                     </div>
                                 </div>
                                 <div className="mt-4 flex items-baseline justify-between gap-2">
-                                    <div className="text-sm font-medium text-slate-900 tracking-tight truncate">
+                                    <div className="text-sm font-medium text-slate-900 dark:text-stone-100 tracking-tight truncate">
                                         {t.name}
                                     </div>
-                                    <div className="text-xs text-slate-500 shrink-0">{t.category}</div>
+                                    <div className="text-xs text-slate-500 dark:text-stone-500 shrink-0">
+                                        {t.category}
+                                    </div>
                                 </div>
                             </motion.button>
                         ))}
@@ -413,6 +438,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             </section>
 
             {/* ─────────── HOW IT WORKS ─────────── */}
+            {/* Intentionally dark in both modes — designed as a contrast section. */}
             <section id="how" className="py-24 lg:py-32 bg-slate-900 text-stone-50 relative overflow-hidden">
                 {/* subtle teal glow */}
                 <div className="absolute -top-1/2 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-brand-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -453,7 +479,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             </section>
 
             {/* ─────────── STATS / SOCIAL PROOF ─────────── */}
-            <section className="py-20 border-y border-slate-200/60 bg-white">
+            <section className="py-20 border-y border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6 text-center">
                     {[
                         { stat: '15+', label: 'Templates' },
@@ -462,10 +488,10 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         { stat: '<20m', label: 'To finish' },
                     ].map((s) => (
                         <motion.div key={s.label} {...fadeUp}>
-                            <div className="font-serif-display text-5xl lg:text-6xl text-slate-900 tracking-tight">
+                            <div className="font-serif-display text-5xl lg:text-6xl text-slate-900 dark:text-stone-100 tracking-tight">
                                 {s.stat}
                             </div>
-                            <div className="text-xs uppercase tracking-wider text-slate-500 mt-2">
+                            <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-stone-500 mt-2">
                                 {s.label}
                             </div>
                         </motion.div>
@@ -474,14 +500,15 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             </section>
 
             {/* ─────────── TESTIMONIALS ─────────── */}
-            <section className="py-24 lg:py-32 bg-stone-50">
+            <section className="py-24 lg:py-32 bg-stone-50 dark:bg-slate-950">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8">
                     <motion.div {...fadeUp} className="max-w-2xl mb-12">
-                        <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">
+                        <div className="text-xs font-semibold text-brand-700 dark:text-brand-400 tracking-wide uppercase mb-3">
                             Real people
                         </div>
-                        <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900">
-                            Loved by job seekers <em className="italic text-slate-400">who got the job.</em>
+                        <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900 dark:text-stone-100">
+                            Loved by job seekers{' '}
+                            <em className="italic text-slate-400 dark:text-stone-500">who got the job.</em>
                         </h2>
                     </motion.div>
                     <Testimonials />
@@ -489,15 +516,19 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             </section>
 
             {/* ─────────── BIG CTA ─────────── */}
-            <section className="py-24 lg:py-32 bg-white">
+            <section className="py-24 lg:py-32 bg-white dark:bg-slate-900">
                 <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
                     <motion.h2
                         {...fadeUp}
-                        className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900"
+                        className="font-serif-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-slate-900 dark:text-stone-100"
                     >
-                        Ready to land your <em className="italic text-brand-700">next interview?</em>
+                        Ready to land your{' '}
+                        <em className="italic text-brand-700 dark:text-brand-400">next interview?</em>
                     </motion.h2>
-                    <motion.p {...fadeUp} className="mt-5 text-lg text-slate-600 max-w-xl mx-auto">
+                    <motion.p
+                        {...fadeUp}
+                        className="mt-5 text-lg text-slate-600 dark:text-stone-400 max-w-xl mx-auto"
+                    >
                         Build a resume that gets read, not filtered. No sign-up, no email, no payment.
                     </motion.p>
                     <motion.div
@@ -506,7 +537,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                     >
                         <button
                             onClick={() => onSelectTemplate(TEMPLATES[0])}
-                            className="group inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-stone-50 text-base font-medium px-7 py-3.5 rounded-full transition-all hover:-translate-y-0.5 shadow-lg shadow-slate-900/10"
+                            className="group inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-slate-900 text-base font-medium px-7 py-3.5 rounded-full transition-all hover:-translate-y-0.5 shadow-lg shadow-slate-900/10"
                         >
                             Start building free
                             <ArrowRight
@@ -516,7 +547,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         </button>
                         <a
                             href="#templates"
-                            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-900 text-base font-medium px-7 py-3.5 rounded-full border border-slate-200 transition-colors"
+                            className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-stone-100 text-base font-medium px-7 py-3.5 rounded-full border border-slate-200 dark:border-slate-700 transition-colors"
                         >
                             Browse templates
                         </a>
@@ -526,25 +557,30 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
 
             {/* ─────────── BLOG ─────────── */}
             {featuredPost && (
-                <section id="blog" className="py-24 lg:py-32 bg-stone-50 border-t border-slate-200/60">
+                <section
+                    id="blog"
+                    className="py-24 lg:py-32 bg-stone-50 dark:bg-slate-950 border-t border-slate-200/60 dark:border-slate-800/60"
+                >
                     <div className="max-w-6xl mx-auto px-6 lg:px-8">
                         <motion.div {...fadeUp} className="flex items-end justify-between gap-6 mb-12">
                             <div>
-                                <div className="text-xs font-semibold text-brand-700 tracking-wide uppercase mb-3">
+                                <div className="text-xs font-semibold text-brand-700 dark:text-brand-400 tracking-wide uppercase mb-3">
                                     From the blog
                                 </div>
-                                <h2 className="font-serif-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-slate-900">
+                                <h2 className="font-serif-display text-3xl sm:text-4xl lg:text-5xl leading-[1.05] tracking-tight text-slate-900 dark:text-stone-100">
                                     Job-search advice{' '}
-                                    <em className="italic text-slate-400">worth your time.</em>
+                                    <em className="italic text-slate-400 dark:text-stone-500">
+                                        worth your time.
+                                    </em>
                                 </h2>
                             </div>
                         </motion.div>
 
                         <motion.article
                             {...fadeUp}
-                            className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm"
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-0 bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm"
                         >
-                            <div className="aspect-[16/10] lg:aspect-auto bg-slate-100 overflow-hidden">
+                            <div className="aspect-[16/10] lg:aspect-auto bg-slate-100 dark:bg-slate-800 overflow-hidden">
                                 <img
                                     src={featuredPost.image}
                                     alt={featuredPost.title}
@@ -553,18 +589,20 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                 />
                             </div>
                             <div className="p-8 lg:p-12 flex flex-col justify-center">
-                                <div className="flex items-center gap-4 text-xs text-slate-500 mb-4">
+                                <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-stone-500 mb-4">
                                     <span>{featuredPost.category}</span>
-                                    <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                    <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
                                     <span className="inline-flex items-center gap-1">
                                         <Clock size={12} />
                                         {featuredPost.readTime}
                                     </span>
                                 </div>
-                                <h3 className="font-serif-display text-2xl lg:text-3xl leading-tight tracking-tight text-slate-900 mb-4">
+                                <h3 className="font-serif-display text-2xl lg:text-3xl leading-tight tracking-tight text-slate-900 dark:text-stone-100 mb-4">
                                     {featuredPost.title}
                                 </h3>
-                                <p className="text-slate-600 leading-relaxed mb-6">{featuredPost.excerpt}</p>
+                                <p className="text-slate-600 dark:text-stone-400 leading-relaxed mb-6">
+                                    {featuredPost.excerpt}
+                                </p>
                                 <button
                                     onClick={() => {
                                         if (featuredPost.externalUrl) {
@@ -573,7 +611,7 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                             onViewBlog(featuredPost.id);
                                         }
                                     }}
-                                    className="group inline-flex items-center gap-1.5 text-slate-900 font-medium text-sm self-start hover:gap-2.5 transition-all"
+                                    className="group inline-flex items-center gap-1.5 text-slate-900 dark:text-stone-100 font-medium text-sm self-start hover:gap-2.5 transition-all"
                                 >
                                     Read the article
                                     <ArrowUpRight
@@ -588,13 +626,13 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             )}
 
             {/* ─────────── FEEDBACK FORM (compact) ─────────── */}
-            <section className="py-20 bg-white border-t border-slate-200/60">
+            <section className="py-20 bg-white dark:bg-slate-900 border-t border-slate-200/60 dark:border-slate-800/60">
                 <div className="max-w-3xl mx-auto px-6 lg:px-8">
                     <motion.div {...fadeUp} className="text-center mb-8">
-                        <h3 className="font-serif-display text-3xl lg:text-4xl leading-tight tracking-tight text-slate-900">
+                        <h3 className="font-serif-display text-3xl lg:text-4xl leading-tight tracking-tight text-slate-900 dark:text-stone-100">
                             Got feedback?
                         </h3>
-                        <p className="mt-2 text-slate-600">
+                        <p className="mt-2 text-slate-600 dark:text-stone-400">
                             Tell us what to build next. We actually read every message.
                         </p>
                     </motion.div>
@@ -641,33 +679,38 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                             type="email"
                             required
                             placeholder="your@email.com"
-                            className="flex-1 px-5 py-3 rounded-full bg-stone-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
+                            className="flex-1 px-5 py-3 rounded-full bg-stone-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-slate-900 dark:focus:border-stone-300 transition-colors"
                         />
                         <input
                             name="message"
                             type="text"
                             required
                             placeholder="Your thoughts…"
-                            className="flex-1 px-5 py-3 rounded-full bg-stone-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
+                            className="flex-1 px-5 py-3 rounded-full bg-stone-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 focus:outline-none focus:border-slate-900 dark:focus:border-stone-300 transition-colors"
                         />
                         <button
                             type="submit"
                             disabled={formSubmitState.loading}
-                            className="px-7 py-3 rounded-full bg-slate-900 hover:bg-slate-800 disabled:opacity-60 text-stone-50 font-medium transition-colors"
+                            className="px-7 py-3 rounded-full bg-slate-900 hover:bg-slate-800 dark:bg-stone-100 dark:hover:bg-white disabled:opacity-60 text-stone-50 dark:text-slate-900 font-medium transition-colors"
                         >
                             {formSubmitState.loading ? 'Sending…' : 'Send'}
                         </button>
                     </motion.form>
                     {formSubmitState.success && (
-                        <p className="mt-4 text-center text-sm text-emerald-700">Thanks — we got it.</p>
+                        <p className="mt-4 text-center text-sm text-emerald-700 dark:text-emerald-400">
+                            Thanks — we got it.
+                        </p>
                     )}
                     {formSubmitState.error && (
-                        <p className="mt-4 text-center text-sm text-red-600">{formSubmitState.error}</p>
+                        <p className="mt-4 text-center text-sm text-red-600 dark:text-red-400">
+                            {formSubmitState.error}
+                        </p>
                     )}
                 </div>
             </section>
 
             {/* ─────────── FOOTER ─────────── */}
+            {/* Always dark — the footer is designed as a dark surface in both modes. */}
             <footer className="bg-slate-900 text-stone-300 py-16">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
