@@ -1,20 +1,19 @@
 import React from 'react';
 
-// LandedJob logo. A rounded-square letter mark with a downward arrow
-// landing on a strip — literal "you landed it" metaphor. The mark and
-// the wordmark draw from CSS custom properties so a theme switch
-// repaints them automatically without touching this file.
+// LandedJob logo. A single bold "L"-checkmark glyph paired with a tight
+// wordmark — no container frame so it reads as a brand mark rather than
+// an app icon. The "L" stem descends and the foot tilts up into a
+// checkmark stroke: the letter L (start of "Landed") and a tick (you
+// landed it) in one continuous trajectory.
 //
 // `tone` controls the wordmark color so the logo reads cleanly on both
-// light and dark backgrounds. The brand mark itself stays the gradient
-// teal regardless of tone — only the "Job" half of the wordmark flips.
+// light and dark backgrounds. The glyph itself stays in the brand
+// gradient regardless — only the "Landed" half of the wordmark flips.
 //
 //   tone="auto"  (default) — follows the global light/dark theme via
-//                            Tailwind's `dark:` variant. Use on any
-//                            surface that flips with the user toggle.
+//                            Tailwind's `dark:` variant.
 //   tone="light"           — always light text. Use on surfaces that
-//                            are designed dark in *both* modes (footer,
-//                            editor top header chrome).
+//                            are designed dark in *both* modes.
 //   tone="dark"            — always dark text. Rare; permanently light
 //                            surfaces only.
 const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' }) => {
@@ -25,51 +24,38 @@ const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' 
               ? 'text-slate-900'
               : 'text-slate-900 dark:text-stone-100';
     return (
-        <div className="flex items-center gap-2.5 group cursor-pointer">
+        <div className="flex items-center gap-2 group cursor-pointer">
             <div className={`relative ${className} transition-transform duration-300 group-hover:scale-110`}>
                 <svg
-                    viewBox="0 0 40 40"
+                    viewBox="0 0 32 32"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-full h-full drop-shadow-sm"
+                    className="w-full h-full"
                 >
                     <defs>
                         <linearGradient
                             id="landedjob-grad"
-                            x1="2"
-                            y1="2"
-                            x2="38"
-                            y2="38"
+                            x1="0"
+                            y1="0"
+                            x2="32"
+                            y2="32"
                             gradientUnits="userSpaceOnUse"
                         >
-                            <stop offset="0%" stopColor="var(--brand-600, #0D9488)" />
+                            <stop offset="0%" stopColor="var(--brand-500, #14B8A6)" />
                             <stop offset="100%" stopColor="var(--brand-700, #0F766E)" />
                         </linearGradient>
                     </defs>
 
-                    {/* Rounded square mark */}
-                    <rect x="2" y="2" width="36" height="36" rx="11" fill="url(#landedjob-grad)" />
-
-                    {/* Downward arrow shaft — the descent */}
-                    <path d="M20 10 L20 24" stroke="white" strokeWidth="3" strokeLinecap="round" />
-
-                    {/* Arrowhead — the impact point */}
+                    {/* Single fluid stroke: L's vertical stem descends, then
+                        foot tilts upward into a checkmark — letter + tick
+                        in one continuous trajectory. */}
                     <path
-                        d="M14 19 L20 25 L26 19"
-                        stroke="white"
-                        strokeWidth="3"
+                        d="M7 4 L7 22 L27 14"
+                        stroke="url(#landedjob-grad)"
+                        strokeWidth="4.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         fill="none"
-                    />
-
-                    {/* Landing strip — the destination */}
-                    <path
-                        d="M10 31 H30"
-                        stroke="white"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        opacity="0.85"
                     />
                 </svg>
 
@@ -80,9 +66,11 @@ const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' 
                 />
             </div>
 
-            {/* Wordmark — "Landed" in brand gradient (the verb, the promise),
-                "Job" in surface text (the noun, the object). */}
-            <div className={`font-bold tracking-tight ${textClassName}`}>
+            {/* Wordmark — tight tracking, mixed weight so the brand half
+                ("Job") punches through with the gradient while "Landed"
+                grounds it in the surface text color. */}
+            <div className={`font-extrabold tracking-tight ${textClassName} leading-none`}>
+                <span className={`${wordmarkClass} transition-colors`}>Landed</span>
                 <span
                     className="bg-clip-text text-transparent transition-colors"
                     style={{
@@ -90,9 +78,8 @@ const Logo = ({ className = 'w-8 h-8', textClassName = 'text-xl', tone = 'auto' 
                             'linear-gradient(90deg, var(--brand-600, #0D9488), var(--brand-500, #14B8A6))',
                     }}
                 >
-                    Landed
+                    Job
                 </span>
-                <span className={`${wordmarkClass} transition-colors`}>Job</span>
             </div>
         </div>
     );
