@@ -4,22 +4,18 @@ import react from '@vitejs/plugin-react';
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [react()],
-    optimizeDeps: {
-        include: ['tslib', '@react-pdf/renderer', 'react', 'react-dom'],
-    },
     resolve: {
         dedupe: ['react', 'react-dom'],
     },
     build: {
-        commonjsOptions: {
-            include: [/node_modules/],
-            transformMixedEsModules: true,
-        },
         rollupOptions: {
             output: {
+                // PDF generation is server-side via Puppeteer, so we no
+                // longer ship a `pdf` chunk on the client. Keep React in
+                // its own vendor chunk and lucide icons in `ui` so they
+                // hit cache across deploys.
                 manualChunks: {
                     vendor: ['react', 'react-dom'],
-                    pdf: ['jspdf', 'html2canvas', '@react-pdf/renderer'],
                     ui: ['lucide-react'],
                 },
             },
