@@ -23,6 +23,8 @@ import {
     ChevronDown,
     Bot,
     Flame,
+    Eye,
+    Minimize2,
 } from 'lucide-react';
 import useHistory from './hooks/useHistory';
 
@@ -30,7 +32,7 @@ import { KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/c
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 import { TEMPLATES } from './constants/layouts';
-import { initialData } from './data/mockData';
+import { initialData, emptyResume } from './data/mockData';
 
 // UI Components
 import TemplateThumbnail from './components/ui/TemplateThumbnail';
@@ -103,6 +105,7 @@ const App = () => {
     const [mobileView, setMobileView] = useState('editor'); // 'editor' | 'preview'
     const modals = useModalState();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
     const [isImproving, setIsImproving] = useState(false);
 
     // Normalize a single resume blob — handles the description→bullets
@@ -190,7 +193,10 @@ const App = () => {
     const handleSwitchProfile = (id) => setProfilesStore((prev) => switchActive(prev, id));
     const handleCreateProfile = (name) =>
         setProfilesStore((prev) => {
-            const seed = normalizeResumeShape(initialData);
+            // Blank scaffold — user explicitly asked for "New resume", they
+            // want a fresh start, not a clone of the demo. Use Duplicate to
+            // copy an existing profile.
+            const seed = normalizeResumeShape(emptyResume);
             return createProfile(prev, name || 'Untitled Resume', seed).store;
         });
     const handleDuplicateProfile = (id) => setProfilesStore((prev) => duplicateProfile(prev, id).store);
@@ -248,33 +254,42 @@ const App = () => {
     const [scale, setScale] = useState(1);
 
     // Handle Responsive Scaling
+    //
+    // Sizes the preview to fill the available canvas width. Subtracts the
+    // editor sidebar at md+ and the template selector sidebar at xl+ when
+    // open — previously these were unaccounted for, so on wide screens the
+    // A4 paper sat at 794px with empty space around it, and on narrow xl
+    // screens the open template sidebar would force the preview into the
+    // 340px gutter. Caps upscaling at 1.3 normally, 1.6 in fullscreen
+    // preview mode (no sidebars, the user explicitly wants a bigger view).
     useEffect(() => {
         const handleResize = () => {
             const windowWidth = window.innerWidth;
             let availableWidth = windowWidth;
 
-            // If desktop mode (md breakpoint is 768px), subtract sidebar width
-            if (windowWidth >= 768) {
-                availableWidth -= 450; // Sidebar width
+            if (!isPreviewFullscreen) {
+                if (windowWidth >= 768) {
+                    availableWidth -= 450; // Editor sidebar
+                }
+                if (windowWidth >= 1280 && isSidebarOpen) {
+                    availableWidth -= 340; // Right template selector
+                }
             }
-
-            // Subtract padding (approx 32px-48px) -> Increased to 96px for better breathing room
-            availableWidth -= 96;
+            availableWidth -= 96; // Horizontal padding
 
             const targetWidth = 794; // A4 width at 96 DPI
-
-            if (availableWidth < targetWidth) {
-                const newScale = availableWidth / targetWidth;
-                setScale(Math.min(newScale, 1));
-            } else {
-                setScale(1);
-            }
+            const fitScale = availableWidth / targetWidth;
+            // Preview mode = compact: smaller cap so the paper reads as a
+            // contained document, not a magnified billboard. Regular editor
+            // mode = 1.3 to fill wide screens.
+            const maxScale = isPreviewFullscreen ? 1.15 : 1.3;
+            setScale(Math.max(0.3, Math.min(fitScale, maxScale)));
         };
 
         handleResize(); // Initial call
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    }, [isSidebarOpen, isPreviewFullscreen]);
 
     // Autosave: pipe every resume edit into the active profile inside the
     // profiles store. The store helper handles localStorage persistence with
@@ -651,6 +666,30 @@ const App = () => {
     };
 
     const contentRef = React.useRef(null);
+    const aiMenuRef = React.useRef(null);
+    const exportMenuRef = React.useRef(null);
+
+    // Close the header dropdowns on any click outside their wrapping
+    // container. Each ref wraps both the trigger button and the menu, so
+    // clicks on the button itself are still "inside" and won't double-toggle.
+    useEffect(() => {
+        const aiOpen = modals.is('aiMenu');
+        const exportOpen = modals.is('exportMenu');
+        if (!aiOpen && !exportOpen) return;
+        const handleDown = (e) => {
+            if (aiOpen && aiMenuRef.current && !aiMenuRef.current.contains(e.target)) {
+                modals.close('aiMenu');
+            }
+            if (exportOpen && exportMenuRef.current && !exportMenuRef.current.contains(e.target)) {
+                modals.close('exportMenu');
+            }
+        };
+        document.addEventListener('mousedown', handleDown);
+        return () => document.removeEventListener('mousedown', handleDown);
+        // modals is referentially stable per the useModalState memo; we only
+        // rebind when either menu opens or closes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [modals.is('aiMenu'), modals.is('exportMenu')]);
 
     // True-WYSIWYG PDF export. Sends the rendered preview HTML to the
     // server's Puppeteer endpoint so the downloaded PDF is pixel-identical
@@ -702,6 +741,16 @@ const App = () => {
         window.addEventListener('keydown', handlePrintShortcut);
         return () => window.removeEventListener('keydown', handlePrintShortcut);
     });
+
+    // Esc closes the fullscreen preview — matches iOS Quick Look gesture.
+    useEffect(() => {
+        if (!isPreviewFullscreen) return;
+        const onKey = (e) => {
+            if (e.key === 'Escape') setIsPreviewFullscreen(false);
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [isPreviewFullscreen]);
 
     const handleStyleUpdate = (id, newPos) => {
         setResume((prev) => ({
@@ -872,7 +921,10 @@ const App = () => {
                 }}
             />
 
-            {/* Editor Header (dark chrome over light workspace) */}
+            {/* Editor Header (dark chrome over light workspace). In preview
+                mode we keep it but slim it down — AI Assistant + Download stay
+                accessible, secondary chrome (templates link, help, undo/redo,
+                "Editing" label) hides for an iOS Quick Look feel. */}
             <header
                 className="h-16 flex items-center justify-between px-6 flex-shrink-0 z-50 no-print
         bg-slate-950 border-b border-white/10"
@@ -884,34 +936,58 @@ const App = () => {
                     >
                         <Logo className="w-8 h-8" textClassName="text-xl hidden md:block" tone="light" />
                     </div>
-                    <div className="h-6 w-px bg-white/10 mx-2 hidden md:block" />
-                    <button
-                        onClick={() => setView('gallery')}
-                        className="text-gray-400 hover:text-white flex items-center gap-1.5 text-sm font-medium transition-all hover:translate-x-[-2px]"
-                    >
-                        <ArrowLeft size={16} /> Templates
-                    </button>
-                    <div className="h-6 w-px bg-white/10 mx-2" />
-                    <button
-                        onClick={() => modals.open('tutorial')}
-                        className="text-gray-400 hover:text-white flex items-center gap-1.5 text-sm font-medium transition-colors"
-                        title="Show tutorial"
-                    >
-                        <Sparkles size={16} className="text-amber-400/80" />
-                        <span className="hidden lg:inline">Help</span>
-                    </button>
-                    <div className="h-6 w-px bg-white/10 mx-2" />
-                    <h1 className="font-semibold text-sm tracking-wide hidden lg:block text-gray-300">
-                        Editing{' '}
-                        <span className="text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-md ml-1 border border-brand-500/20">
-                            {selectedTemplate.name}
+                    {!isPreviewFullscreen && (
+                        <>
+                            <div className="h-6 w-px bg-white/10 mx-2 hidden md:block" />
+                            <button
+                                onClick={() => setView('gallery')}
+                                className="text-gray-400 hover:text-white flex items-center gap-1.5 text-sm font-medium transition-all hover:translate-x-[-2px]"
+                            >
+                                <ArrowLeft size={16} /> Templates
+                            </button>
+                            <div className="h-6 w-px bg-white/10 mx-2" />
+                            <button
+                                onClick={() => modals.open('tutorial')}
+                                className="text-gray-400 hover:text-white flex items-center gap-1.5 text-sm font-medium transition-colors"
+                                title="Show tutorial"
+                            >
+                                <Sparkles size={16} className="text-amber-400/80" />
+                                <span className="hidden lg:inline">Help</span>
+                            </button>
+                            <div className="h-6 w-px bg-white/10 mx-2" />
+                            <h1 className="font-semibold text-sm tracking-wide hidden lg:block text-gray-300">
+                                Editing{' '}
+                                <span className="text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-md ml-1 border border-brand-500/20">
+                                    {selectedTemplate.name}
+                                </span>
+                            </h1>
+                        </>
+                    )}
+                    {isPreviewFullscreen && (
+                        <span className="hidden md:inline text-xs uppercase tracking-[0.2em] text-gray-400 ml-2">
+                            Preview
                         </span>
-                    </h1>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-2 lg:gap-4">
-                    {/* Undo/Redo Controls (Minimal) */}
-                    <div className="hidden lg:flex items-center gap-0.5 mr-4 bg-white/5 rounded-full p-1 border border-white/5">
+                    {/* Fullscreen Preview Toggle — hides both sidebars and
+                        scales the resume up so it fills the canvas. */}
+                    <button
+                        onClick={() => setIsPreviewFullscreen((v) => !v)}
+                        className="hidden lg:flex items-center gap-2 bg-white/5 backdrop-blur-md border border-white/10 text-white px-4 py-2.5 rounded-xl font-medium hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-0.5"
+                        title={isPreviewFullscreen ? 'Exit fullscreen preview' : 'Fullscreen preview'}
+                    >
+                        {isPreviewFullscreen ? <Minimize2 size={16} /> : <Eye size={16} />}
+                        <span className="text-sm tracking-wide">
+                            {isPreviewFullscreen ? 'Exit Preview' : 'Preview'}
+                        </span>
+                    </button>
+
+                    {/* Undo/Redo Controls (Minimal) — hidden in preview mode */}
+                    <div
+                        className={`${isPreviewFullscreen ? 'hidden' : 'hidden lg:flex'} items-center gap-0.5 mr-4 bg-white/5 rounded-full p-1 border border-white/5`}
+                    >
                         <button
                             onClick={undo}
                             disabled={!canUndo}
@@ -931,7 +1007,7 @@ const App = () => {
                     </div>
 
                     {/* Group 1: AI Assistant Dropdown */}
-                    <div className="relative">
+                    <div className="relative" ref={aiMenuRef}>
                         <button
                             onClick={() => {
                                 modals.toggle('aiMenu');
@@ -1019,13 +1095,47 @@ const App = () => {
                                             <div className="text-xs text-gray-500">Optimize for bots</div>
                                         </div>
                                     </button>
+
+                                    <button
+                                        onClick={() => {
+                                            modals.open('roast');
+                                            modals.close('aiMenu');
+                                        }}
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-red-50 text-gray-700 hover:text-red-700 rounded-lg transition-colors text-left"
+                                    >
+                                        <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+                                            <Flame size={18} />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-sm">Roast My Resume</div>
+                                            <div className="text-xs text-gray-500">Get brutal feedback</div>
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            modals.open('coverLetter');
+                                            modals.close('aiMenu');
+                                        }}
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-purple-50 text-gray-700 hover:text-purple-700 rounded-lg transition-colors text-left"
+                                    >
+                                        <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                                            <FileText size={18} />
+                                        </div>
+                                        <div>
+                                            <div className="font-bold text-sm">Cover Letter</div>
+                                            <div className="text-xs text-gray-500">
+                                                AI-generated from resume + JD
+                                            </div>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         )}
                     </div>
 
                     {/* Group 2: Export Dropdown */}
-                    <div className="relative">
+                    <div className="relative" ref={exportMenuRef}>
                         <button
                             onClick={() => {
                                 modals.toggle('exportMenu');
@@ -1044,42 +1154,6 @@ const App = () => {
                         {modals.is('exportMenu') && (
                             <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-2xl dark:shadow-black/40 border border-gray-100 dark:border-slate-700 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                                 <div className="p-2 space-y-1">
-                                    <button
-                                        onClick={() => {
-                                            modals.open('roast');
-                                            modals.close('exportMenu');
-                                        }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-700 dark:text-stone-200 hover:text-red-700 dark:hover:text-red-300 rounded-lg transition-colors text-left"
-                                    >
-                                        <div className="p-2 bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 rounded-lg">
-                                            <Flame size={18} />
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-sm">Roast My Resume</div>
-                                            <div className="text-xs text-gray-500 dark:text-stone-400">
-                                                Get brutal feedback
-                                            </div>
-                                        </div>
-                                    </button>
-
-                                    <button
-                                        onClick={() => {
-                                            modals.open('ats');
-                                            modals.close('exportMenu');
-                                        }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-brand-50 dark:hover:bg-brand-500/10 text-gray-700 dark:text-stone-200 hover:text-brand-700 dark:hover:text-brand-300 rounded-lg transition-colors text-left"
-                                    >
-                                        <div className="p-2 bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded-lg">
-                                            <Sparkles size={18} />
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-sm">Check ATS Score</div>
-                                            <div className="text-xs text-gray-500 dark:text-stone-400">
-                                                Optimize for bots
-                                            </div>
-                                        </div>
-                                    </button>
-
                                     <button
                                         onClick={() => {
                                             handleDownloadPDF();
@@ -1115,24 +1189,6 @@ const App = () => {
                                             </div>
                                         </div>
                                     </button>
-
-                                    <button
-                                        onClick={() => {
-                                            modals.open('coverLetter');
-                                            modals.close('exportMenu');
-                                        }}
-                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-purple-50 dark:hover:bg-purple-500/10 text-gray-700 dark:text-stone-200 hover:text-purple-700 dark:hover:text-purple-300 rounded-lg transition-colors text-left"
-                                    >
-                                        <div className="p-2 bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 rounded-lg">
-                                            <FileText size={18} />
-                                        </div>
-                                        <div>
-                                            <div className="font-bold text-sm">Cover Letter (PDF)</div>
-                                            <div className="text-xs text-gray-500 dark:text-stone-400">
-                                                AI-generated from your resume + JD
-                                            </div>
-                                        </div>
-                                    </button>
                                 </div>
                             </div>
                         )}
@@ -1140,8 +1196,10 @@ const App = () => {
                 </div>
             </header>
 
-            {/* Mobile Navigation Bar (Bottom) */}
-            <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700 z-50 flex justify-around items-center h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.4)]">
+            {/* Mobile Navigation Bar (Bottom) — hidden in fullscreen preview */}
+            <div
+                className={`lg:hidden fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700 z-50 ${isPreviewFullscreen ? 'hidden' : 'flex'} justify-around items-center h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.4)]`}
+            >
                 <button
                     onClick={() => setMobileView('editor')}
                     className={`flex flex-col items-center gap-1 p-2 ${mobileView === 'editor' ? 'text-brand-600 dark:text-brand-400' : 'text-gray-500 dark:text-stone-400'}`}
@@ -1159,50 +1217,59 @@ const App = () => {
             </div>
 
             <div className="w-full flex-1 flex flex-row overflow-hidden relative pb-16 lg:pb-0">
-                {/* Left: Editor Sidebar */}
-                <EditorSidebar
-                    mobileView={mobileView}
-                    handleDownloadPDF={handleDownloadPDF}
-                    setView={setView}
-                    activeSection={activeSection}
-                    setActiveSection={setActiveSection}
-                    resume={resume}
-                    setResume={setResume}
-                    sensors={sensors}
-                    handleDragEnd={handleDragEnd}
-                    removeCustomSection={removeCustomSection}
-                    togglePageBreak={togglePageBreak}
-                    addCustomSection={addCustomSection}
-                    handlePersonalChange={handlePersonalChange}
-                    handleSocialChange={handleSocialChange}
-                    handleAddSocial={handleAddSocial}
-                    handleRemoveSocial={handleRemoveSocial}
-                    handleArrayChange={handleArrayChange}
-                    removeItem={removeItem}
-                    addItem={addItem}
-                    handleCoverLetterChange={handleCoverLetterChange}
-                    updateCustomSectionTitle={updateCustomSectionTitle}
-                    updateCustomItem={updateCustomItem}
-                    removeCustomItem={removeCustomItem}
-                    addCustomItem={addCustomItem}
-                    onOpenAts={() => modals.open('ats')}
-                    onOpenTheme={() => modals.open('theme')}
-                    profiles={profilesStore.profiles}
-                    activeProfileId={activeProfile.id}
-                    onSwitchProfile={handleSwitchProfile}
-                    onCreateProfile={handleCreateProfile}
-                    onDuplicateProfile={handleDuplicateProfile}
-                    onRenameProfile={handleRenameProfile}
-                    onDeleteProfile={handleDeleteProfile}
-                />
+                {/* Left: Editor Sidebar — hidden in fullscreen preview mode */}
+                {!isPreviewFullscreen && (
+                    <EditorSidebar
+                        mobileView={mobileView}
+                        handleDownloadPDF={handleDownloadPDF}
+                        setView={setView}
+                        activeSection={activeSection}
+                        setActiveSection={setActiveSection}
+                        resume={resume}
+                        setResume={setResume}
+                        sensors={sensors}
+                        handleDragEnd={handleDragEnd}
+                        removeCustomSection={removeCustomSection}
+                        togglePageBreak={togglePageBreak}
+                        addCustomSection={addCustomSection}
+                        handlePersonalChange={handlePersonalChange}
+                        handleSocialChange={handleSocialChange}
+                        handleAddSocial={handleAddSocial}
+                        handleRemoveSocial={handleRemoveSocial}
+                        handleArrayChange={handleArrayChange}
+                        removeItem={removeItem}
+                        addItem={addItem}
+                        handleCoverLetterChange={handleCoverLetterChange}
+                        updateCustomSectionTitle={updateCustomSectionTitle}
+                        updateCustomItem={updateCustomItem}
+                        removeCustomItem={removeCustomItem}
+                        addCustomItem={addCustomItem}
+                        onOpenTheme={() => modals.open('theme')}
+                        profiles={profilesStore.profiles}
+                        activeProfileId={activeProfile.id}
+                        onSwitchProfile={handleSwitchProfile}
+                        onCreateProfile={handleCreateProfile}
+                        onDuplicateProfile={handleDuplicateProfile}
+                        onRenameProfile={handleRenameProfile}
+                        onDeleteProfile={handleDeleteProfile}
+                    />
+                )}
 
                 <div
-                    className={`${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isSidebarOpen ? 'xl:pr-[340px]' : 'xl:pr-12'}`}
+                    className={
+                        isPreviewFullscreen
+                            ? // Compact iOS Quick Look-style overlay: slim dark backdrop below
+                              // the editor header (which remains visible so AI Assistant and
+                              // Export stay accessible). Resume centered, scaled down for a
+                              // contained "preview of a document" feel.
+                              'fixed inset-x-0 top-16 bottom-0 z-[40] bg-slate-950/95 backdrop-blur-md overflow-auto flex flex-col items-center p-8 gap-8 print-area'
+                            : `${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 dark:bg-slate-950 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${!isSidebarOpen ? 'xl:pr-12' : 'xl:pr-[340px]'}`
+                    }
                 >
-                    {/* Template Sidebar Toggle (When Closed) */}
+                    {/* Template Sidebar Toggle (When Closed) — hidden in fullscreen preview */}
                     <button
                         onClick={() => setIsSidebarOpen(true)}
-                        className={`fixed right-0 top-1/2 -translate-y-1/2 bg-white text-gray-900 p-3 rounded-l-xl shadow-lg border-y border-l border-gray-200 z-20 hidden xl:flex items-center gap-2 group hover:w-auto hover:pr-6 transition-all duration-300 ${isSidebarOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
+                        className={`fixed right-0 top-1/2 -translate-y-1/2 bg-white text-gray-900 p-3 rounded-l-xl shadow-lg border-y border-l border-gray-200 z-20 hidden ${isPreviewFullscreen ? '' : 'xl:flex'} items-center gap-2 group hover:w-auto hover:pr-6 transition-all duration-300 ${isSidebarOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
                         title="Open Template Selector"
                     >
                         <ChevronRight size={20} className="rotate-180 text-brand-600" />
@@ -1211,9 +1278,9 @@ const App = () => {
                         </span>
                     </button>
 
-                    {/* Template Selector Sidebar (Right) - Categorized List */}
+                    {/* Template Selector Sidebar (Right) - Categorized List — hidden in fullscreen preview */}
                     <div
-                        className={`fixed right-0 top-16 bottom-0 w-80 bg-white/80 backdrop-blur-md border-l border-gray-200 p-6 hidden xl:flex flex-col gap-8 no-print z-30 shadow-xl overflow-y-auto transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                        className={`fixed right-0 top-16 bottom-0 w-80 bg-white/80 backdrop-blur-md border-l border-gray-200 p-6 ${isPreviewFullscreen ? 'hidden' : 'hidden xl:flex'} flex-col gap-8 no-print z-30 shadow-xl overflow-y-auto transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
                     >
                         <div className="flex items-center justify-between">
                             <h3 className="font-bold text-gray-900 text-lg uppercase tracking-wider">

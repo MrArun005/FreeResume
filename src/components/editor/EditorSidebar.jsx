@@ -1,19 +1,9 @@
 import React from 'react';
-import {
-    Download,
-    LayoutGrid,
-    User,
-    Plus,
-    SplitSquareHorizontal,
-    Sparkles,
-    ArrowRight,
-    Palette,
-} from 'lucide-react';
+import { Download, LayoutGrid, User, Plus, SplitSquareHorizontal, Palette } from 'lucide-react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 
 import { SortableTag } from '../ui/SortableTag';
-import Logo from '../ui/Logo';
 import AppThemeSwitcher from '../ui/AppThemeSwitcher';
 import PersonalSection from '../editor/PersonalSection';
 import SummarySection from '../editor/SummarySection';
@@ -49,7 +39,6 @@ const EditorSidebar = ({
     updateCustomItem,
     removeCustomItem,
     addCustomItem,
-    onOpenAts,
     onOpenTheme,
     profiles,
     activeProfileId,
@@ -63,13 +52,26 @@ const EditorSidebar = ({
         <div
             className={`${mobileView === 'editor' ? 'flex' : 'hidden'} lg:flex w-full lg:w-[450px] bg-stone-50 dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col h-full z-10 overflow-hidden no-print absolute lg:relative inset-0`}
         >
-            {/* Header */}
-            <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
-                <div className="flex items-center justify-between mb-1 gap-2">
-                    <div className="min-w-0">
-                        <Logo className="w-8 h-8" textClassName="text-lg" />
+            {/* Header — single row: active profile on the left (uses the
+                space the wordmark used to occupy), action buttons on the
+                right. Previously this was two stacked rows with an empty
+                left half. */}
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                        {profiles?.length > 0 ? (
+                            <ProfilesMenu
+                                profiles={profiles}
+                                activeProfileId={activeProfileId}
+                                onSwitchProfile={onSwitchProfile}
+                                onCreateProfile={onCreateProfile}
+                                onDuplicateProfile={onDuplicateProfile}
+                                onRenameProfile={onRenameProfile}
+                                onDeleteProfile={onDeleteProfile}
+                            />
+                        ) : null}
                     </div>
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex gap-1.5 shrink-0">
                         <button
                             onClick={handleDownloadPDF}
                             className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-stone-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
@@ -96,19 +98,6 @@ const EditorSidebar = ({
                         </button>
                     </div>
                 </div>
-                {profiles?.length > 0 && (
-                    <div className="mt-2">
-                        <ProfilesMenu
-                            profiles={profiles}
-                            activeProfileId={activeProfileId}
-                            onSwitchProfile={onSwitchProfile}
-                            onCreateProfile={onCreateProfile}
-                            onDuplicateProfile={onDuplicateProfile}
-                            onRenameProfile={onRenameProfile}
-                            onDeleteProfile={onDeleteProfile}
-                        />
-                    </div>
-                )}
             </div>
 
             {/* Navigation & Content */}
@@ -188,31 +177,6 @@ const EditorSidebar = ({
                             <Plus size={14} /> Add Section
                         </button>
                     </div>
-
-                    {/* AI Affordance — first-class entry into ATS audit */}
-                    {onOpenAts && (
-                        <button
-                            onClick={onOpenAts}
-                            className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border border-brand-200 dark:border-brand-500/30 text-left transition-all hover:border-brand-300 dark:hover:border-brand-400/50 hover:-translate-y-px"
-                            style={{
-                                background:
-                                    'linear-gradient(135deg, rgba(20,184,166,0.10), rgba(20,184,166,0.02))',
-                            }}
-                        >
-                            <div className="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center shrink-0">
-                                <Sparkles size={16} />
-                            </div>
-                            <div className="flex-1">
-                                <div className="text-sm font-semibold text-slate-900 dark:text-stone-100">
-                                    Run ATS audit
-                                </div>
-                                <div className="text-[12px] text-slate-500 dark:text-stone-400 mt-0.5">
-                                    AI score + keyword check
-                                </div>
-                            </div>
-                            <ArrowRight size={16} className="text-brand-700 dark:text-brand-400 shrink-0" />
-                        </button>
-                    )}
 
                     {/* Active Section Editor */}
                     <div className="animate-fadeIn">

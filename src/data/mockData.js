@@ -134,6 +134,30 @@ export const initialData = {
     pageBreaks: {},
 };
 
+// Blank scaffold for "New resume" in the profiles menu. Keeps the canonical
+// shape but no content — previously new profiles were seeded from
+// `initialData` (Arun's demo resume), which made every new profile look
+// identical to the first one and obscured the multi-profile feature.
+export const emptyResume = {
+    personal: {
+        fullName: '',
+        title: '',
+        email: '',
+        phone: '',
+        location: '',
+        summary: '',
+        socials: [],
+    },
+    experience: [],
+    education: [],
+    skills: [],
+    projects: [],
+    customSections: [],
+    coverLetter: { title: '', body: '', bullets: [] },
+    sectionOrder: ['summary', 'experience', 'education', 'skills'],
+    pageBreaks: {},
+};
+
 export const parsedMockData = {
     personal: {
         fullName: 'Jordan Smith',
