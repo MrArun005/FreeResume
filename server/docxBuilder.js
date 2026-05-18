@@ -92,7 +92,35 @@ const THEMES = {
     },
 };
 
-const resolveTheme = (templateId) => THEMES[templateId] || THEMES.standard;
+// Convert resume-CSS pixels into DOCX's half-point unit. DOCX expresses
+// font sizes as half-points (a `size: 20` means 10pt). Web px → pt is
+// roughly 0.75 (at 96 DPI), so px × 1.5 ≈ DOCX half-points.
+const pxToDocxSize = (px) => Math.round(px * 1.5);
+
+// Build a theme bundle for the active template, injecting size knobs
+// from the user's typography prefs. The five size slots (name, heading,
+// subheading, body, bullet) are what the paragraph builders read; the
+// caller never has to know about half-points or px conversion.
+//
+// Name scales 1.5× the heading so the candidate's name still dominates
+// the page even if the user picks a small heading size. Subheading sits
+// at 0.85× heading — the role/title strip just below the name.
+const resolveTheme = (templateId, typography = {}) => {
+    const base = THEMES[templateId] || THEMES.standard;
+    const headingPx = typography.headingPx ?? 22;
+    const bodyPx = typography.bodyPx ?? 14;
+    const bulletPx = typography.bulletPx ?? 13;
+    return {
+        ...base,
+        sizes: {
+            name: pxToDocxSize(headingPx * 1.5),
+            heading: pxToDocxSize(headingPx),
+            subheading: pxToDocxSize(headingPx * 0.85),
+            body: pxToDocxSize(bodyPx),
+            bullet: pxToDocxSize(bulletPx),
+        },
+    };
+};
 
 // ── Text helpers ─────────────────────────────────────────────────────────
 const t = (v) => (v == null ? '' : String(v)).trim();
@@ -121,7 +149,9 @@ function buildHeader(personal = {}, theme) {
             new Paragraph({
                 alignment,
                 spacing: { after: 60 },
-                children: [run(nameText, theme, { size: 40, bold: theme.nameBold, color: nameColor })],
+                children: [
+                    run(nameText, theme, { size: theme.sizes.name, bold: theme.nameBold, color: nameColor }),
+                ],
             })
         );
     }
@@ -131,7 +161,13 @@ function buildHeader(personal = {}, theme) {
             new Paragraph({
                 alignment,
                 spacing: { after: 80 },
-                children: [run(personal.title, theme, { size: 22, italics: true, color: theme.muted })],
+                children: [
+                    run(personal.title, theme, {
+                        size: theme.sizes.subheading,
+                        italics: true,
+                        color: theme.muted,
+                    }),
+                ],
             })
         );
     }
@@ -156,7 +192,9 @@ function buildHeader(personal = {}, theme) {
                 border: theme.sectionRule
                     ? { bottom: { color: theme.accentRule, style: BorderStyle.SINGLE, size: 6 } }
                     : undefined,
-                children: [run(contactBits.join(' | '), theme, { size: 20, color: theme.muted })],
+                children: [
+                    run(contactBits.join(' | '), theme, { size: theme.sizes.body, color: theme.muted }),
+                ],
             })
         );
     }
@@ -172,7 +210,13 @@ function sectionTitle(text, theme) {
         border: theme.sectionRule
             ? { bottom: { color: theme.accentRule, style: BorderStyle.SINGLE, size: 6 } }
             : undefined,
-        children: [run(t(text).toUpperCase(), theme, { bold: true, size: 22, color: theme.accent })],
+        children: [
+            run(t(text).toUpperCase(), theme, {
+                bold: true,
+                size: theme.sizes.heading,
+                color: theme.accent,
+            }),
+        ],
     });
 }
 
@@ -181,14 +225,14 @@ function bullet(text, theme) {
     return new Paragraph({
         numbering: { reference: `bullets-${theme.bulletKey}`, level: 0 },
         spacing: { after: 40 },
-        children: [run(text, theme, { size: 20 })],
+        children: [run(text, theme, { size: theme.sizes.bullet })],
     });
 }
 
 function body(text, theme, opts = {}) {
     return new Paragraph({
         spacing: { after: opts.after ?? 80 },
-        children: [run(text, theme, { size: 20, ...opts })],
+        children: [run(text, theme, { size: theme.sizes.body, ...opts })],
     });
 }
 
@@ -202,19 +246,19 @@ function itemHeaderLine({ left, right, theme }) {
                 text: part.text,
                 bold: part.bold,
                 italics: part.italics,
-                size: 20,
+                size: theme.sizes.body,
                 color: part.bold && theme.itemHeaderAccent ? theme.accent : '0F172A',
                 font: theme.font,
             })
         );
     }
     if (right) {
-        children.push(new TextRun({ text: '\t', size: 20, font: theme.font }));
+        children.push(new TextRun({ text: '\t', size: theme.sizes.body, font: theme.font }));
         children.push(
             new TextRun({
                 text: t(right),
                 italics: true,
-                size: 20,
+                size: theme.sizes.body,
                 color: theme.muted,
                 font: theme.font,
             })
@@ -284,11 +328,16 @@ function buildSkills(resume, theme) {
                         new TextRun({
                             text: `${label}: `,
                             bold: true,
-                            size: 20,
+                            size: theme.sizes.body,
                             color: theme.itemHeaderAccent ? theme.accent : '0F172A',
                             font: theme.font,
                         }),
-                        new TextRun({ text: rest, size: 20, color: '0F172A', font: theme.font }),
+                        new TextRun({
+                            text: rest,
+                            size: theme.sizes.body,
+                            color: '0F172A',
+                            font: theme.font,
+                        }),
                     ],
                 })
             );
@@ -355,8 +404,8 @@ function buildBody(resume, theme) {
 }
 
 // ── Public entry point ───────────────────────────────────────────────────
-export async function buildResumeDocx(resume, templateId = 'standard') {
-    const theme = resolveTheme(templateId);
+export async function buildResumeDocx(resume, templateId = 'standard', typography = {}) {
+    const theme = resolveTheme(templateId, typography);
     // The bullet numbering definition needs a unique reference per theme
     // because Word baked the bullet character into the numbering itself —
     // we can't change it per-paragraph. So we register one numbering def
@@ -369,7 +418,7 @@ export async function buildResumeDocx(resume, templateId = 'standard') {
         styles: {
             default: {
                 document: {
-                    run: { font: theme.font, size: 20 },
+                    run: { font: theme.font, size: theme.sizes.body },
                     paragraph: { spacing: { line: 276 } },
                 },
             },

@@ -1,3 +1,12 @@
+import {
+    HEADING_SIZES,
+    BODY_SIZES,
+    BULLET_SIZES,
+    loadSavedHeadingSize,
+    loadSavedBodySize,
+    loadSavedBulletSize,
+} from '../theme/tokens';
+
 // True-WYSIWYG PDF export.
 //
 // The preview is HTML/CSS rendered by React. To get a PDF that's pixel-
@@ -319,11 +328,21 @@ export async function exportCoverLetterPdf({ coverLetter, resumeData, filename =
 export async function exportResumeDocx({ resume, templateId, filename = 'Resume.docx' } = {}) {
     if (!resume) return { ok: false, reason: 'No resume provided.' };
 
+    // Pull the user's typography prefs (set in the Design & Theme modal)
+    // and translate them into the raw px values the server's docxBuilder
+    // expects. If the user never touched the controls, these resolve to
+    // the defaults defined in src/theme/tokens.js.
+    const typography = {
+        headingPx: HEADING_SIZES[loadSavedHeadingSize()]?.px,
+        bodyPx: BODY_SIZES[loadSavedBodySize()]?.px,
+        bulletPx: BULLET_SIZES[loadSavedBulletSize()]?.px,
+    };
+
     try {
         const response = await fetch('/api/generate-docx', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ resumeData: resume, templateId }),
+            body: JSON.stringify({ resumeData: resume, templateId, typography }),
         });
 
         if (!response.ok) {

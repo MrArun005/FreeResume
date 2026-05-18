@@ -56,10 +56,10 @@ router.post('/generate-pdf', async (req, res) => {
 
 router.post('/generate-docx', async (req, res) => {
     try {
-        const { resumeData, templateId } = req.body;
+        const { resumeData, templateId, typography } = req.body;
         if (!resumeData) return res.status(400).json({ error: 'Missing resumeData' });
 
-        const buffer = await buildResumeDocx(resumeData, templateId || 'standard');
+        const buffer = await buildResumeDocx(resumeData, templateId || 'standard', typography);
         res.set({
             'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'Content-Disposition': 'attachment; filename=resume.docx',
