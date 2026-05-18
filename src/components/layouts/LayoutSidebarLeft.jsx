@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon } from 'lucide-react';
 
 const LayoutSidebarLeft = ({ data, theme, pageIndex, isMeasurement }) => {
@@ -18,7 +19,12 @@ const LayoutSidebarLeft = ({ data, theme, pageIndex, isMeasurement }) => {
     const renderMainSection = (sectionId) => {
         if (sectionId === 'summary') {
             return (
-                <div key="summary" id={`section-summary`} className="mb-8">
+                <div
+                    key="summary"
+                    id={`section-summary`}
+                    style={sectionStyle(data, 'summary')}
+                    className="mb-8"
+                >
                     <h3 className={`text-lg font-bold uppercase tracking-widest mb-4 ${theme.text}`}>
                         Profile
                     </h3>
@@ -31,7 +37,12 @@ const LayoutSidebarLeft = ({ data, theme, pageIndex, isMeasurement }) => {
             const isFirstPageOfSection =
                 !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
-                <div key="experience" id="section-experience" className="mb-8">
+                <div
+                    key="experience"
+                    id="section-experience"
+                    style={sectionStyle(data, 'experience')}
+                    className="mb-8"
+                >
                     {isFirstPageOfSection && (
                         <h3
                             id="section-title-experience"
@@ -75,7 +86,12 @@ const LayoutSidebarLeft = ({ data, theme, pageIndex, isMeasurement }) => {
         const customSection = data.customSections?.find((s) => s.id === sectionId);
         if (customSection && customSection.items.length > 0) {
             return (
-                <div key={sectionId} id={`section-${sectionId}`} className="mb-8">
+                <div
+                    key={sectionId}
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="mb-8"
+                >
                     {(!data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex) && (
                         <h3
                             id={`section-title-${sectionId}`}
@@ -150,7 +166,7 @@ const LayoutSidebarLeft = ({ data, theme, pageIndex, isMeasurement }) => {
                     </div>
                 )}
                 {data.education && data.education.length > 0 && (
-                    <div id="section-education" className="mb-8">
+                    <div id="section-education" style={sectionStyle(data, 'education')} className="mb-8">
                         <h3
                             id="section-title-education"
                             className="text-xs uppercase tracking-widest font-bold border-b border-white/30 pb-2 mb-3"
@@ -171,7 +187,7 @@ const LayoutSidebarLeft = ({ data, theme, pageIndex, isMeasurement }) => {
                     </div>
                 )}
                 {data.skills && data.skills.length > 0 && (
-                    <div id="section-skills">
+                    <div id="section-skills" style={sectionStyle(data, 'skills')}>
                         <h3 className="text-xs uppercase tracking-widest font-bold border-b border-white/30 pb-2 mb-3">
                             Skills
                         </h3>

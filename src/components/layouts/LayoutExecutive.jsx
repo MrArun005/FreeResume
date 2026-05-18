@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon } from 'lucide-react';
 
 const LayoutExecutive = ({ data, pageIndex }) => {
@@ -64,14 +65,18 @@ const LayoutExecutive = ({ data, pageIndex }) => {
                 <div className="flex-1 flex flex-col gap-8">
                     {/* Summary */}
                     {personal.summary && (!pageIndex || pageIndex === 0) && (
-                        <section id="section-summary" className="text-center max-w-2xl mx-auto">
+                        <section
+                            id="section-summary"
+                            style={sectionStyle(data, 'summary')}
+                            className="text-center max-w-2xl mx-auto"
+                        >
                             <p className="text-slate-700 leading-relaxed italic">"{personal.summary}"</p>
                         </section>
                     )}
 
                     {/* Experience */}
                     {experience.length > 0 && (
-                        <section id="section-experience">
+                        <section id="section-experience" style={sectionStyle(data, 'experience')}>
                             {shouldRenderTitle('experience') && (
                                 <div id="section-title-experience" className="flex items-center gap-4 mb-6">
                                     <div className="h-px bg-slate-300 flex-1"></div>
@@ -115,7 +120,7 @@ const LayoutExecutive = ({ data, pageIndex }) => {
 
                     {/* Education */}
                     {education.length > 0 && (
-                        <section id="section-education">
+                        <section id="section-education" style={sectionStyle(data, 'education')}>
                             {shouldRenderTitle('education') && (
                                 <div
                                     id="section-title-education"
@@ -150,7 +155,7 @@ const LayoutExecutive = ({ data, pageIndex }) => {
 
                     {/* Skills */}
                     {skills.length > 0 && (
-                        <section id="section-skills">
+                        <section id="section-skills" style={sectionStyle(data, 'skills')}>
                             {shouldRenderTitle('skills') && (
                                 <div id="section-title-skills" className="flex items-center gap-4 mb-6 mt-2">
                                     <div className="h-px bg-slate-300 flex-1"></div>
@@ -178,7 +183,11 @@ const LayoutExecutive = ({ data, pageIndex }) => {
                     {customSections?.map(
                         (section) =>
                             section.items.length > 0 && (
-                                <section key={section.id} id={`section-${section.id}`}>
+                                <section
+                                    key={section.id}
+                                    id={`section-${section.id}`}
+                                    style={sectionStyle(data, section.id)}
+                                >
                                     {shouldRenderTitle(section.id) && (
                                         <div
                                             id={`section-title-${section.id}`}

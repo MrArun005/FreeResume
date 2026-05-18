@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Globe } from 'lucide-react';
 
 const SectionHeading = ({ title, theme }) => (
@@ -63,7 +64,7 @@ const LayoutDeedy = ({ data, theme, pageIndex, isMeasurement }) => {
                 {/* Left Column Content */}
                 <div className="space-y-6">
                     {education.length > 0 && (
-                        <div id="section-education">
+                        <div id="section-education" style={sectionStyle(data, 'education')}>
                             {(!data.sectionStartPage ||
                                 data.sectionStartPage['education'] === data.pageIndex) && (
                                 <div id="section-title-education">
@@ -81,7 +82,7 @@ const LayoutDeedy = ({ data, theme, pageIndex, isMeasurement }) => {
                     )}
 
                     {skills.length > 0 && (
-                        <div id="section-skills">
+                        <div id="section-skills" style={sectionStyle(data, 'skills')}>
                             {(!data.sectionStartPage ||
                                 data.sectionStartPage['skills'] === data.pageIndex) && (
                                 <div id="section-title-skills">
@@ -105,7 +106,7 @@ const LayoutDeedy = ({ data, theme, pageIndex, isMeasurement }) => {
                 {/* Right Column Content */}
                 <div className="space-y-6">
                     {experience.length > 0 && (
-                        <div id="section-experience">
+                        <div id="section-experience" style={sectionStyle(data, 'experience')}>
                             {(!data.sectionStartPage ||
                                 data.sectionStartPage['experience'] === data.pageIndex) && (
                                 <div id="section-title-experience">
@@ -134,7 +135,11 @@ const LayoutDeedy = ({ data, theme, pageIndex, isMeasurement }) => {
                     )}
 
                     {customSections.map((section) => (
-                        <div key={section.id} id={`section-${section.id}`}>
+                        <div
+                            key={section.id}
+                            id={`section-${section.id}`}
+                            style={sectionStyle(data, section.id)}
+                        >
                             {(!data.sectionStartPage ||
                                 data.sectionStartPage[section.id] === data.pageIndex) && (
                                 <div id={`section-title-${section.id}`}>

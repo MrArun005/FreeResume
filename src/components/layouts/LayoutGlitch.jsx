@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import {
     MapPin,
     Mail,
@@ -73,7 +74,7 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                 <div className="flex-1 flex flex-col gap-8">
                     {/* Summary */}
                     {personal.summary && (!pageIndex || pageIndex === 0) && (
-                        <section id="section-summary">
+                        <section id="section-summary" style={sectionStyle(data, 'summary')}>
                             <div className="mb-4 flex items-center gap-2 text-cyan-500">
                                 <Terminal size={16} />
                                 <h3 className="text-sm font-bold uppercase tracking-widest">About_Me</h3>
@@ -86,7 +87,7 @@ const LayoutGlitch = ({ data, pageIndex }) => {
 
                     {/* Experience */}
                     {experience.length > 0 && (
-                        <section id="section-experience">
+                        <section id="section-experience" style={sectionStyle(data, 'experience')}>
                             {shouldRenderTitle('experience') && (
                                 <div
                                     id="section-title-experience"
@@ -135,7 +136,7 @@ const LayoutGlitch = ({ data, pageIndex }) => {
 
                     {/* Education */}
                     {education.length > 0 && (
-                        <section id="section-education">
+                        <section id="section-education" style={sectionStyle(data, 'education')}>
                             {shouldRenderTitle('education') && (
                                 <div
                                     id="section-title-education"
@@ -163,7 +164,7 @@ const LayoutGlitch = ({ data, pageIndex }) => {
 
                     {/* Skills */}
                     {skills.length > 0 && (
-                        <section id="section-skills">
+                        <section id="section-skills" style={sectionStyle(data, 'skills')}>
                             {shouldRenderTitle('skills') && (
                                 <div
                                     id="section-title-skills"
@@ -192,7 +193,11 @@ const LayoutGlitch = ({ data, pageIndex }) => {
                     {customSections?.map(
                         (section) =>
                             section.items.length > 0 && (
-                                <section key={section.id} id={`section-${section.id}`}>
+                                <section
+                                    key={section.id}
+                                    id={`section-${section.id}`}
+                                    style={sectionStyle(data, section.id)}
+                                >
                                     {shouldRenderTitle(section.id) && (
                                         <div
                                             id={`section-title-${section.id}`}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import SectionTitle from '../ui/SectionTitle';
 import { Mail, Phone, MapPin, Link as LinkIcon } from 'lucide-react';
 
@@ -66,7 +67,12 @@ const LayoutClassic = ({ data, theme, pageIndex, isMeasurement }) => {
 
                 if (sectionId === 'summary' && data.personal.summary) {
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6 break-inside-avoid">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6 break-inside-avoid"
+                        >
                             <div id={`section-title-${sectionId}`}>
                                 <SectionTitle title="Professional Summary" theme={theme} />
                             </div>
@@ -81,7 +87,12 @@ const LayoutClassic = ({ data, theme, pageIndex, isMeasurement }) => {
                         !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
 
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6"
+                        >
                             {isFirstPageOfSection && (
                                 <div id={`section-title-${sectionId}`}>
                                     <SectionTitle title="Experience" theme={theme} />
@@ -119,7 +130,12 @@ const LayoutClassic = ({ data, theme, pageIndex, isMeasurement }) => {
                         !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
 
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6"
+                        >
                             {isFirstPageOfSection && (
                                 <div id={`section-title-${sectionId}`}>
                                     <SectionTitle title="Education" theme={theme} />
@@ -140,7 +156,12 @@ const LayoutClassic = ({ data, theme, pageIndex, isMeasurement }) => {
 
                 if (sectionId === 'skills' && data.skills.length > 0) {
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6 break-inside-avoid">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6 break-inside-avoid"
+                        >
                             <div id={`section-title-${sectionId}`}>
                                 <SectionTitle title="Skills" theme={theme} />
                             </div>
@@ -163,7 +184,12 @@ const LayoutClassic = ({ data, theme, pageIndex, isMeasurement }) => {
                         !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
 
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6"
+                        >
                             {isFirstPageOfSection && (
                                 <div id={`section-title-${sectionId}`}>
                                     <SectionTitle title={sectionData.title} theme={theme} />

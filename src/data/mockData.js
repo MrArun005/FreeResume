@@ -156,6 +156,7 @@ export const emptyResume = {
     coverLetter: { title: '', body: '', bullets: [] },
     sectionOrder: ['summary', 'experience', 'education', 'skills'],
     pageBreaks: {},
+    sectionStyles: {},
 };
 
 export const parsedMockData = {

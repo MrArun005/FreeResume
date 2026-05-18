@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon, Leaf } from 'lucide-react';
 
 const LayoutLeaf = ({ data, pageIndex }) => {
@@ -66,7 +67,7 @@ const LayoutLeaf = ({ data, pageIndex }) => {
 
                 {/* Skills - Sidebar */}
                 {skills.length > 0 && (
-                    <section id="section-skills">
+                    <section id="section-skills" style={sectionStyle(data, 'skills')}>
                         {shouldRenderTitle('skills') && (
                             <h3
                                 id="section-title-skills"
@@ -90,7 +91,7 @@ const LayoutLeaf = ({ data, pageIndex }) => {
 
                 {/* Education - Sidebar */}
                 {education.length > 0 && (
-                    <section id="section-education">
+                    <section id="section-education" style={sectionStyle(data, 'education')}>
                         {shouldRenderTitle('education') && (
                             <h3
                                 id="section-title-education"
@@ -130,7 +131,7 @@ const LayoutLeaf = ({ data, pageIndex }) => {
 
                 {/* Summary */}
                 {personal.summary && (!pageIndex || pageIndex === 0) && (
-                    <section id="section-summary">
+                    <section id="section-summary" style={sectionStyle(data, 'summary')}>
                         <div className="bg-[#F1F8E9] p-6 rounded-2xl border border-[#DCEDC8]">
                             <p className="text-gray-700 leading-relaxed text-sm">{personal.summary}</p>
                         </div>
@@ -139,7 +140,7 @@ const LayoutLeaf = ({ data, pageIndex }) => {
 
                 {/* Experience */}
                 {experience.length > 0 && (
-                    <section id="section-experience">
+                    <section id="section-experience" style={sectionStyle(data, 'experience')}>
                         {shouldRenderTitle('experience') && (
                             <div id="section-title-experience" className="flex items-center gap-3 mb-6">
                                 <div className="p-2 bg-[#E8F5E9] rounded-full text-[#2E7D32]">
@@ -191,7 +192,11 @@ const LayoutLeaf = ({ data, pageIndex }) => {
                 {customSections?.map(
                     (section) =>
                         section.items.length > 0 && (
-                            <section key={section.id} id={`section-${section.id}`}>
+                            <section
+                                key={section.id}
+                                id={`section-${section.id}`}
+                                style={sectionStyle(data, section.id)}
+                            >
                                 {shouldRenderTitle(section.id) && (
                                     <div
                                         id={`section-title-${section.id}`}

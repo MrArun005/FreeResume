@@ -134,6 +134,13 @@ const App = () => {
             skills: normalizeSkills(parsed.skills || []),
             sectionOrder: parsed.sectionOrder || ['summary', 'experience', 'education', 'skills'],
             pageBreaks: parsed.pageBreaks || {},
+            // Path B per-section size scales. Keyed by sectionId (built-in
+            // 'summary'|'experience'|'education'|'skills'|'projects' or a
+            // custom UUID). Value is the scale preset key — see
+            // src/utils/sectionStyles.js for the multiplier table. Missing
+            // sections fall back to scale=1 (no change), so older resumes
+            // without this field render identically.
+            sectionStyles: parsed.sectionStyles || {},
         };
     };
 

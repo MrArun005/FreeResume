@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Linkedin, Github, Globe } from 'lucide-react';
 
 const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
@@ -52,7 +53,11 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                         const isFirstPageOfSection =
                             !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                         return (
-                            <div key={sectionId} id={`section-${sectionId}`}>
+                            <div
+                                key={sectionId}
+                                id={`section-${sectionId}`}
+                                style={sectionStyle(data, sectionId)}
+                            >
                                 {isFirstPageOfSection && (
                                     <div id={`section-title-${sectionId}`}>
                                         <SectionHeading title="Education" />
@@ -82,7 +87,11 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                         const isFirstPageOfSection =
                             !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                         return (
-                            <div key={sectionId} id={`section-${sectionId}`}>
+                            <div
+                                key={sectionId}
+                                id={`section-${sectionId}`}
+                                style={sectionStyle(data, sectionId)}
+                            >
                                 {isFirstPageOfSection && (
                                     <div id={`section-title-${sectionId}`}>
                                         <SectionHeading title="Experience" />
@@ -121,7 +130,12 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
                         const isFirstPageOfSection =
                             !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                         return (
-                            <div key={sectionId} id={`section-${sectionId}`} className="break-inside-avoid">
+                            <div
+                                key={sectionId}
+                                id={`section-${sectionId}`}
+                                style={sectionStyle(data, sectionId)}
+                                className="break-inside-avoid"
+                            >
                                 {isFirstPageOfSection && (
                                     <div id={`section-title-${sectionId}`}>
                                         <SectionHeading title="Skills" />
@@ -157,7 +171,11 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
 
                     if (isCustom && sectionData && sectionData.items.length > 0) {
                         return (
-                            <div key={sectionId} id={`section-${sectionId}`}>
+                            <div
+                                key={sectionId}
+                                id={`section-${sectionId}`}
+                                style={sectionStyle(data, sectionId)}
+                            >
                                 {(!data.sectionStartPage ||
                                     data.sectionStartPage[sectionId] === data.pageIndex) && (
                                     <div id={`section-title-${sectionId}`}>

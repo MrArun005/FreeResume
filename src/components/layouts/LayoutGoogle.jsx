@@ -1,6 +1,8 @@
 // LayoutGoogle — "Google internal" style: modern sans-serif, Google brand accent.
 // Clean single-column, ATS-friendly, subtle blue rule under section titles.
 
+import { sectionStyle } from '../../utils/sectionStyles';
+
 const TEXT = '#202124'; // Google text gray-900
 const MUTED = '#5f6368'; // Google gray-600
 const BORDER = '#dadce0'; // Google gray-300
@@ -62,7 +64,12 @@ const LayoutGoogle = ({ data, pageIndex, isMeasurement }) => {
     const renderSection = (sectionId) => {
         if (sectionId === 'summary' && personal.summary) {
             return (
-                <section key="summary" id={`section-${sectionId}`} className="break-inside-avoid">
+                <section
+                    key="summary"
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="break-inside-avoid"
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Summary" />
@@ -77,7 +84,7 @@ const LayoutGoogle = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'experience' && experience.length > 0) {
             return (
-                <section key="experience" id={`section-${sectionId}`}>
+                <section key="experience" id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Experience" />
@@ -129,7 +136,7 @@ const LayoutGoogle = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'education' && education.length > 0) {
             return (
-                <section key="education" id={`section-${sectionId}`}>
+                <section key="education" id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Education" />
@@ -165,7 +172,12 @@ const LayoutGoogle = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'skills' && skills.length > 0) {
             return (
-                <section key="skills" id={`section-${sectionId}`} className="break-inside-avoid">
+                <section
+                    key="skills"
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="break-inside-avoid"
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Skills" />
@@ -189,7 +201,11 @@ const LayoutGoogle = ({ data, pageIndex, isMeasurement }) => {
         const customSection = customSections?.find((s) => s.id === sectionId);
         if (customSection && customSection.items?.length > 0) {
             return (
-                <section key={customSection.id} id={`section-${sectionId}`}>
+                <section
+                    key={customSection.id}
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title={customSection.title} />

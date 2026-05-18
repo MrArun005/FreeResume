@@ -358,14 +358,21 @@ html {
 }
 
 /* Element-type size overrides — apply on top of the base font-size above.
-   Selector strategy is documented in the Path A plan:
+   Selector strategy documented in the Path A plan:
      - Headings: semantic h1-h6 + Tailwind text-lg through text-5xl (some
        templates use plain divs with size classes instead of semantic tags)
      - Body: <p> + text-base / text-md / text-sm
      - Bullets: <li> nested in <ul>/<ol> — higher specificity than body so
        bullet size wins for li elements that also carry a text-sm class.
    `[class~="x"]` matches the class as a whole token (whitespace-separated)
-   so we don't accidentally hit unrelated classes. */
+   so we don't accidentally hit unrelated classes.
+
+   Path B composition: every rule multiplies by --section-scale via calc().
+   That variable defaults to 1 (no change). When a layout sets it on a
+   section wrapper inline (style={{'--section-scale': 0.85}}), it inherits
+   down through the section's subtree and shrinks/grows that section's
+   text proportionally. The fallback inside `var()` keeps existing
+   single-knob (Path A only) users at exact same sizes. */
 .resume-paper h1,
 .resume-paper h2,
 .resume-paper h3,
@@ -378,17 +385,17 @@ html {
 .resume-paper [class~='text-3xl'],
 .resume-paper [class~='text-4xl'],
 .resume-paper [class~='text-5xl'] {
-    font-size: var(--resume-heading-size);
+    font-size: calc(var(--resume-heading-size) * var(--section-scale, 1));
 }
 .resume-paper p,
 .resume-paper [class~='text-base'],
 .resume-paper [class~='text-md'],
 .resume-paper [class~='text-sm'] {
-    font-size: var(--resume-body-size);
+    font-size: calc(var(--resume-body-size) * var(--section-scale, 1));
 }
 .resume-paper ul li,
 .resume-paper ol li {
-    font-size: var(--resume-bullet-size);
+    font-size: calc(var(--resume-bullet-size) * var(--section-scale, 1));
 }
 
 @layer base {

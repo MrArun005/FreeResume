@@ -3,6 +3,8 @@
 // tiny tracked uppercase labels. Maximum ATS score because there's almost
 // nothing for the parser to misread.
 
+import { sectionStyle } from '../../utils/sectionStyles';
+
 const TEXT = '#0F172A';
 const MUTED = '#475569';
 
@@ -44,7 +46,12 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
     const renderSection = (sectionId) => {
         if (sectionId === 'summary' && personal.summary) {
             return (
-                <section key="summary" id={`section-${sectionId}`} className="break-inside-avoid">
+                <section
+                    key="summary"
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="break-inside-avoid"
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Summary" />
@@ -59,7 +66,7 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'experience' && experience.length > 0) {
             return (
-                <section key="experience" id={`section-${sectionId}`}>
+                <section key="experience" id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Experience" />
@@ -103,7 +110,7 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'education' && education.length > 0) {
             return (
-                <section key="education" id={`section-${sectionId}`}>
+                <section key="education" id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Education" />
@@ -140,7 +147,12 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'skills' && skills.length > 0) {
             return (
-                <section key="skills" id={`section-${sectionId}`} className="break-inside-avoid">
+                <section
+                    key="skills"
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="break-inside-avoid"
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Skills" />
@@ -177,7 +189,7 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
         const custom = customSections?.find((s) => s.id === sectionId);
         if (custom && custom.items?.length > 0) {
             return (
-                <section key={custom.id} id={`section-${sectionId}`}>
+                <section key={custom.id} id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title={custom.title} />

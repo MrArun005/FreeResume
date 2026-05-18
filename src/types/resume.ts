@@ -87,6 +87,13 @@ export interface Resume {
     sectionOrder: string[];
     /** Map of section/item id → boolean. When true, the section starts on a new page. */
     pageBreaks: Record<string, boolean>;
+    /**
+     * Per-section size scale (Path B typography). Key is the section id;
+     * value is a preset key from SECTION_SCALES in src/utils/sectionStyles.js.
+     * Missing entries fall back to scale=1 (no change). Layers on top of
+     * the global Path A heading/body/bullet sizes — composes, doesn't override.
+     */
+    sectionStyles?: Record<string, 'compact' | 'normal' | 'large'>;
 }
 
 // ─── Fix descriptors ─────────────────────────────────────────────────────

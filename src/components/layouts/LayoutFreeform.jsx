@@ -1,3 +1,4 @@
+import { sectionStyle } from '../../utils/sectionStyles';
 import { useState } from 'react';
 import {
     DndContext,
@@ -125,7 +126,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'summary' && data.personal.summary) {
             return (
-                <div id={`section-${sectionId}`} className="mb-6">
+                <div id={`section-${sectionId}`} style={sectionStyle(data, sectionId)} className="mb-6">
                     <div id={`section-title-${sectionId}`}>
                         <SectionTitle title="Professional Summary" theme={theme} />
                     </div>
@@ -138,7 +139,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
             const isFirstPageOfSection =
                 !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
-                <div id={`section-${sectionId}`} className="mb-6">
+                <div id={`section-${sectionId}`} style={sectionStyle(data, sectionId)} className="mb-6">
                     {isFirstPageOfSection && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Experience" theme={theme} />
@@ -173,7 +174,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
             const isFirstPageOfSection =
                 !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
-                <div id={`section-${sectionId}`} className="mb-6">
+                <div id={`section-${sectionId}`} style={sectionStyle(data, sectionId)} className="mb-6">
                     {isFirstPageOfSection && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Education" theme={theme} />
@@ -194,7 +195,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'skills' && data.skills.length > 0) {
             return (
-                <div id={`section-${sectionId}`} className="mb-6">
+                <div id={`section-${sectionId}`} style={sectionStyle(data, sectionId)} className="mb-6">
                     <div id={`section-title-${sectionId}`}>
                         <SectionTitle title="Skills" theme={theme} />
                     </div>
@@ -214,7 +215,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
 
         if (isCustom && sectionData && sectionData.items.length > 0) {
             return (
-                <div id={`section-${sectionId}`} className="mb-6">
+                <div id={`section-${sectionId}`} style={sectionStyle(data, sectionId)} className="mb-6">
                     {(!data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title={sectionData.title} theme={theme} />

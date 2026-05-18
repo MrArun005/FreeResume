@@ -368,25 +368,52 @@ function buildCustomSection(section, theme) {
     return blocks;
 }
 
+// Path B: per-section scale multipliers. Mirrors SECTION_SCALES in
+// src/utils/sectionStyles.js — kept duplicated rather than imported so
+// the server doesn't reach into client code (different build, different
+// module resolution).
+const SECTION_FACTORS = { compact: 0.85, normal: 1.0, large: 1.15 };
+
+// Return a shallow-cloned theme whose `sizes` slots are multiplied by
+// `factor`. factor=1 short-circuits so callers don't pay the clone cost
+// for sections at the default scale.
+function scaleTheme(theme, factor) {
+    if (factor === 1) return theme;
+    const scaled = {};
+    for (const [k, v] of Object.entries(theme.sizes)) {
+        scaled[k] = Math.max(2, Math.round(v * factor));
+    }
+    return { ...theme, sizes: scaled };
+}
+
+// Look up a per-section scale factor from the resume blob.
+function scaleFor(resume, sectionId) {
+    return SECTION_FACTORS[resume.sectionStyles?.[sectionId]] ?? 1;
+}
+
 function buildBody(resume, theme) {
     const order = resume.sectionOrder || ['summary', 'experience', 'education', 'skills'];
     const blocks = [];
     const referenced = new Set(order);
 
     for (const id of order) {
-        if (id === 'summary') blocks.push(...buildSummary(resume, theme));
-        else if (id === 'experience') blocks.push(...buildExperience(resume, theme));
-        else if (id === 'education') blocks.push(...buildEducation(resume, theme));
-        else if (id === 'skills') blocks.push(...buildSkills(resume, theme));
+        const sectionTheme = scaleTheme(theme, scaleFor(resume, id));
+        if (id === 'summary') blocks.push(...buildSummary(resume, sectionTheme));
+        else if (id === 'experience') blocks.push(...buildExperience(resume, sectionTheme));
+        else if (id === 'education') blocks.push(...buildEducation(resume, sectionTheme));
+        else if (id === 'skills') blocks.push(...buildSkills(resume, sectionTheme));
         else {
             const sec = (resume.customSections || []).find((s) => s.id === id);
-            if (sec) blocks.push(...buildCustomSection(sec, theme));
+            if (sec) blocks.push(...buildCustomSection(sec, sectionTheme));
         }
     }
 
     // Custom sections that aren't in sectionOrder still get rendered at the end.
     for (const sec of resume.customSections || []) {
-        if (!referenced.has(sec.id)) blocks.push(...buildCustomSection(sec, theme));
+        if (!referenced.has(sec.id)) {
+            const sectionTheme = scaleTheme(theme, scaleFor(resume, sec.id));
+            blocks.push(...buildCustomSection(sec, sectionTheme));
+        }
     }
 
     // Cover letter is an object ({ title, body, bullets }), not a string —
@@ -394,9 +421,10 @@ function buildBody(resume, theme) {
     // empty {}, then .split() crashes. Read the `body` field explicitly.
     const coverBody = t(resume.coverLetter?.body);
     if (coverBody) {
-        blocks.push(sectionTitle('Cover Letter', theme));
+        const coverTheme = scaleTheme(theme, scaleFor(resume, 'coverLetter'));
+        blocks.push(sectionTitle('Cover Letter', coverTheme));
         for (const para of coverBody.split(/\n+/)) {
-            if (t(para)) blocks.push(body(para, theme));
+            if (t(para)) blocks.push(body(para, coverTheme));
         }
     }
 

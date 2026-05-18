@@ -3,6 +3,7 @@
 // en-dash bullets with hanging indent, numbered projects, right-aligned dates.
 
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Phone, Mail, MapPin, Linkedin } from 'lucide-react';
 
 const ACCENT = '#DC2626'; // red-600
@@ -64,7 +65,7 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
 
     // Group experience bullets in a way the rendered list keeps a tight, scan-friendly feel.
     const renderExperience = (sectionId) => (
-        <section key={sectionId} id={`section-${sectionId}`}>
+        <section key={sectionId} id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
             {shouldRenderTitle(sectionId) && (
                 <div id={`section-title-${sectionId}`}>
                     <SectionTitle title="Experience" />
@@ -102,7 +103,7 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
     );
 
     const renderEducation = (sectionId) => (
-        <section key={sectionId} id={`section-${sectionId}`}>
+        <section key={sectionId} id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
             {shouldRenderTitle(sectionId) && (
                 <div id={`section-title-${sectionId}`}>
                     <SectionTitle title="Education" />
@@ -142,7 +143,12 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
     // We split a skill on the first ":" to bold the label portion. Plain skills
     // without a colon still render as a simple line item.
     const renderSkills = (sectionId) => (
-        <section key={sectionId} id={`section-${sectionId}`} className="break-inside-avoid">
+        <section
+            key={sectionId}
+            id={`section-${sectionId}`}
+            style={sectionStyle(data, sectionId)}
+            className="break-inside-avoid"
+        >
             {shouldRenderTitle(sectionId) && (
                 <div id={`section-title-${sectionId}`}>
                     <SectionTitle title="Skills" />
@@ -169,7 +175,7 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
     const renderCustom = (section) => {
         const isProjects = /project/i.test(section.title);
         return (
-            <section key={section.id} id={`section-${section.id}`}>
+            <section key={section.id} id={`section-${section.id}`} style={sectionStyle(data, section.id)}>
                 {shouldRenderTitle(section.id) && (
                     <div id={`section-title-${section.id}`}>
                         <SectionTitle title={section.title} />
@@ -218,7 +224,12 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
     const renderSection = (sectionId) => {
         if (sectionId === 'summary' && personal.summary) {
             return (
-                <section key="summary" id={`section-${sectionId}`} className="break-inside-avoid">
+                <section
+                    key="summary"
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="break-inside-avoid"
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Summary" />

@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon, Calendar, Building, GraduationCap } from 'lucide-react';
 import SectionTitle from '../ui/SectionTitle';
 
@@ -72,7 +73,12 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
                 {sidebarSectionIds.map((sectionId) => {
                     if (sectionId === 'education' && data.education && data.education.length > 0) {
                         return (
-                            <div key="education" id="section-education" className="mb-8">
+                            <div
+                                key="education"
+                                id="section-education"
+                                style={sectionStyle(data, 'education')}
+                                className="mb-8"
+                            >
                                 <h3
                                     id="section-title-education"
                                     className="text-lg font-bold uppercase tracking-wider border-b border-white/30 pb-2 mb-4 flex items-center gap-2"
@@ -183,7 +189,11 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
                         const isFirstPageOfSection =
                             !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                         return (
-                            <div key={sectionId} id="section-experience">
+                            <div
+                                key={sectionId}
+                                id="section-experience"
+                                style={sectionStyle(data, 'experience')}
+                            >
                                 {isFirstPageOfSection && (
                                     <h3
                                         id="section-title-experience"

@@ -3,6 +3,8 @@
 // aligned, modern light-navy chips for skills. Recruiter-friendly for BigCo,
 // finance, consulting, and product roles.
 
+import { sectionStyle } from '../../utils/sectionStyles';
+
 const NAVY = '#0F2C5E';
 const TEXT = '#0F172A';
 const MUTED = '#475569';
@@ -56,7 +58,12 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
     const renderSection = (sectionId) => {
         if (sectionId === 'summary' && personal.summary) {
             return (
-                <section key="summary" id={`section-${sectionId}`} className="break-inside-avoid">
+                <section
+                    key="summary"
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="break-inside-avoid"
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Summary" />
@@ -71,7 +78,7 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'experience' && experience.length > 0) {
             return (
-                <section key="experience" id={`section-${sectionId}`}>
+                <section key="experience" id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Experience" />
@@ -115,7 +122,7 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'education' && education.length > 0) {
             return (
-                <section key="education" id={`section-${sectionId}`}>
+                <section key="education" id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Education" />
@@ -159,7 +166,12 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
             // Render category strings ("Languages: Python, SQL") as a label + chip cluster.
             // Plain strings render as a chip.
             return (
-                <section key="skills" id={`section-${sectionId}`} className="break-inside-avoid">
+                <section
+                    key="skills"
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="break-inside-avoid"
+                >
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title="Skills" />
@@ -215,7 +227,7 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
         const custom = customSections?.find((s) => s.id === sectionId);
         if (custom && custom.items?.length > 0) {
             return (
-                <section key={custom.id} id={`section-${sectionId}`}>
+                <section key={custom.id} id={`section-${sectionId}`} style={sectionStyle(data, sectionId)}>
                     {shouldRenderTitle(sectionId) && (
                         <div id={`section-title-${sectionId}`}>
                             <SectionTitle title={custom.title} />

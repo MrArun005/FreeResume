@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon, Award } from 'lucide-react';
 
 const LayoutGold = ({ data, pageIndex }) => {
@@ -112,6 +113,7 @@ const LayoutGold = ({ data, pageIndex }) => {
                                 <section
                                     key="summary"
                                     id="section-summary"
+                                    style={sectionStyle(data, 'summary')}
                                     className="text-center max-w-3xl mx-auto"
                                 >
                                     <p className="text-slate-700 leading-loose text-justify font-light text-sm">
@@ -133,7 +135,11 @@ const LayoutGold = ({ data, pageIndex }) => {
                         // Experience
                         if (sectionId === 'experience' && experience.length > 0) {
                             return (
-                                <section key="experience" id="section-experience">
+                                <section
+                                    key="experience"
+                                    id="section-experience"
+                                    style={sectionStyle(data, 'experience')}
+                                >
                                     {shouldRenderTitle('experience') && (
                                         <div
                                             id="section-title-experience"
@@ -215,7 +221,11 @@ const LayoutGold = ({ data, pageIndex }) => {
                         // Education
                         if (sectionId === 'education' && education.length > 0) {
                             return (
-                                <section key="education" id="section-education">
+                                <section
+                                    key="education"
+                                    id="section-education"
+                                    style={sectionStyle(data, 'education')}
+                                >
                                     {shouldRenderTitle('education') && (
                                         <div
                                             id="section-title-education"
@@ -267,7 +277,11 @@ const LayoutGold = ({ data, pageIndex }) => {
                         // Skills
                         if (sectionId === 'skills' && skills.length > 0) {
                             return (
-                                <section key="skills" id="section-skills">
+                                <section
+                                    key="skills"
+                                    id="section-skills"
+                                    style={sectionStyle(data, 'skills')}
+                                >
                                     {shouldRenderTitle('skills') && (
                                         <div
                                             id="section-title-skills"
@@ -303,7 +317,11 @@ const LayoutGold = ({ data, pageIndex }) => {
                         // Custom Sections
                         if (isCustom && customSection && customSection.items.length > 0) {
                             return (
-                                <section key={sectionId} id={`section-${sectionId}`}>
+                                <section
+                                    key={sectionId}
+                                    id={`section-${sectionId}`}
+                                    style={sectionStyle(data, sectionId)}
+                                >
                                     {shouldRenderTitle(sectionId) && (
                                         <div
                                             id={`section-title-${sectionId}`}

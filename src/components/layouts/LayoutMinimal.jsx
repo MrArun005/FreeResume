@@ -1,3 +1,4 @@
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Link as LinkIcon } from 'lucide-react';
 
 const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
@@ -17,7 +18,12 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
     const renderSection = (sectionId) => {
         if (sectionId === 'summary') {
             return (
-                <div key="summary" id={`section-summary`} className="grid grid-cols-12 gap-4">
+                <div
+                    key="summary"
+                    id={`section-summary`}
+                    style={sectionStyle(data, 'summary')}
+                    className="grid grid-cols-12 gap-4"
+                >
                     <div className="col-span-3">
                         <h3 className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}>About</h3>
                     </div>
@@ -32,7 +38,12 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
             const isFirstPageOfSection =
                 !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
-                <div key="experience" id="section-experience" className="grid grid-cols-12 gap-4">
+                <div
+                    key="experience"
+                    id="section-experience"
+                    style={sectionStyle(data, 'experience')}
+                    className="grid grid-cols-12 gap-4"
+                >
                     <div className="col-span-3">
                         {isFirstPageOfSection && (
                             <h3
@@ -73,7 +84,12 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
             const isFirstPageOfSection =
                 !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
             return (
-                <div key="education" id="section-education" className="grid grid-cols-12 gap-4">
+                <div
+                    key="education"
+                    id="section-education"
+                    style={sectionStyle(data, 'education')}
+                    className="grid grid-cols-12 gap-4"
+                >
                     <div className="col-span-3">
                         {isFirstPageOfSection && (
                             <h3
@@ -99,7 +115,12 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
 
         if (sectionId === 'skills') {
             return (
-                <div key="skills" id={`section-skills`} className="grid grid-cols-12 gap-4">
+                <div
+                    key="skills"
+                    id={`section-skills`}
+                    style={sectionStyle(data, 'skills')}
+                    className="grid grid-cols-12 gap-4"
+                >
                     <div className="col-span-3">
                         <h3 className={`text-xs font-bold uppercase tracking-widest ${theme.text}`}>
                             Skills
@@ -123,7 +144,12 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
         const customSection = data.customSections?.find((s) => s.id === sectionId);
         if (customSection && customSection.items.length > 0) {
             return (
-                <div key={sectionId} id={`section-${sectionId}`} className="grid grid-cols-12 gap-4">
+                <div
+                    key={sectionId}
+                    id={`section-${sectionId}`}
+                    style={sectionStyle(data, sectionId)}
+                    className="grid grid-cols-12 gap-4"
+                >
                     <div className="col-span-3">
                         {(!data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex) && (
                             <h3

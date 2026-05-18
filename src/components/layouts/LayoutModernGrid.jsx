@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Link as LinkIcon } from 'lucide-react';
 
 const LayoutModernGrid = ({ data, theme, pageIndex, isMeasurement }) => {
@@ -37,6 +38,7 @@ const LayoutModernGrid = ({ data, theme, pageIndex, isMeasurement }) => {
                                     <div
                                         key="summary"
                                         id="section-summary"
+                                        style={sectionStyle(data, 'summary')}
                                         className={`${theme.accent} p-6 rounded-lg`}
                                     >
                                         <h3 className={`font-bold text-lg mb-3 ${theme.text}`}>Summary</h3>
@@ -52,7 +54,11 @@ const LayoutModernGrid = ({ data, theme, pageIndex, isMeasurement }) => {
                                     !data.sectionStartPage ||
                                     data.sectionStartPage[sectionId] === data.pageIndex;
                                 return (
-                                    <div key="experience" id="section-experience">
+                                    <div
+                                        key="experience"
+                                        id="section-experience"
+                                        style={sectionStyle(data, 'experience')}
+                                    >
                                         {isFirstPageOfSection && (
                                             <h3
                                                 id="section-title-experience"
@@ -96,7 +102,11 @@ const LayoutModernGrid = ({ data, theme, pageIndex, isMeasurement }) => {
                             const customSection = data.customSections?.find((s) => s.id === sectionId);
                             if (customSection && customSection.items.length > 0) {
                                 return (
-                                    <div key={sectionId} id={`section-${sectionId}`}>
+                                    <div
+                                        key={sectionId}
+                                        id={`section-${sectionId}`}
+                                        style={sectionStyle(data, sectionId)}
+                                    >
                                         <h3
                                             className={`font-bold text-lg mb-4 border-b-2 ${theme.border} pb-2`}
                                         >
@@ -140,7 +150,11 @@ const LayoutModernGrid = ({ data, theme, pageIndex, isMeasurement }) => {
                                     !data.sectionStartPage ||
                                     data.sectionStartPage[sectionId] === data.pageIndex;
                                 return (
-                                    <div key="education" id="section-education">
+                                    <div
+                                        key="education"
+                                        id="section-education"
+                                        style={sectionStyle(data, 'education')}
+                                    >
                                         {isFirstPageOfSection && (
                                             <h3
                                                 id="section-title-education"
@@ -166,7 +180,11 @@ const LayoutModernGrid = ({ data, theme, pageIndex, isMeasurement }) => {
 
                             if (sectionId === 'skills' && data.skills.length > 0) {
                                 return (
-                                    <div key="skills" id="section-skills">
+                                    <div
+                                        key="skills"
+                                        id="section-skills"
+                                        style={sectionStyle(data, 'skills')}
+                                    >
                                         <h3
                                             className={`font-bold text-lg mb-4 border-b-2 ${theme.border} pb-2`}
                                         >

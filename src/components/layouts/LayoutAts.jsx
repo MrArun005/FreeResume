@@ -1,4 +1,5 @@
 import React from 'react';
+import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
 const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
@@ -59,7 +60,12 @@ const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
 
                 if (sectionId === 'summary' && data.personal.summary) {
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6 break-inside-avoid">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6 break-inside-avoid"
+                        >
                             <div id={`section-title-${sectionId}`}>
                                 <h2
                                     className={`text-sm font-bold uppercase tracking-widest mb-2 pb-1 border-b-2 ${theme.border}`}
@@ -78,7 +84,12 @@ const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
                     const isFirstPageOfSection =
                         !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6"
+                        >
                             {isFirstPageOfSection && (
                                 <div id={`section-title-${sectionId}`}>
                                     <h2
@@ -121,7 +132,12 @@ const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
                     const isFirstPageOfSection =
                         !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6"
+                        >
                             {isFirstPageOfSection && (
                                 <div id={`section-title-${sectionId}`}>
                                     <h2
@@ -148,7 +164,12 @@ const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
                     const isFirstPageOfSection =
                         !data.sectionStartPage || data.sectionStartPage[sectionId] === data.pageIndex;
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6 break-inside-avoid">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6 break-inside-avoid"
+                        >
                             {isFirstPageOfSection && (
                                 <div id={`section-title-${sectionId}`}>
                                     <h2
@@ -167,7 +188,12 @@ const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
 
                 if (isCustom && sectionData && sectionData.items.length > 0) {
                     return (
-                        <div key={sectionId} id={`section-${sectionId}`} className="mb-6">
+                        <div
+                            key={sectionId}
+                            id={`section-${sectionId}`}
+                            style={sectionStyle(data, sectionId)}
+                            className="mb-6"
+                        >
                             {(!data.sectionStartPage ||
                                 data.sectionStartPage[sectionId] === data.pageIndex) && (
                                 <div id={`section-title-${sectionId}`}>

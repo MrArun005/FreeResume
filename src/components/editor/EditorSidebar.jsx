@@ -12,6 +12,7 @@ import EducationSection from '../editor/EducationSection';
 import SkillsSection from '../editor/SkillsSection';
 import CustomSection from '../editor/CustomSection';
 import CoverLetterSection from '../editor/CoverLetterSection';
+import SectionSizePicker from '../editor/SectionSizePicker';
 import ProfilesMenu from '../ui/ProfilesMenu';
 
 const EditorSidebar = ({
@@ -180,6 +181,19 @@ const EditorSidebar = ({
 
                     {/* Active Section Editor */}
                     <div className="animate-fadeIn">
+                        {/* Path B — per-section size override. Skipped for the
+                            Personal block (contact info, not a sized content
+                            section). Renders for everything else: built-in
+                            sections (summary/experience/education/skills/
+                            coverLetter) and custom sections (UUID ids). */}
+                        {activeSection !== 'personal' && (
+                            <SectionSizePicker
+                                resume={resume}
+                                sectionId={activeSection}
+                                onResumeChange={setResume}
+                            />
+                        )}
+
                         {activeSection === 'personal' && (
                             <PersonalSection
                                 resume={resume}
