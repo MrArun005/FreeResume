@@ -269,6 +269,12 @@ const App = () => {
     // screens the open template sidebar would force the preview into the
     // 340px gutter. Caps upscaling at 1.3 normally, 1.6 in fullscreen
     // preview mode (no sidebars, the user explicitly wants a bigger view).
+    // Extracted boolean so it can drive the resize effect dependency. The
+    // Design & Theme panel is a right-anchored side drawer (not an overlay
+    // modal) — when open, it occupies ~420px on the right edge and the
+    // preview has to shrink to stay visible alongside it.
+    const isThemePanelOpen = modals.is('theme');
+
     useEffect(() => {
         const handleResize = () => {
             const windowWidth = window.innerWidth;
@@ -278,8 +284,13 @@ const App = () => {
                 if (windowWidth >= 768) {
                     availableWidth -= 450; // Editor sidebar
                 }
-                if (windowWidth >= 1280 && isSidebarOpen) {
-                    availableWidth -= 340; // Right template selector
+                if (windowWidth >= 1280 && isSidebarOpen && !isThemePanelOpen) {
+                    // Template selector hides when the Theme drawer is open
+                    // (they'd otherwise stack on the right edge).
+                    availableWidth -= 340;
+                }
+                if (isThemePanelOpen && windowWidth >= 640) {
+                    availableWidth -= 420; // Design & Theme side drawer
                 }
             }
             availableWidth -= 96; // Horizontal padding
@@ -296,7 +307,7 @@ const App = () => {
         handleResize(); // Initial call
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [isSidebarOpen, isPreviewFullscreen]);
+    }, [isSidebarOpen, isPreviewFullscreen, isThemePanelOpen]);
 
     // Autosave: pipe every resume edit into the active profile inside the
     // profiles store. The store helper handles localStorage persistence with
@@ -1270,13 +1281,14 @@ const App = () => {
                               // Export stay accessible). Resume centered, scaled down for a
                               // contained "preview of a document" feel.
                               'fixed inset-x-0 top-16 bottom-0 z-[40] bg-slate-950/95 backdrop-blur-md overflow-auto flex flex-col items-center p-8 gap-8 print-area'
-                            : `${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 dark:bg-slate-950 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${!isSidebarOpen ? 'xl:pr-12' : 'xl:pr-[340px]'}`
+                            : `${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 dark:bg-slate-950 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isThemePanelOpen ? 'sm:pr-[420px]' : !isSidebarOpen ? 'xl:pr-12' : 'xl:pr-[340px]'}`
                     }
                 >
-                    {/* Template Sidebar Toggle (When Closed) — hidden in fullscreen preview */}
+                    {/* Template Sidebar Toggle (When Closed) — hidden in fullscreen preview
+                        and when the Design & Theme drawer is occupying the right edge. */}
                     <button
                         onClick={() => setIsSidebarOpen(true)}
-                        className={`fixed right-0 top-1/2 -translate-y-1/2 bg-white text-gray-900 p-3 rounded-l-xl shadow-lg border-y border-l border-gray-200 z-20 hidden ${isPreviewFullscreen ? '' : 'xl:flex'} items-center gap-2 group hover:w-auto hover:pr-6 transition-all duration-300 ${isSidebarOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
+                        className={`fixed right-0 top-1/2 -translate-y-1/2 bg-white text-gray-900 p-3 rounded-l-xl shadow-lg border-y border-l border-gray-200 z-20 hidden ${isPreviewFullscreen || isThemePanelOpen ? '' : 'xl:flex'} items-center gap-2 group hover:w-auto hover:pr-6 transition-all duration-300 ${isSidebarOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
                         title="Open Template Selector"
                     >
                         <ChevronRight size={20} className="rotate-180 text-brand-600" />
@@ -1285,9 +1297,11 @@ const App = () => {
                         </span>
                     </button>
 
-                    {/* Template Selector Sidebar (Right) - Categorized List — hidden in fullscreen preview */}
+                    {/* Template Selector Sidebar (Right) - Categorized List — hidden in
+                        fullscreen preview AND when the Design & Theme drawer is open
+                        (they both anchor right; the user only sees one at a time). */}
                     <div
-                        className={`fixed right-0 top-16 bottom-0 w-80 bg-white/80 backdrop-blur-md border-l border-gray-200 p-6 ${isPreviewFullscreen ? 'hidden' : 'hidden xl:flex'} flex-col gap-8 no-print z-30 shadow-xl overflow-y-auto transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                        className={`fixed right-0 top-16 bottom-0 w-80 bg-white/80 backdrop-blur-md border-l border-gray-200 p-6 ${isPreviewFullscreen || isThemePanelOpen ? 'hidden' : 'hidden xl:flex'} flex-col gap-8 no-print z-30 shadow-xl overflow-y-auto transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
                     >
                         <div className="flex items-center justify-between">
                             <h3 className="font-bold text-gray-900 text-lg uppercase tracking-wider">
