@@ -325,12 +325,18 @@ html {
     --brand-500-alpha-20: rgba(20, 184, 166, 0.2);
 
     /* Resume-only typography knobs. The ThemeSettingsModal writes to these at
-       runtime via src/theme/tokens.js → applyFont() / applySize(). They are
+       runtime via src/theme/tokens.js → applyFont() / applySize() /
+       applyHeadingSize() / applyBodySize() / applyBulletSize(). All five are
        scoped to .resume-paper below so the app chrome (landing page, editor
        sidebar, modals) keeps its own typography regardless of the user's
-       resume font choice. */
+       resume choices. The three element-type sizes (heading/body/bullet)
+       override the base --resume-font-size for their matching selectors,
+       giving the user independent control over visual hierarchy. */
     --resume-font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     --resume-font-size: 16px;
+    --resume-heading-size: 22px;
+    --resume-body-size: 14px;
+    --resume-bullet-size: 13px;
 }
 
 /* Resume typography routing. Every element inside a resume page
@@ -349,6 +355,40 @@ html {
 .resume-paper,
 .resume-paper * {
     font-family: var(--resume-font-family) !important;
+}
+
+/* Element-type size overrides — apply on top of the base font-size above.
+   Selector strategy is documented in the Path A plan:
+     - Headings: semantic h1-h6 + Tailwind text-lg through text-5xl (some
+       templates use plain divs with size classes instead of semantic tags)
+     - Body: <p> + text-base / text-md / text-sm
+     - Bullets: <li> nested in <ul>/<ol> — higher specificity than body so
+       bullet size wins for li elements that also carry a text-sm class.
+   `[class~="x"]` matches the class as a whole token (whitespace-separated)
+   so we don't accidentally hit unrelated classes. */
+.resume-paper h1,
+.resume-paper h2,
+.resume-paper h3,
+.resume-paper h4,
+.resume-paper h5,
+.resume-paper h6,
+.resume-paper [class~='text-lg'],
+.resume-paper [class~='text-xl'],
+.resume-paper [class~='text-2xl'],
+.resume-paper [class~='text-3xl'],
+.resume-paper [class~='text-4xl'],
+.resume-paper [class~='text-5xl'] {
+    font-size: var(--resume-heading-size);
+}
+.resume-paper p,
+.resume-paper [class~='text-base'],
+.resume-paper [class~='text-md'],
+.resume-paper [class~='text-sm'] {
+    font-size: var(--resume-body-size);
+}
+.resume-paper ul li,
+.resume-paper ol li {
+    font-size: var(--resume-bullet-size);
 }
 
 @layer base {

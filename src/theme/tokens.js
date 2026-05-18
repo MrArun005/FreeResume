@@ -173,6 +173,49 @@ export const FONT_SIZES = {
 export const DEFAULT_SIZE = 'normal';
 const SIZE_STORAGE_KEY = 'paperjetSize';
 
+// ─────────────────────────────────────────────────────────────────────────
+// Element-type size presets — independent controls for the three visual
+// bands of resume typography: headings, body text, and bullet points.
+//
+// Each preset is an absolute px value written to its CSS custom property
+// (--resume-heading-size, --resume-body-size, --resume-bullet-size). The
+// scoped rules in src/index.css apply these on top of the base
+// --resume-font-size so the user can shrink bullets without shrinking
+// headings, or bump headings without enlarging body — independent knobs.
+//
+// Trade-off: this collapses heading hierarchy within a single template.
+// If a layout previously used text-4xl for the candidate name and text-xl
+// for section titles, both now render at the same heading size. That's
+// the cost of user-controlled uniform typography; templates that want
+// internal hierarchy would need a per-level system (Path B).
+
+export const HEADING_SIZES = {
+    compact: { name: 'Compact', description: 'Tighter headings.', px: 18 },
+    normal: { name: 'Normal', description: 'The default.', px: 22 },
+    large: { name: 'Large', description: 'Bolder presence.', px: 28 },
+};
+
+export const DEFAULT_HEADING_SIZE = 'normal';
+const HEADING_STORAGE_KEY = 'paperjetHeadingSize';
+
+export const BODY_SIZES = {
+    compact: { name: 'Compact', description: 'Fit more per page.', px: 12 },
+    normal: { name: 'Normal', description: 'The default.', px: 14 },
+    large: { name: 'Large', description: 'Easier to scan.', px: 16 },
+};
+
+export const DEFAULT_BODY_SIZE = 'normal';
+const BODY_STORAGE_KEY = 'paperjetBodySize';
+
+export const BULLET_SIZES = {
+    compact: { name: 'Compact', description: 'Dense bullet lists.', px: 11 },
+    normal: { name: 'Normal', description: 'The default.', px: 13 },
+    large: { name: 'Large', description: 'Roomier bullets.', px: 15 },
+};
+
+export const DEFAULT_BULLET_SIZE = 'normal';
+const BULLET_STORAGE_KEY = 'paperjetBulletSize';
+
 // Convert "#RRGGBB" → "R, G, B" for CSS rgba(var(--brand-500-rgb), 0.2) style use.
 function hexToRgbTuple(hex) {
     const h = hex.replace('#', '');
@@ -221,11 +264,16 @@ export function saveTheme(themeName) {
 }
 
 // One-shot init for main.jsx: load saved theme + apply before first paint.
+// Order matters only in the sense that all five must be applied before
+// React mounts, so the resume preview never flashes its compiled defaults.
 export function initTheme() {
     const name = loadSavedTheme();
     applyTheme(name);
     applyFont(loadSavedFont());
     applySize(loadSavedSize());
+    applyHeadingSize(loadSavedHeadingSize());
+    applyBodySize(loadSavedBodySize());
+    applyBulletSize(loadSavedBulletSize());
     return name;
 }
 
@@ -278,6 +326,81 @@ export function loadSavedSize() {
 export function saveSize(sizeKey) {
     try {
         localStorage.setItem(SIZE_STORAGE_KEY, sizeKey);
+    } catch {
+        /* private mode */
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Element-type size controls — same shape, three parallel sets.
+
+export function applyHeadingSize(key) {
+    const preset = HEADING_SIZES[key] || HEADING_SIZES[DEFAULT_HEADING_SIZE];
+    document.documentElement.style.setProperty('--resume-heading-size', `${preset.px}px`);
+    document.documentElement.dataset.paperjetHeadingSize = key in HEADING_SIZES ? key : DEFAULT_HEADING_SIZE;
+}
+
+export function loadSavedHeadingSize() {
+    try {
+        const saved = localStorage.getItem(HEADING_STORAGE_KEY);
+        if (saved && HEADING_SIZES[saved]) return saved;
+    } catch {
+        /* private mode */
+    }
+    return DEFAULT_HEADING_SIZE;
+}
+
+export function saveHeadingSize(key) {
+    try {
+        localStorage.setItem(HEADING_STORAGE_KEY, key);
+    } catch {
+        /* private mode */
+    }
+}
+
+export function applyBodySize(key) {
+    const preset = BODY_SIZES[key] || BODY_SIZES[DEFAULT_BODY_SIZE];
+    document.documentElement.style.setProperty('--resume-body-size', `${preset.px}px`);
+    document.documentElement.dataset.paperjetBodySize = key in BODY_SIZES ? key : DEFAULT_BODY_SIZE;
+}
+
+export function loadSavedBodySize() {
+    try {
+        const saved = localStorage.getItem(BODY_STORAGE_KEY);
+        if (saved && BODY_SIZES[saved]) return saved;
+    } catch {
+        /* private mode */
+    }
+    return DEFAULT_BODY_SIZE;
+}
+
+export function saveBodySize(key) {
+    try {
+        localStorage.setItem(BODY_STORAGE_KEY, key);
+    } catch {
+        /* private mode */
+    }
+}
+
+export function applyBulletSize(key) {
+    const preset = BULLET_SIZES[key] || BULLET_SIZES[DEFAULT_BULLET_SIZE];
+    document.documentElement.style.setProperty('--resume-bullet-size', `${preset.px}px`);
+    document.documentElement.dataset.paperjetBulletSize = key in BULLET_SIZES ? key : DEFAULT_BULLET_SIZE;
+}
+
+export function loadSavedBulletSize() {
+    try {
+        const saved = localStorage.getItem(BULLET_STORAGE_KEY);
+        if (saved && BULLET_SIZES[saved]) return saved;
+    } catch {
+        /* private mode */
+    }
+    return DEFAULT_BULLET_SIZE;
+}
+
+export function saveBulletSize(key) {
+    try {
+        localStorage.setItem(BULLET_STORAGE_KEY, key);
     } catch {
         /* private mode */
     }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Palette, Check, Type, AArrowUp } from 'lucide-react';
+import { X, Palette, Check, Type, AArrowUp, Heading, AlignLeft, List } from 'lucide-react';
 import {
     THEMES,
     applyTheme,
@@ -13,6 +13,18 @@ import {
     applySize,
     saveSize,
     loadSavedSize,
+    HEADING_SIZES,
+    applyHeadingSize,
+    saveHeadingSize,
+    loadSavedHeadingSize,
+    BODY_SIZES,
+    applyBodySize,
+    saveBodySize,
+    loadSavedBodySize,
+    BULLET_SIZES,
+    applyBulletSize,
+    saveBulletSize,
+    loadSavedBulletSize,
 } from '../../theme/tokens';
 
 // Settings panel for the design system. Shows every available theme preset
@@ -26,6 +38,9 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
     const [activeTheme, setActiveTheme] = useState(loadSavedTheme);
     const [activeFont, setActiveFont] = useState(loadSavedFont);
     const [activeSize, setActiveSize] = useState(loadSavedSize);
+    const [activeHeadingSize, setActiveHeadingSize] = useState(loadSavedHeadingSize);
+    const [activeBodySize, setActiveBodySize] = useState(loadSavedBodySize);
+    const [activeBulletSize, setActiveBulletSize] = useState(loadSavedBulletSize);
 
     if (!isOpen) return null;
 
@@ -46,6 +61,64 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
         applySize(sizeKey);
         saveSize(sizeKey);
     };
+
+    const handleHeadingSizeSelect = (key) => {
+        setActiveHeadingSize(key);
+        applyHeadingSize(key);
+        saveHeadingSize(key);
+    };
+
+    const handleBodySizeSelect = (key) => {
+        setActiveBodySize(key);
+        applyBodySize(key);
+        saveBodySize(key);
+    };
+
+    const handleBulletSizeSelect = (key) => {
+        setActiveBulletSize(key);
+        applyBulletSize(key);
+        saveBulletSize(key);
+    };
+
+    // Shared renderer for the three element-type size pickers — same shape
+    // (3 options × {name, description, px}), same visual pattern. Extracted
+    // so the markup stays scannable rather than three near-identical blocks.
+    const renderSizePicker = ({ icon, label, presets, activeKey, onSelect, sampleText }) => (
+        <div>
+            <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                {icon} {label}
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+                {Object.entries(presets).map(([key, preset]) => {
+                    const isActive = key === activeKey;
+                    return (
+                        <button
+                            key={key}
+                            onClick={() => onSelect(key)}
+                            className={`px-3 py-3 rounded-xl border transition-all text-center ${
+                                isActive
+                                    ? 'border-slate-900 bg-slate-50'
+                                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                            }`}
+                        >
+                            <div
+                                className="font-semibold text-slate-900 leading-none mb-1.5 truncate"
+                                style={{ fontSize: `${preset.px}px` }}
+                                title={sampleText}
+                            >
+                                {sampleText}
+                            </div>
+                            <div className="text-xs font-semibold text-slate-900 flex items-center justify-center gap-1">
+                                {preset.name}
+                                {isActive && <Check size={12} className="text-emerald-600" />}
+                            </div>
+                            <div className="text-[10px] text-slate-500 mt-0.5">{preset.description}</div>
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
 
     const currentTheme = THEMES[activeTheme] || THEMES.teal;
 
@@ -216,6 +289,37 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                             template-specific text (with fixed Tailwind sizing) won't resize here.
                         </p>
                     </div>
+
+                    {/* Element-type size pickers — three independent knobs for
+                        headings, body text, and bullet points. Override the
+                        base text-size for their matching selectors (see
+                        index.css for the routing rules). */}
+                    {renderSizePicker({
+                        icon: <Heading size={11} />,
+                        label: 'Heading size',
+                        presets: HEADING_SIZES,
+                        activeKey: activeHeadingSize,
+                        onSelect: handleHeadingSizeSelect,
+                        sampleText: 'Heading',
+                    })}
+
+                    {renderSizePicker({
+                        icon: <AlignLeft size={11} />,
+                        label: 'Body text size',
+                        presets: BODY_SIZES,
+                        activeKey: activeBodySize,
+                        onSelect: handleBodySizeSelect,
+                        sampleText: 'Body text',
+                    })}
+
+                    {renderSizePicker({
+                        icon: <List size={11} />,
+                        label: 'Bullet size',
+                        presets: BULLET_SIZES,
+                        activeKey: activeBulletSize,
+                        onSelect: handleBulletSizeSelect,
+                        sampleText: 'Bullet item',
+                    })}
 
                     {/* Token inspector — the active theme's scale, hex values, and a
                         live preview of buttons / pills using brand-* classes. */}
