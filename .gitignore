@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Puppeteer local Chrome cache (200MB+, auto-downloaded by npm install)
+server/.cache/
+
 # Environment / secrets
 .env
 .env.local
