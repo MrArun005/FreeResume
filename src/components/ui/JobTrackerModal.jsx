@@ -490,16 +490,14 @@ const JobTrackerModal = ({ onClose, profiles, tracker }) => {
                 onClick={(e) => e.stopPropagation()}
                 className="relative w-full max-w-7xl max-h-[94vh] rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/60 shadow-2xl flex flex-col"
             >
-                <header className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 bg-gradient-to-r from-brand-50 to-indigo-50 dark:from-brand-500/10 dark:to-indigo-500/10">
+                <header className="px-6 py-4 border-b border-brand-200/60 dark:border-slate-700 flex items-center justify-between gap-4 bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-600/40 dark:to-indigo-600/40">
                     <div className="flex items-center gap-3 min-w-0">
-                        <div className="p-2 bg-brand-600 rounded-lg text-white shadow-lg shrink-0">
+                        <div className="p-2 bg-white/15 dark:bg-white/10 backdrop-blur rounded-lg text-white shadow-lg shrink-0 border border-white/20">
                             <Briefcase size={20} />
                         </div>
                         <div className="min-w-0">
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-stone-100 m-0 truncate">
-                                Job Tracker
-                            </h2>
-                            <p className="text-[12px] text-slate-500 dark:text-stone-400 m-0 truncate">
+                            <h2 className="text-lg font-bold text-white m-0 truncate">Job Tracker</h2>
+                            <p className="text-[12px] text-white/85 m-0 truncate">
                                 Each application linked to its resume version &amp; JD analysis.
                             </p>
                         </div>
@@ -513,14 +511,14 @@ const JobTrackerModal = ({ onClose, profiles, tracker }) => {
                     <div className="flex items-center gap-2 shrink-0">
                         <button
                             onClick={handleQuickAdd}
-                            className="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"
+                            className="flex items-center gap-1.5 bg-white hover:bg-white/90 text-brand-700 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors shadow-sm"
                         >
                             <Plus size={14} /> Add
                         </button>
                         <button
                             onClick={exportJson}
                             disabled={jobs.length === 0}
-                            className="flex items-center gap-1.5 bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-stone-200 px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/25 text-white px-3 py-1.5 rounded-lg text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed backdrop-blur-sm transition-colors"
                             title="Export as JSON backup"
                         >
                             <Download size={13} />
@@ -528,7 +526,7 @@ const JobTrackerModal = ({ onClose, profiles, tracker }) => {
                         </button>
                         <button
                             onClick={onClose}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-stone-200"
+                            className="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
                             aria-label="Close"
                         >
                             <X size={20} />
@@ -592,20 +590,19 @@ const JobTrackerModal = ({ onClose, profiles, tracker }) => {
 };
 
 function Stat({ label, value, tone }) {
+    // Header is a colored gradient (brand→indigo) in both light and dark mode,
+    // so the stat tile uses a translucent white/glass backdrop that reads on
+    // top of the gradient regardless of theme. Text is always white-ish.
     return (
-        <div className="text-center">
+        <div className="text-center px-2.5 py-1 rounded-lg bg-white/15 border border-white/25 backdrop-blur-sm">
             <div
-                className={`text-base font-bold ${
-                    tone === 'emerald'
-                        ? 'text-emerald-700 dark:text-emerald-400'
-                        : 'text-slate-900 dark:text-stone-100'
+                className={`text-base font-bold tabular-nums leading-tight ${
+                    tone === 'emerald' ? 'text-emerald-200' : 'text-white'
                 }`}
             >
                 {value}
             </div>
-            <div className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-stone-400">
-                {label}
-            </div>
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-white/85">{label}</div>
         </div>
     );
 }

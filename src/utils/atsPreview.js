@@ -115,6 +115,252 @@ export function renderAtsText(resume) {
     return sections.filter(Boolean).join('\n\n');
 }
 
+// Best-effort tenure math. ATS engines parse "Jan 2021 - Present" style strings
+// into start/end dates and sum months across roles. We mimic that with a
+// regex-and-Date-parse pipeline so the user sees the YoE the bot will compute.
+const MONTH_TOKENS = {
+    jan: 0,
+    january: 0,
+    feb: 1,
+    february: 1,
+    mar: 2,
+    march: 2,
+    apr: 3,
+    april: 3,
+    may: 4,
+    jun: 5,
+    june: 5,
+    jul: 6,
+    july: 6,
+    aug: 7,
+    august: 7,
+    sep: 8,
+    sept: 8,
+    september: 8,
+    oct: 9,
+    october: 9,
+    nov: 10,
+    november: 10,
+    dec: 11,
+    december: 11,
+};
+
+function parseDatePart(raw) {
+    if (!raw) return null;
+    const s = raw.trim().toLowerCase();
+    if (!s || s === 'present' || s === 'current' || s === 'now') return new Date();
+    // "Jan 2021", "January 2021", "01/2021", "2021"
+    const monthYear = s.match(/([a-z]+)[ .\-/]*([0-9]{4})/);
+    if (monthYear && MONTH_TOKENS[monthYear[1]] !== undefined) {
+        return new Date(parseInt(monthYear[2], 10), MONTH_TOKENS[monthYear[1]], 1);
+    }
+    const numMonthYear = s.match(/(\d{1,2})[ .\-/]+(\d{4})/);
+    if (numMonthYear) {
+        const m = Math.max(0, Math.min(11, parseInt(numMonthYear[1], 10) - 1));
+        return new Date(parseInt(numMonthYear[2], 10), m, 1);
+    }
+    const yearOnly = s.match(/(\d{4})/);
+    if (yearOnly) return new Date(parseInt(yearOnly[1], 10), 0, 1);
+    return null;
+}
+
+function parseDateRange(dateStr) {
+    if (!dateStr) return { start: null, end: null, months: 0 };
+    const parts = String(dateStr)
+        .split(/[-–—]|to/i)
+        .map((p) => p.trim())
+        .filter(Boolean);
+    const start = parseDatePart(parts[0]);
+    const end = parts.length > 1 ? parseDatePart(parts[1]) : start;
+    if (!start || !end) return { start, end, months: 0 };
+    const months = Math.max(
+        0,
+        (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())
+    );
+    return { start, end, months };
+}
+
+function formatYoE(totalMonths) {
+    if (!totalMonths) return '0 years';
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    if (years === 0) return `${months} mo`;
+    if (months === 0) return `${years} yr${years === 1 ? '' : 's'}`;
+    return `${years} yr${years === 1 ? '' : 's'} ${months} mo`;
+}
+
+// Returns the structured field tree that an ATS would store in its database
+// after parsing a resume PDF. This is what recruiter searches actually hit —
+// not your styled layout, not the raw text dump, but these tagged fields.
+export function parseAtsFields(resume) {
+    if (!resume) return null;
+    const p = resume.personal || {};
+    const experience = resume.experience || [];
+    const education = resume.education || [];
+
+    const rangedExperience = experience.map((e) => ({
+        ...e,
+        ...parseDateRange(e.date),
+    }));
+    const totalMonths = rangedExperience.reduce((sum, e) => sum + (e.months || 0), 0);
+    const mostRecent = rangedExperience
+        .filter((e) => e.start)
+        .sort((a, b) => (b.end?.getTime() || 0) - (a.end?.getTime() || 0))[0];
+
+    return {
+        candidate: {
+            name: p.fullName?.trim() || p.name?.trim() || null,
+            title: p.title?.trim() || null,
+            email: p.email?.trim() || null,
+            phone: p.phone?.trim() || null,
+            location: p.location?.trim() || null,
+            links: (p.socials || [])
+                .filter((s) => s.url)
+                .map((s) => ({ network: s.network || 'Link', url: s.url })),
+        },
+        derived: {
+            totalYoE: formatYoE(totalMonths),
+            totalMonths,
+            currentTitle: mostRecent?.role || null,
+            currentCompany: mostRecent?.company || null,
+            roleCount: experience.length,
+            educationCount: education.length,
+        },
+        experience: rangedExperience.map((e) => ({
+            title: e.role || null,
+            company: e.company || null,
+            location: e.location || null,
+            rawDate: e.date || null,
+            startISO: e.start ? e.start.toISOString().slice(0, 7) : null,
+            endISO: e.end ? e.end.toISOString().slice(0, 7) : null,
+            months: e.months,
+            tenure: formatYoE(e.months || 0),
+            bulletCount: (e.bullets || []).length,
+        })),
+        education: education.map((edu) => ({
+            degree: edu.degree || null,
+            school: edu.school || null,
+            location: edu.location || null,
+            date: edu.date || null,
+        })),
+        skills: resume.skills || [],
+    };
+}
+
+// Build an alphabetized keyword index — what a recruiter search would actually
+// hit. We tokenize from skills + experience bullets + role titles, normalize,
+// and dedupe. ATS keyword searches are typically case-insensitive substring or
+// stemmed-match against this kind of index.
+const KEYWORD_STOPWORDS = new Set([
+    'the',
+    'and',
+    'with',
+    'for',
+    'from',
+    'into',
+    'over',
+    'that',
+    'this',
+    'have',
+    'has',
+    'was',
+    'were',
+    'are',
+    'will',
+    'been',
+    'being',
+    'their',
+    'them',
+    'they',
+    'across',
+    'using',
+    'used',
+    'via',
+    'led',
+    'team',
+    'work',
+    'worked',
+    'built',
+    'shipped',
+    'while',
+    'than',
+    'then',
+    'when',
+    'which',
+    'what',
+    'who',
+    'how',
+    'why',
+    'where',
+    'about',
+    'also',
+    'after',
+    'before',
+    'between',
+    'such',
+    'each',
+    'every',
+    'some',
+    'most',
+    'more',
+    'less',
+    'first',
+    'last',
+    'new',
+    'old',
+    'next',
+    'within',
+    'without',
+    'including',
+    'include',
+]);
+
+export function buildKeywordIndex(resume) {
+    if (!resume) return [];
+    const tokens = new Map(); // lower -> { original, count }
+
+    const ingest = (raw) => {
+        if (!raw) return;
+        // Capture multi-word skill phrases AND single tokens. We treat anything
+        // joined by spaces in a skills entry as a phrase; bullet text is split.
+        String(raw)
+            .split(/[\n,;|•·]+/)
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .forEach((phrase) => {
+                // Single tokens from inside the phrase
+                phrase
+                    .replace(/[()[\]{}.!?"]/g, '')
+                    .split(/\s+/)
+                    .forEach((word) => {
+                        const lower = word.toLowerCase();
+                        if (lower.length < 2) return;
+                        if (KEYWORD_STOPWORDS.has(lower)) return;
+                        if (/^\d+%?$/.test(lower)) return;
+                        const prev = tokens.get(lower);
+                        if (prev) prev.count++;
+                        else tokens.set(lower, { original: word, count: 1 });
+                    });
+            });
+    };
+
+    (resume.skills || []).forEach(ingest);
+    (resume.experience || []).forEach((e) => {
+        ingest(e.role);
+        ingest(e.company);
+        (e.bullets || []).forEach(ingest);
+    });
+    (resume.education || []).forEach((edu) => {
+        ingest(edu.degree);
+        ingest(edu.school);
+    });
+
+    return [...tokens.values()].sort((a, b) => {
+        if (b.count !== a.count) return b.count - a.count;
+        return a.original.toLowerCase().localeCompare(b.original.toLowerCase());
+    });
+}
+
 // Surface a few signals an ATS parser would flag. Used to render a small
 // "what the bot will struggle with" panel alongside the plain-text view.
 export function diagnoseAts(resume) {

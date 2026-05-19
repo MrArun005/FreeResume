@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, User, Plus, SplitSquareHorizontal, Palette, X } from 'lucide-react';
+import { LayoutGrid, User, Plus, SplitSquareHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
@@ -40,8 +40,6 @@ const EditorSidebar = ({
     updateCustomItem,
     removeCustomItem,
     addCustomItem,
-    isThemeOpen,
-    onToggleTheme,
     profiles,
     activeProfileId,
     onSwitchProfile,
@@ -74,34 +72,9 @@ const EditorSidebar = ({
                         ) : null}
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                        {/* Primary action: Design — toggles the side drawer.
-                            Export lives in the app header (top-right) with its
-                            full PDF/DOCX dropdown; duplicating it here just
-                            confused users. When open, the button flips to a
-                            "Close" affordance so users don't have to hunt for
-                            the X in the drawer. */}
-                        {onToggleTheme && (
-                            <button
-                                onClick={onToggleTheme}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
-                                    isThemeOpen
-                                        ? 'bg-brand-600 hover:bg-brand-700 text-white border-brand-600'
-                                        : 'bg-brand-50 hover:bg-brand-100 dark:bg-brand-500/15 dark:hover:bg-brand-500/25 text-brand-700 dark:text-brand-300 border-brand-200 dark:border-brand-500/30'
-                                }`}
-                                title={
-                                    isThemeOpen
-                                        ? 'Close design panel'
-                                        : 'Open design panel — fonts, colors, sizes'
-                                }
-                                aria-pressed={isThemeOpen}
-                            >
-                                {isThemeOpen ? <X size={14} /> : <Palette size={14} />}
-                                <span className="hidden sm:inline">{isThemeOpen ? 'Close' : 'Design'}</span>
-                            </button>
-                        )}
-                        {/* Divider between primary actions and tertiary icon
-                            buttons — keeps the cluster readable. */}
-                        <span className="hidden sm:block w-px h-6 bg-slate-200 dark:bg-slate-700 mx-0.5" />
+                        {/* Design button moved to the top app header
+                            (next to Export) — keeps this editor strip
+                            uncluttered for new users. ⌘D still toggles it. */}
                         {/* Tertiary actions: dark-mode toggle + back-to-gallery.
                             Both are icon-only and share consistent sizing. */}
                         <AppThemeSwitcher className="!p-2 !rounded-lg" />

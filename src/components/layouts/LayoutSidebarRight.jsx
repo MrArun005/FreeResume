@@ -2,6 +2,29 @@ import { sectionStyle } from '../../utils/sectionStyles';
 import { Link as LinkIcon } from 'lucide-react';
 import SectionTitle from '../ui/SectionTitle';
 
+// Skills can arrive as flat tokens ("React") OR as "Label: a, b, c" category
+// strings (the SkillsSection editor stores them that way). Sidebar layouts
+// don't have room for category headings, so we flatten everything to a single
+// chip list. Category labels are dropped here; the categorical view is shown
+// by layouts that have a dedicated skills area (Bold Recruit, Jakes, etc.).
+const flattenSkills = (skills) => {
+    const out = [];
+    (skills || []).forEach((s) => {
+        if (typeof s !== 'string') return;
+        const colon = s.indexOf(':');
+        if (colon > 0) {
+            s.slice(colon + 1)
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean)
+                .forEach((t) => out.push(t));
+        } else if (s.trim()) {
+            out.push(s.trim());
+        }
+    });
+    return out;
+};
+
 const LayoutSidebarRight = ({ data, theme, pageIndex, isMeasurement }) => {
     // ... (rest of file)
 
@@ -154,20 +177,21 @@ const LayoutSidebarRight = ({ data, theme, pageIndex, isMeasurement }) => {
                     .map((sectionId) => renderMainSection(sectionId))}
             </div>
 
-            {/* Fixed Sidebar */}
+            {/* Fixed Sidebar — theme.accent is always a LIGHT color across all
+                themes, so text must be dark (text.text). Previously hardcoded
+                to white-on-light which rendered invisible. */}
             <div
-                className={`flex-[1] ${theme.accent} p-8 border-l ${theme.border} border-opacity-20 min-w-0 min-h-full`}
+                className={`flex-[1] ${theme.accent} ${theme.text} p-8 border-l ${theme.border} border-opacity-20 min-w-0 min-h-full`}
             >
                 {pageIndex === 0 && (
                     <div id="section-contact" className="mb-10 text-right">
                         <SectionTitle title="Contact" theme={theme} className="text-right" />
-                        <p className="text-sm font-bold mb-1">{data.personal.email}</p>
+                        <p className="text-sm font-bold mb-1 break-words">{data.personal.email}</p>
                         <p className="text-sm mb-1">{data.personal.phone}</p>
                         <p className="text-sm mb-1">{data.personal.location}</p>
                         {(data.personal.socials || []).map((social) => (
-                            <p key={social.id} className="text-sm mb-1">
-                                <span className="font-bold opacity-70">{social.network}:</span>{' '}
-                                {social.username}
+                            <p key={social.id} className="text-sm mb-1 break-words">
+                                <span className="font-bold opacity-70">{social.network}:</span> {social.url}
                             </p>
                         ))}
                     </div>
@@ -191,20 +215,21 @@ const LayoutSidebarRight = ({ data, theme, pageIndex, isMeasurement }) => {
                                 className="mb-3 text-sm break-inside-avoid"
                             >
                                 <div className="font-bold">{edu.degree}</div>
-                                <div className="text-white/80 text-xs">{edu.school}</div>
-                                <div className="text-white/60 text-xs italic">{edu.date}</div>
+                                <div className="text-xs opacity-80">{edu.school}</div>
+                                <div className="text-xs italic opacity-60">{edu.date}</div>
                             </div>
                         ))}
                     </div>
                 )}
                 {data.skills && data.skills.length > 0 && (
                     <div id="section-skills" style={sectionStyle(data, 'skills')} className="text-right">
-                        <h3 className="text-xs uppercase tracking-widest font-bold border-b border-white/30 pb-2 mb-3">
-                            Skills
-                        </h3>
-                        <div className="flex flex-wrap gap-2 justify-end">
-                            {data.skills.map((skill, i) => (
-                                <span key={i} className="text-xs bg-white/10 px-2 py-1 rounded">
+                        <SectionTitle title="Skills" theme={theme} className="text-right" />
+                        <div className="flex flex-wrap gap-1.5 justify-end">
+                            {flattenSkills(data.skills).map((skill, i) => (
+                                <span
+                                    key={i}
+                                    className="text-[11px] px-2 py-0.5 rounded bg-white/70 border border-black/5"
+                                >
                                     {skill}
                                 </span>
                             ))}

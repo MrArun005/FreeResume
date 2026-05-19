@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Plus, X, FolderPlus } from 'lucide-react';
+import {
+    Plus,
+    X,
+    Code2,
+    Boxes,
+    Database,
+    Cloud,
+    Wrench,
+    BarChart3,
+    Brain,
+    Shield,
+    BookOpen,
+    Users,
+    Tag,
+    FolderPlus,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FieldLabel } from '../ui/EditorPrimitives';
 import { normalizeSkills } from '../../utils/skillTaxonomy';
 
-// Categories the user is likely to want. Quick-add chips create a new group
-// pre-named so they don't have to type the label.
-const STARTER_CATEGORIES = [
-    'Languages',
-    'Frameworks',
-    'Cloud & Big Data',
-    'Databases',
-    'DevOps & Tools',
-    'Visualization & BI',
-    'Machine Learning',
-    'Soft Skills',
-];
-
-// A "category" entry is just a string with a colon: "Label: item1, item2".
-// All consumers (Bold Recruit layout, PDF, etc.) split on the first colon.
+// "Category" entries are stored as "Label: item1, item2" strings — the rest
+// of the app (layouts, PDF/DOCX exporters, AI prompts) parses them by
+// splitting on the first colon. Keep that contract.
 const isCategory = (s) => typeof s === 'string' && s.indexOf(':') > 0;
 const parseCategory = (s) => {
     const idx = s.indexOf(':');
@@ -26,24 +29,65 @@ const parseCategory = (s) => {
 };
 const buildCategory = (label, items) => `${label.trim()}: ${items.trim()}`;
 
+const STARTER_CATEGORIES = [
+    'Languages',
+    'Frameworks',
+    'Databases',
+    'Cloud & Big Data',
+    'DevOps & Tools',
+    'Machine Learning',
+    'Visualization & BI',
+    'Soft Skills',
+];
+
+// Each known category gets an icon + a single dot color used as its identity
+// marker. Chips themselves stay neutral so the editor doesn't compete with
+// the user's chosen resume accent. Custom labels fall back to a stable
+// hash-derived dot color.
+const CATEGORY_META = {
+    languages: { Icon: Code2, dot: 'bg-blue-500' },
+    frameworks: { Icon: Boxes, dot: 'bg-emerald-500' },
+    databases: { Icon: Database, dot: 'bg-amber-500' },
+    'cloud & big data': { Icon: Cloud, dot: 'bg-sky-500' },
+    'devops & tools': { Icon: Wrench, dot: 'bg-orange-500' },
+    'visualization & bi': { Icon: BarChart3, dot: 'bg-fuchsia-500' },
+    'machine learning': { Icon: Brain, dot: 'bg-purple-500' },
+    'architecture & security': { Icon: Shield, dot: 'bg-red-500' },
+    concepts: { Icon: BookOpen, dot: 'bg-indigo-500' },
+    'soft skills': { Icon: Users, dot: 'bg-teal-500' },
+};
+
+const FALLBACK_DOTS = ['bg-rose-500', 'bg-lime-500', 'bg-cyan-500', 'bg-violet-500', 'bg-slate-400'];
+
+function metaForCategory(label) {
+    const lc = (label || '').trim().toLowerCase();
+    if (CATEGORY_META[lc]) return CATEGORY_META[lc];
+    let hash = 0;
+    for (let i = 0; i < lc.length; i++) hash = (hash * 31 + lc.charCodeAt(i)) | 0;
+    return { Icon: Tag, dot: FALLBACK_DOTS[Math.abs(hash) % FALLBACK_DOTS.length] };
+}
+
 const SkillsSection = ({ skills, onUpdateSkills }) => {
-    // Auto-normalize ONCE on mount if we detect any flat (non-category)
-    // skills. Watching [skills] would re-fire on every keystroke and cascade
-    // into pagination re-runs; mount-only is enough because every other
-    // entry point (load, profile switch, AI rewrite) goes through
-    // normalizeResumeShape which already normalizes skills.
     useEffect(() => {
         const hasFlat = skills.some((s) => typeof s === 'string' && s.trim().length > 0 && !isCategory(s));
-        if (hasFlat) {
-            onUpdateSkills?.(normalizeSkills(skills));
-        }
-        // Intentionally empty deps — see comment above.
+        if (hasFlat) onUpdateSkills?.(normalizeSkills(skills));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const categories = skills
         .map((s, idx) => ({ original: s, idx }))
         .filter(({ original }) => isCategory(original));
+
+    const totalSkills = categories.reduce((sum, { original }) => {
+        const items = parseCategory(original).items;
+        return (
+            sum +
+            items
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean).length
+        );
+    }, 0);
 
     const updateAt = (idx, newValue) => {
         const next = [...skills];
@@ -56,101 +100,137 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
         onUpdateSkills?.([...skills, `${label}: `]);
     };
 
+    const usedLabels = new Set(categories.map(({ original }) => parseCategory(original).label.toLowerCase()));
+    const availableStarters = STARTER_CATEGORIES.filter((c) => !usedLabels.has(c.toLowerCase()));
+
     return (
-        <div className="space-y-3">
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                    <FieldLabel>
-                        Skill Categories
+        <div className="space-y-2.5">
+            {/* Header */}
+            <div className="flex items-baseline justify-between gap-3">
+                <FieldLabel>
+                    Skill Groups
+                    {totalSkills > 0 && (
                         <span className="ml-2 text-[10px] text-slate-400 dark:text-stone-500 font-normal normal-case tracking-normal">
-                            {categories.length} {categories.length === 1 ? 'group' : 'groups'}
+                            {categories.length} · {totalSkills} {totalSkills === 1 ? 'skill' : 'skills'}
                         </span>
-                    </FieldLabel>
-                    <button
-                        onClick={() => addCategory()}
-                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-brand-700 dark:text-brand-400 hover:text-brand-800 dark:hover:text-brand-300 transition-colors"
-                    >
-                        <FolderPlus size={13} /> Add group
-                    </button>
+                    )}
+                </FieldLabel>
+                <span className="text-[10.5px] text-slate-400 dark:text-stone-500">
+                    <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[9.5px] mr-1 border border-slate-200 dark:border-slate-700">
+                        Enter
+                    </kbd>
+                    to add
+                </span>
+            </div>
+
+            {categories.length === 0 ? (
+                <EmptyState onPick={addCategory} starters={STARTER_CATEGORIES.slice(0, 4)} />
+            ) : (
+                <div className="space-y-1.5">
+                    <AnimatePresence initial={false}>
+                        {categories.map(({ original, idx }) => {
+                            const { label, items } = parseCategory(original);
+                            return (
+                                <motion.div
+                                    key={idx}
+                                    layout
+                                    initial={{ opacity: 0, y: -4 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, x: -8, transition: { duration: 0.15 } }}
+                                    transition={{ type: 'spring', stiffness: 340, damping: 26 }}
+                                >
+                                    <CategoryCard
+                                        label={label}
+                                        items={items}
+                                        onChange={(newLabel, newItems) =>
+                                            updateAt(idx, buildCategory(newLabel, newItems))
+                                        }
+                                        onRemove={() => updateAt(idx, null)}
+                                    />
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
                 </div>
+            )}
 
-                {categories.length === 0 ? (
-                    <div className="text-[12px] text-slate-400 dark:text-stone-500 italic mb-3">
-                        No groups yet. Categories let you organize skills like{' '}
-                        <span className="not-italic font-medium text-slate-600 dark:text-stone-300">
-                            Languages: Python, SQL
-                        </span>
-                        .
-                    </div>
-                ) : (
-                    <div className="space-y-2.5">
-                        {categories.map(({ original, idx }) => (
-                            <CategoryRow
-                                key={idx}
-                                label={parseCategory(original).label}
-                                items={parseCategory(original).items}
-                                onChange={(label, items) => updateAt(idx, buildCategory(label, items))}
-                                onRemove={() => updateAt(idx, null)}
-                            />
-                        ))}
-                    </div>
-                )}
-
-                {/* Starter-category chips (one tap → adds a pre-named group) */}
-                {categories.length < 4 && (
-                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
-                        <div className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-stone-500 font-bold mb-2">
-                            Quick add
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                            {STARTER_CATEGORIES.filter(
-                                (c) =>
-                                    !categories.some(
-                                        ({ original }) =>
-                                            parseCategory(original).label.toLowerCase() === c.toLowerCase()
-                                    )
-                            )
-                                .slice(0, 6)
-                                .map((c) => (
+            {/* Add row — compact */}
+            {(categories.length > 0 || availableStarters.length < STARTER_CATEGORIES.length) &&
+                availableStarters.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap pt-1">
+                        <button
+                            onClick={() => addCategory()}
+                            className="inline-flex items-center gap-1 text-[11.5px] font-medium text-slate-600 dark:text-stone-300 hover:text-slate-900 dark:hover:text-stone-100 transition-colors"
+                        >
+                            <FolderPlus size={12} /> Custom
+                        </button>
+                        <span className="text-slate-300 dark:text-slate-700">·</span>
+                        <div className="flex flex-wrap gap-1">
+                            {availableStarters.slice(0, 5).map((c) => {
+                                const m = metaForCategory(c);
+                                return (
                                     <button
                                         key={c}
                                         onClick={() => addCategory(c)}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-600 dark:text-stone-300 bg-slate-50 dark:bg-slate-700/60 border border-dashed border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
+                                        title={`Add ${c}`}
+                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] text-slate-500 dark:text-stone-400 hover:text-slate-800 dark:hover:text-stone-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                                     >
-                                        <Plus size={10} /> {c}
+                                        <span className={`inline-block w-1.5 h-1.5 rounded-full ${m.dot}`} />
+                                        {c}
                                     </button>
-                                ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
-            </div>
         </div>
     );
 };
 
-// Splits the stored comma string into displayable skills. Trims and filters
-// empties so a trailing comma or stray whitespace never produces ghost chips.
+const EmptyState = ({ onPick, starters }) => (
+    <div className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/40 px-4 py-5 text-center">
+        <div className="text-[12.5px] font-semibold text-slate-700 dark:text-stone-200 mb-1">
+            Start a skill group
+        </div>
+        <div className="text-[11px] text-slate-500 dark:text-stone-400 mb-3 max-w-[300px] mx-auto">
+            Recruiters scan for keyword clusters. Group your skills like &ldquo;Languages: Python, SQL&rdquo;.
+        </div>
+        <div className="flex flex-wrap gap-1.5 justify-center">
+            {starters.map((c) => {
+                const m = metaForCategory(c);
+                const I = m.Icon;
+                return (
+                    <button
+                        key={c}
+                        onClick={() => onPick(c)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11.5px] font-medium text-slate-700 dark:text-stone-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
+                    >
+                        <span className={`inline-block w-1.5 h-1.5 rounded-full ${m.dot}`} />
+                        <I size={11} className="opacity-70" /> {c}
+                    </button>
+                );
+            })}
+        </div>
+    </div>
+);
+
 const splitSkills = (items) =>
     items
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
-
-// Joins back to the canonical "a, b, c" storage format the rest of the app
-// (PDF/DOCX exporters, AI prompts) expects.
 const joinSkills = (arr) => arr.join(', ');
 
-// Inline editor for one category. Label stays as a plain input; the items
-// list is rendered as removable chips with an inline add-input. Each chip
-// has its own X so the user can drop individual skills (Python, SQL…) without
-// editing a long comma string by hand.
-const CategoryRow = ({ label, items, onChange, onRemove }) => {
+const CategoryCard = ({ label, items, onChange, onRemove }) => {
     const [localLabel, setLocalLabel] = useState(label);
     const [draft, setDraft] = useState('');
     const skillList = splitSkills(items);
+    const meta = metaForCategory(localLabel);
+    const Icon = meta.Icon;
 
     const commitLabel = () => {
-        if (localLabel !== label) onChange(localLabel, items);
+        if (localLabel.trim() && localLabel !== label) onChange(localLabel.trim(), items);
+        else if (!localLabel.trim()) setLocalLabel(label);
     };
 
     const removeSkill = (idx) => {
@@ -159,7 +239,6 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
     };
 
     const addSkillsFromDraft = () => {
-        // Allow paste of "Python, SQL, R" — split and add each as its own chip.
         const incoming = splitSkills(draft);
         if (!incoming.length) return;
         const merged = [...skillList];
@@ -177,37 +256,41 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
             e.preventDefault();
             addSkillsFromDraft();
         } else if (e.key === 'Backspace' && draft === '' && skillList.length > 0) {
-            // Backspace on empty input nukes the last chip — matches the
-            // expected behavior of every chip-editor users have seen elsewhere.
             removeSkill(skillList.length - 1);
         }
     };
 
     return (
-        <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-3 bg-slate-50/40 dark:bg-slate-900/40 group">
-            <div className="flex items-center gap-2 mb-2">
+        <div className="group rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-colors">
+            {/* Header: dot + icon + name + count + remove */}
+            <div className="flex items-center gap-2 px-3 pt-2 pb-1">
+                <span className={`inline-block w-2 h-2 rounded-full ${meta.dot} shrink-0`} />
+                <Icon size={12} className="text-slate-500 dark:text-stone-400 shrink-0" />
                 <input
                     value={localLabel}
                     onChange={(e) => setLocalLabel(e.target.value)}
                     onBlur={commitLabel}
-                    placeholder="Category name"
-                    className="flex-1 text-[12px] font-bold text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-transparent border-0 border-b border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-slate-400 dark:focus:border-slate-500 focus:bg-white dark:focus:bg-slate-800 px-1 py-0.5 outline-none transition-colors"
+                    onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                    placeholder="Group name"
+                    className="flex-1 min-w-0 text-[12px] font-semibold text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-transparent border-0 outline-none px-1 py-0.5 hover:bg-slate-50 dark:hover:bg-slate-900/40 rounded transition-colors"
                 />
+                {skillList.length > 0 && (
+                    <span className="text-[10px] font-mono text-slate-400 dark:text-stone-500 shrink-0 tabular-nums">
+                        {skillList.length}
+                    </span>
+                )}
                 <button
                     onClick={onRemove}
-                    className="text-slate-400 dark:text-stone-500 hover:text-red-600 dark:hover:text-red-400 p-1 rounded transition-colors opacity-0 group-hover:opacity-100"
                     title="Remove group"
+                    className="text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 p-0.5 rounded transition-all opacity-0 group-hover:opacity-100"
                 >
-                    <X size={14} />
+                    <X size={13} />
                 </button>
             </div>
 
-            {/* Chip row — each existing skill is its own removable pill, then
-                an inline input for adding more. Wrapping is fine because chips
-                are short; the container clicks focus onto the input so the
-                whole row feels like one tag editor. */}
+            {/* Chips — neutral so they don't compete with template accent */}
             <div
-                className="flex flex-wrap items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2 py-1.5 focus-within:border-slate-400 dark:focus-within:border-slate-500"
+                className="flex flex-wrap items-center gap-1 px-3 pb-2.5 pt-0.5"
                 onClick={(e) => {
                     const input = e.currentTarget.querySelector('input');
                     if (input && e.target === e.currentTarget) input.focus();
@@ -222,16 +305,16 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.12 } }}
                             transition={{ type: 'spring', stiffness: 500, damping: 28, mass: 0.5 }}
-                            className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full text-[11px] font-medium bg-brand-50 dark:bg-brand-900/30 text-brand-800 dark:text-brand-200 border border-brand-200 dark:border-brand-800"
+                            className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded text-[11px] font-medium text-slate-700 dark:text-stone-200 bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 group/chip"
                         >
                             {skill}
                             <button
                                 type="button"
                                 onClick={() => removeSkill(idx)}
-                                className="hover:bg-brand-200 dark:hover:bg-brand-800 rounded-full p-0.5 transition-colors"
+                                className="hover:bg-slate-200 dark:hover:bg-slate-700 rounded p-0.5 transition-colors opacity-50 group-hover/chip:opacity-100"
                                 title={`Remove ${skill}`}
                             >
-                                <X size={10} />
+                                <X size={9} />
                             </button>
                         </motion.span>
                     ))}
@@ -241,20 +324,12 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={handleKeyDown}
                     onBlur={addSkillsFromDraft}
-                    placeholder={skillList.length === 0 ? 'Python, SQL, JavaScript…' : 'Add skill…'}
-                    className="flex-1 min-w-[80px] text-[12px] text-slate-700 dark:text-stone-200 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-transparent border-0 outline-none py-0.5"
+                    placeholder={skillList.length === 0 ? 'Type a skill, Enter to add…' : '+ add'}
+                    className="flex-1 min-w-[80px] text-[11.5px] text-slate-700 dark:text-stone-200 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-transparent border-0 outline-none py-0.5 px-1"
                 />
-            </div>
-            <div className="mt-1.5 text-[10px] text-slate-400 dark:text-stone-500">
-                Type a skill and press{' '}
-                <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 font-mono text-[10px]">
-                    Enter
-                </kbd>{' '}
-                or{' '}
-                <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 font-mono text-[10px]">
-                    ,
-                </kbd>{' '}
-                to add. Click ✕ on a chip to remove.
+                {skillList.length === 0 && (
+                    <Plus size={11} className="text-slate-300 dark:text-stone-600 mr-1" />
+                )}
             </div>
         </div>
     );

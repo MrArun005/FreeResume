@@ -17,7 +17,6 @@ import LayoutMinimal from '../layouts/LayoutMinimal';
 import LayoutAts from '../layouts/LayoutAts';
 import LayoutJakes from '../layouts/LayoutJakes';
 import LayoutFreeform from '../layouts/LayoutFreeform';
-import LayoutCreative from '../layouts/LayoutCreative';
 import LayoutCanvas from '../layouts/LayoutCanvas';
 import LayoutExecutive from '../layouts/LayoutExecutive';
 import LayoutGold from '../layouts/LayoutGold';
@@ -37,7 +36,6 @@ const LAYOUT_MAP = {
     ats: LayoutAts,
     jakes: LayoutJakes,
     freeform: LayoutFreeform,
-    creative: LayoutCreative,
     canvas: LayoutCanvas,
     executive: LayoutExecutive,
     gold: LayoutGold,

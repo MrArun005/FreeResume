@@ -5,12 +5,12 @@
 import { useEffect, useRef, useState } from 'react';
 
 const DEFAULT_SAMPLE = {
-    name: 'Anna Reyes',
+    name: 'Sofia Andersson',
     title: 'Senior Product Designer',
-    email: 'anna@reyes.studio',
-    phone: '+1 415 555 0142',
-    location: 'San Francisco',
-    site: 'reyes.studio',
+    email: 'sofia@andersson.studio',
+    phone: '+46 70 555 0142',
+    location: 'Stockholm',
+    site: 'sofia.andersson.studio',
 };
 
 // Build a thumbnail-display sample from the user's actual personal data.

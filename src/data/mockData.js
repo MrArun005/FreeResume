@@ -1,127 +1,108 @@
 export const initialData = {
     personal: {
-        fullName: 'Arun M',
-        title: 'FullStack Developer',
-        email: 'arunmallikarjun005@gmail.com',
-        phone: '7483573363',
-        location: 'Bengaluru, India',
+        fullName: 'Sofia Andersson',
+        title: 'Senior Product Designer',
+        email: 'sofia@andersson.studio',
+        phone: '+46 70 555 0142',
+        location: 'Stockholm, Sweden',
         summary:
-            'Passionate Full Stack Developer with 3.2 years of experience creating and implementing innovative web applications. Proficient in both front-end and back-end technologies, with a strong focus on user-interface design and seamless functionality implementation and delivering high-quality solutions within deadlines.',
+            'Senior Product Designer with 7+ years shipping consumer and B2B SaaS at growth-stage startups across Europe. I lead end-to-end product design — research, systems, prototyping — and partner closely with engineering to move fast without losing craft. Known for shipping high-clarity interfaces, scaling design systems, and mentoring designers into senior roles.',
         socials: [
-            { id: 1, network: 'LinkedIn', url: 'https://linkedin.com/in/arun-%C2%A0m-9163181a0' },
-            { id: 2, network: 'Portfolio', url: 'https://arunmallikarjun.netlify.app' },
+            { id: 1, network: 'LinkedIn', url: 'https://linkedin.com/in/sofiaandersson' },
+            { id: 2, network: 'Portfolio', url: 'https://sofia.andersson.studio' },
         ],
     },
     experience: [
         {
             id: 1,
-            role: 'Senior Developer',
-            company: 'Tecnotree Convergence Private Limited',
-            date: '10/2023 - Present',
-            location: 'Bengaluru',
+            role: 'Senior Product Designer',
+            company: 'Helix',
+            date: '03/2022 - Present',
+            location: 'Stockholm',
             bullets: [
-                'Integrated third-party applications into existing software, enhancing features and performances',
-                'Analyzed and mitigated performance issues in microservices ecosystem and increasing system scalability',
-                'Conducted comprehensive code reviews for team members, providing constructive feedback to enhance code quality and readability',
-                'Boosted application performance by 30% by optimising React component renders, resulting in a smoother user interface',
-                'Identified and addressed production bottlenecks, including browser service limitations, ensuring high service availability and reliability',
-                'Delivered customized Active Reports solutions , enabling advanced data visualization and enhancing reporting eﬃciency for clients',
+                'Led the redesign of the onboarding flow, lifting day-7 activation from 38% to 61% (+23pp) across 180k monthly signups.',
+                'Built and shipped Helix Design System v2 (78 components, 12 tokens) — adopted by 4 product teams in under a quarter.',
+                'Partnered with research to run 27 moderated studies in 8 months, turning findings into a quarterly opportunity backlog the PM org now plans against.',
+                'Mentored two mid-level designers into senior roles; both now leading their own product surfaces.',
+                'Reduced design-to-engineering handoff time ~40% by introducing component-spec docs and a Figma-to-Storybook pipeline.',
             ],
         },
         {
             id: 2,
-            role: 'Software Engineer',
-            company: 'Tecnotree Convergence Private Limited',
-            date: '10/2021 - 10/2023',
-            location: 'Bengaluru',
+            role: 'Product Designer',
+            company: 'Field & Co',
+            date: '06/2019 - 02/2022',
+            location: 'Berlin',
             bullets: [
-                'Developed high-quality code for diverse software projects considering system performance optimization',
-                'Designed and executed workflows through the utilization of microservices, capitalizing on their flexibility and scalability',
-                'Diagnosed and resolved deployment issues, such as Chrome service limitations, by implementing optimized resource management strategies',
+                'Owned design for the merchant dashboard (€400M annual GMV) — redesigned analytics, payouts, and inventory in three releases.',
+                'Cut support tickets ~28% by simplifying the refund flow and rewriting in-product microcopy with the writing lead.',
+                "Established the company's first usability testing cadence — 4 sessions per sprint — embedded into the standing design ritual.",
+                'Collaborated with brand on a full visual refresh ahead of the Series B round.',
+            ],
+        },
+        {
+            id: 3,
+            role: 'UX Designer',
+            company: 'Klint Analytics',
+            date: '08/2017 - 05/2019',
+            location: 'Copenhagen',
+            bullets: [
+                'Designed dashboard tooling for enterprise SaaS analytics customers (Tier-1 banks, telcos).',
+                'Prototyped data-viz patterns in code (D3, Recharts) to reduce engineer ramp time on bespoke chart asks.',
+                'Ran the first formal design critique program — still in place at the company six years later.',
             ],
         },
     ],
     education: [
         {
             id: 1,
-            degree: "Bachelor's of Engineering, Computer science and Engineering",
-            school: 'Visvesvaraya Technological University',
-            date: '07/2017 - 09/2021',
-            location: 'Mysuru',
+            degree: 'MA, Interaction Design',
+            school: 'Umeå Institute of Design',
+            date: '08/2015 - 06/2017',
+            location: 'Umeå, Sweden',
+        },
+        {
+            id: 2,
+            degree: 'BA, Visual Communication',
+            school: 'Konstfack — University of Arts, Crafts & Design',
+            date: '08/2012 - 06/2015',
+            location: 'Stockholm, Sweden',
         },
     ],
     skills: [
-        'Javascript',
-        'NodeJs',
-        'Java',
-        'SpringBoot',
-        'Css',
-        'HTML',
-        'MongoDB',
-        'MySQL',
-        'Kubernates',
-        'Scrum',
-        'Jira',
-        'Git',
-        'RESTful API',
-        'ReactJS',
-        'Material-UI',
-        'Redux',
+        'Tools: Figma, FigJam, Framer, Principle, Notion',
+        'Research: Moderated & unmoderated testing, diary studies, surveys, journey mapping',
+        'Systems: Tokens, theming, accessibility (WCAG 2.2 AA), Storybook',
+        'Prototyping: Framer, HTML/CSS, Lottie, light React',
+        'Collaboration: Cross-functional facilitation, design critique, mentoring',
+        'Languages: English (native), Swedish (native), German (conversational)',
     ],
     projects: [
         {
             id: 1,
-            title: 'Automated YouTube Video Creator',
+            title: 'Helix Design System v2',
             date: '2024',
             bullets: [
-                'Built an automated platform combining OpenAI, ElevenLabs, and DALL-E for script generation, text-to-speech, and background visuals.',
-                'Developed a web-based dashboard UI to manage video rendering and schedule uploads directly to YouTube.',
+                'Rebuilt the company design system from scratch with semantic tokens, dark mode, and a documented contribution model.',
+                'Shipped a Storybook-backed component library that four product teams adopted within a quarter.',
             ],
         },
         {
             id: 2,
-            title: 'FixMyPipe (Plumbing Booking Platform)',
-            date: '2024',
+            title: 'Onboarding Redesign — Helix',
+            date: '2023',
             bullets: [
-                'Developed a SaaS application with PWA features for service booking, calendar scheduling, and admin workflows.',
-                'Configured Firebase Cloud Messaging for push notifications via service workers to ensure real-time updates for users and plumbers.',
+                'Replaced a 7-step wizard with a 3-step contextual flow informed by 12 user interviews and three rounds of unmoderated testing.',
+                'Day-7 activation lifted from 38% to 61% — measured across an 180k monthly signup base.',
             ],
         },
         {
             id: 3,
-            title: 'Export Coding with the help of AI (Custom Resume Builder)',
-            date: '2024',
+            title: 'Accessibility Audit — Field & Co Merchant Dashboard',
+            date: '2021',
             bullets: [
-                'Engineered a highly customizable resume builder application that manages complex document-level UI rendering.',
-                'Implemented advanced pagination logic and precise styling rules for varied layouts (Jakes, Classic, Freeform) to calculate dynamic DOM heights for pixel-perfect PDF exports.',
-            ],
-        },
-        {
-            id: 4,
-            title: 'Management UI',
-            date: '10/2021 - Present',
-            bullets: [
-                'Implemented various features within React-based frontend application to streamline data configuration for array of microservices',
-                'Implemented data transfer capabilities to facilitate seamless data transfer between diﬀerent environments',
-                'Implemented active reports to design the dynamic invoices',
-            ],
-        },
-        {
-            id: 5,
-            title: 'Active Reports',
-            date: '08/2022 - Present',
-            bullets: [
-                'Developed interactive and dynamic reports using Active Reports and JavaScript, enabling real-time data visualization',
-                'Implemented advanced features such as drill-down, parameterized filtering, and custom scripting',
-                'Integrated Active Reports with RESTful APIs and optimized rendering for large datasets',
-            ],
-        },
-        {
-            id: 6,
-            title: 'Digital Accelerator Platform',
-            date: '10/2021 - Present',
-            bullets: [
-                'Digital accelerator platform (DAP) empowers users to rapidly create and enhance services utilizing low-code methodologies',
+                'Audited a 200-screen dashboard against WCAG 2.1 AA; produced a tracked remediation backlog with engineering ownership.',
+                'Brought contrast and keyboard-navigation compliance from 41% to 96% over two quarters.',
             ],
         },
     ],
@@ -132,6 +113,12 @@ export const initialData = {
 
     // Manual Page Breaks
     pageBreaks: {},
+
+    // Canvas Pro: user-added free-form blocks (heading, quote, photo, divider,
+    // shape, etc). Only used by the Canvas layout. Each entry has its own
+    // position/size and style overrides. Built-in canvas blocks (name, title,
+    // contact, summary, experience, education, skills) live in customStyles.
+    canvasBlocks: [],
 };
 
 // Blank scaffold for "New resume" in the profiles menu. Keeps the canonical
@@ -161,6 +148,7 @@ export const emptyResume = {
     accentColor: null,
     pageMargins: 'standard',
     headerAlignment: 'left',
+    canvasBlocks: [],
 };
 
 export const parsedMockData = {

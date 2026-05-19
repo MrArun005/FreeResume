@@ -5,9 +5,19 @@
 import { Router } from 'express';
 import multer from 'multer';
 import mammoth from 'mammoth';
+import { createRequire } from 'module';
 import { generateFromParts } from '../lib/gemini.js';
 import { extractJson, normalizeRaw, sendError } from '../lib/utils.js';
 import { SCHEMA_PARSED_RESUME } from '../lib/schemas.js';
+
+// pdf-parse is CommonJS — load via createRequire so we can keep this file ESM.
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
+
+// Threshold below which we assume the PDF text extraction came up empty or
+// near-empty (e.g. image-only scanned resume) and fall back to letting
+// Gemini parse the PDF natively (slower but still works).
+const MIN_TEXT_LENGTH = 120;
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -64,7 +74,23 @@ router.post('/parse-resume', upload.single('file'), async (req, res) => {
 
         if (mimeType === 'application/pdf' || req.file.originalname.toLowerCase().endsWith('.pdf')) {
             mimeType = 'application/pdf';
-            console.log('PDF detected, passing buffer to Gemini...');
+            // Speed win: extract PDF text locally with pdf-parse first. Sending
+            // plain text to Gemini is dramatically faster than sending a base64
+            // PDF binary (Gemini skips its vision/OCR pass and gets a smaller
+            // payload). For most native-text PDFs (recruiter-friendly resumes)
+            // this is the fast path. For image-only/scanned PDFs we fall back
+            // to native PDF input below.
+            try {
+                const t0 = Date.now();
+                const result = await pdfParse(buffer);
+                console.log(`pdf-parse done in ${Date.now() - t0}ms, text length: ${result.text.length}`);
+                if (result.text && result.text.length >= MIN_TEXT_LENGTH) {
+                    rawText = result.text;
+                    mimeType = 'text/plain'; // signal text-mode downstream
+                }
+            } catch (err) {
+                console.warn('pdf-parse failed, will fall back to native PDF input:', err.message);
+            }
         } else if (
             mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
             req.file.originalname.toLowerCase().endsWith('.docx')
@@ -80,6 +106,7 @@ router.post('/parse-resume', upload.single('file'), async (req, res) => {
 
         let parts = [];
         if (mimeType === 'application/pdf') {
+            // Image-only PDF — let Gemini handle it natively as fallback.
             parts = [
                 { text: SYSTEM_PROMPT },
                 {

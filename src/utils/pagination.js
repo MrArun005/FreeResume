@@ -50,7 +50,9 @@ const LAYOUT_ITEM_MARGIN = {
     executive: 16,
     'sidebar-left': 10,
     'sidebar-right': 10,
-    creative: 12,
+    // Creative uses mb-8 (32px) between experience items — engine had 12,
+    // under-counting by 20px per item and packing too much onto page 1.
+    creative: 28,
 };
 
 // Per-layout vertical gap between sections (after a section title block ends
@@ -73,7 +75,10 @@ const LAYOUT_SECTION_MARGIN = {
     executive: 16,
     'sidebar-left': 10,
     'sidebar-right': 10,
-    creative: 14,
+    // Creative uses gap-6 (24px) between sections — bumped from 14 so the
+    // engine stops thinking 5 sections of content fit when actual rendering
+    // overflows by ~50px from cumulative gap.
+    creative: 24,
 };
 
 // Allow this many pixels of overhang past maxPageHeight before the engine
@@ -84,6 +89,14 @@ const LAYOUT_SECTION_MARGIN = {
 // section that's just barely "over" the budget keeps short tail sections
 // on the right page instead of breaking with 200-500px of empty space.
 const OVERFLOW_SLACK = 28;
+
+// Sidebar/two-column layouts have separate per-column budgets and chip-wrap
+// height uncertainty. A moderate slack lets short sections (Education /
+// Skills) ride alongside experience instead of going to a half-empty page 2,
+// while staying tight enough not to over-pack Creative (which had been
+// cramming everything into page 1 even though it actually overflowed).
+const SIDEBAR_OVERFLOW_SLACK = 50;
+const isSidebarLayout = (id) => id === 'sidebar-left' || id === 'sidebar-right' || id === 'creative';
 
 const paddingFor = (layoutId, fallback) =>
     LAYOUT_PADDING[layoutId] != null ? LAYOUT_PADDING[layoutId] : fallback;
@@ -369,6 +382,10 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
     const ITEM_MARGIN = itemMarginFor(layoutId, 20);
     const SECTION_MARGIN = sectionMarginFor(layoutId, 16);
     const TITLE_HEIGHT = 28;
+    // Sidebar columns have chip-wrap uncertainty — be more permissive about
+    // fit so trailing short sections (Education, Skills) don't get bumped
+    // to a near-empty page 2 when there's clearly room on page 1.
+    const SLACK = isSidebarLayout(layoutId) ? SIDEBAR_OVERFLOW_SLACK : OVERFLOW_SLACK;
 
     // Define Columns
     let mainCol = 1;
@@ -441,7 +458,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                 pageHeights[currentPageIndex] = [PADDING, PADDING];
             }
 
-            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight + OVERFLOW_SLACK) {
+            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight + SLACK) {
                 currentPageIndex++;
                 if (!pages[currentPageIndex]) {
                     pages[currentPageIndex] = createPage(data);
@@ -485,7 +502,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                     const titleH = isFirstOnPage ? titleHeight : 0;
                     const margin = isFirstOnPage ? SECTION_MARGIN : 0;
 
-                    if (currentH + margin + titleH + itemHeight > maxPageHeight + OVERFLOW_SLACK) {
+                    if (currentH + margin + titleH + itemHeight > maxPageHeight + SLACK) {
                         addItemsToPage(pages[currentPageIndex], sectionId, pageItems, data);
                         pageItems.length = 0;
 
@@ -560,7 +577,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                 const titleH = isFirstOnPage ? titleHeight : 0;
                 const margin = isFirstOnPage ? SECTION_MARGIN : 0;
 
-                if (currentH + margin + titleH + itemHeight > maxPageHeight + OVERFLOW_SLACK) {
+                if (currentH + margin + titleH + itemHeight > maxPageHeight + SLACK) {
                     addItemsToPage(pages[currentPageIndex], sectionId, pageItems, data);
                     pageItems.length = 0;
 
@@ -589,7 +606,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                 pageHeights[currentPageIndex] = [PADDING, PADDING];
             }
 
-            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight + OVERFLOW_SLACK) {
+            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight + SLACK) {
                 currentPageIndex++;
                 if (!pages[currentPageIndex]) {
                     pages[currentPageIndex] = createPage(data);
@@ -965,6 +982,113 @@ const buildSinglePage = (data) => ({
     }, {}),
 });
 
+// For sidebar/two-column layouts: if the trailing page contains ONLY
+// sidebar sections (Education, Skills, or sidebar-keyword custom sections)
+// and the previous page's sidebar column clearly has space, merge them.
+// This catches the very visible "page 1 sidebar half-empty / page 2 only
+// has Education" failure mode the engine's per-column budget over-counts.
+const SIDEBAR_KEYWORDS = ['language', 'interest', 'award', 'certification', 'skill', 'education'];
+const isSidebarSectionId = (id, customSections) => {
+    if (id === 'education' || id === 'skills') return true;
+    const cs = (customSections || []).find((s) => s.id === id);
+    if (cs) {
+        const title = (cs.title || '').toLowerCase();
+        return SIDEBAR_KEYWORDS.some((kw) => title.includes(kw));
+    }
+    return false;
+};
+
+const compactSidebarTail = (pages, data, heights, maxPageHeight, layoutId) => {
+    if (!Array.isArray(pages) || pages.length < 2) return pages;
+    const last = pages[pages.length - 1];
+    const prev = pages[pages.length - 2];
+
+    // Identify which sections on the trailing page are sidebar-eligible.
+    const trailingSidebarIds = last.sectionOrder.filter((id) => isSidebarSectionId(id, data.customSections));
+    if (trailingSidebarIds.length === 0) return pages;
+    const trailingIsSidebarOnly = trailingSidebarIds.length === last.sectionOrder.length;
+
+    // Estimate what the prev page's sidebar column currently uses and what
+    // the trailing page wants to add. We use per-section measured heights
+    // plus section margins as the engine does.
+    const PADDING = paddingFor(layoutId, 48);
+    const SECTION_MARGIN = sectionMarginFor(layoutId, 16);
+    const ITEM_MARGIN = itemMarginFor(layoutId, 20);
+
+    const sumSidebarUsed = (page) => {
+        let h = PADDING;
+        // Contact info only renders on page 0 for sidebar-right; counting it
+        // on any other page over-estimates the used space.
+        if (layoutId === 'sidebar-right' && pages.indexOf(page) === 0) {
+            h += heights['section-contact'] || 0;
+        }
+        page.sectionOrder.forEach((id) => {
+            if (!isSidebarSectionId(id, data.customSections)) return;
+            const sh = heights[`section-${id}`] || 0;
+            h += sh + SECTION_MARGIN;
+        });
+        return h;
+    };
+
+    const prevUsed = sumSidebarUsed(prev);
+    let trailingAdds = 0;
+    trailingSidebarIds.forEach((id) => {
+        const sh = heights[`section-${id}`] || 0;
+        trailingAdds += sh + SECTION_MARGIN;
+        // For list sections, also account for items.
+        if (id === 'education') {
+            (last.education || []).forEach((e) => {
+                trailingAdds += (heights[`item-${e.id}`] || 0) + ITEM_MARGIN;
+            });
+        }
+    });
+
+    // Be conservative — only merge if there's at least 60px headroom after
+    // pulling everything back, to avoid creating a new overflow.
+    const HEADROOM = 60;
+    if (prevUsed + trailingAdds > maxPageHeight + OVERFLOW_SLACK - HEADROOM) return pages;
+
+    // Merge: pull trailing sidebar sections back into prev.
+    trailingSidebarIds.forEach((id) => {
+        if (!prev.sectionOrder.includes(id)) prev.sectionOrder.push(id);
+        if (id === 'education') {
+            prev.education = [...(prev.education || []), ...(last.education || [])];
+        } else if (id === 'skills') {
+            prev.skills = data.skills;
+        } else {
+            const cs = data.customSections.find((s) => s.id === id);
+            if (cs) {
+                const lastCs = (last.customSections || []).find((s) => s.id === id);
+                const items = lastCs ? lastCs.items : [];
+                const existing = prev.customSections.find((s) => s.id === id);
+                if (existing) existing.items = [...existing.items, ...items];
+                else prev.customSections.push({ ...cs, items: [...items] });
+            }
+        }
+        // Remove the pulled section from `last` so it doesn't render twice.
+        last.sectionOrder = last.sectionOrder.filter((sid) => sid !== id);
+        if (id === 'education') last.education = [];
+        else if (id === 'skills') last.skills = [];
+        else {
+            const lastCs = (last.customSections || []).find((s) => s.id === id);
+            if (lastCs) lastCs.items = [];
+        }
+    });
+
+    // If the trailing page is now empty (sidebar-only case), drop it.
+    if (trailingIsSidebarOnly) pages.pop();
+    // Final defensive sweep — drop any page that ended up with no content
+    // (no sectionOrder entries, no items in any of the list buckets).
+    const isEmptyPage = (p) =>
+        (p.sectionOrder?.length ?? 0) === 0 &&
+        (p.experience?.length ?? 0) === 0 &&
+        (p.education?.length ?? 0) === 0 &&
+        ((p.skills?.length ?? 0) === 0 || pages.indexOf(p) > 0) &&
+        (p.customSections?.every((cs) => (cs.items?.length ?? 0) === 0) ?? true);
+    const filtered = pages.filter((p) => !isEmptyPage(p));
+    return addPageMetadata(filtered.length > 0 ? filtered : pages);
+};
+
 /**
  * MAIN ENTRY POINT
  */
@@ -993,10 +1117,15 @@ export const paginateResume = (data, heights, maxPageHeight = 1000, layoutId = '
             return paginateCanvas(data);
         case 'creative':
         case 'sidebar-left':
-        case 'sidebar-right':
-            // Two-column strategies are NOT safe to compact with the
-            // single-column heuristic — leave them alone.
-            return paginateSidebar(data, heights, maxPageHeight, layoutId);
+        case 'sidebar-right': {
+            // Two-column strategies don't fit the single-column compaction
+            // heuristic, but we still want to catch the common case where
+            // the LAST page contains only trailing sidebar sections
+            // (Education / Skills / sidebar Custom) while the prior page
+            // has obvious sidebar room. Pull them back when safe.
+            const sidebarPages = paginateSidebar(data, heights, maxPageHeight, layoutId);
+            return compactSidebarTail(sidebarPages, data, heights, maxPageHeight, layoutId);
+        }
         default:
             pages = paginateStandard(data, heights, maxPageHeight, layoutId);
     }

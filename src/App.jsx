@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { useModalState } from './hooks/useModalState';
 import {
     Layout,
-    ChevronRight,
     Plus,
     Trash2,
     Upload,
@@ -36,10 +34,10 @@ import { TEMPLATES } from './constants/layouts';
 import { initialData } from './data/mockData';
 
 // UI Components
-import TemplateThumbnail from './components/ui/TemplateThumbnail';
 import LandingPage from './components/pages/LandingPage';
 import OnboardingModal from './components/ui/OnboardingModal';
 import KeyboardShortcutsModal from './components/ui/KeyboardShortcutsModal';
+import ParsingLoader from './components/ui/ParsingLoader';
 import JobTrackerModal from './components/ui/JobTrackerModal';
 import FeatureTourModal from './components/ui/FeatureTourModal';
 import TutorialModal from './components/ui/TutorialModal';
@@ -54,7 +52,6 @@ import LayoutMinimal from './components/layouts/LayoutMinimal';
 import LayoutAts from './components/layouts/LayoutAts';
 import LayoutJakes from './components/layouts/LayoutJakes';
 import LayoutFreeform from './components/layouts/LayoutFreeform';
-import LayoutCreative from './components/layouts/LayoutCreative';
 import LayoutCanvas from './components/layouts/LayoutCanvas';
 import LayoutExecutive from './components/layouts/LayoutExecutive';
 import LayoutGold from './components/layouts/LayoutGold';
@@ -112,7 +109,6 @@ const App = () => {
     const [view, setView] = useState('gallery'); // 'gallery' | 'editor'
     const [mobileView, setMobileView] = useState('editor'); // 'editor' | 'preview'
     const modals = useModalState();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
     const [isImproving, setIsImproving] = useState(false);
 
@@ -174,6 +170,10 @@ const App = () => {
             // Header alignment for layouts that support it. Layouts read
             // var(--resume-header-align, left).
             headerAlignment: safe.headerAlignment || 'left',
+            // Canvas Pro: free-form blocks the user has added (heading, quote,
+            // photo, divider, shape, etc). Default to an empty array so older
+            // resumes don't crash the Canvas layout.
+            canvasBlocks: Array.isArray(safe.canvasBlocks) ? safe.canvasBlocks : [],
         };
     };
 
@@ -381,6 +381,7 @@ const App = () => {
     useEffect(() => {
         const handleResize = () => {
             const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
             let availableWidth = windowWidth;
 
             // Match the responsive drawer width in ThemeSettingsModal:
@@ -391,36 +392,51 @@ const App = () => {
                 if (windowWidth >= 768) {
                     availableWidth -= 450; // Editor sidebar
                 }
-                if (windowWidth >= 1280 && isSidebarOpen && !isThemePanelOpen) {
-                    // Template selector hides when the Theme drawer is open
-                    // (they'd otherwise stack on the right edge).
-                    availableWidth -= 340;
-                }
                 if (isThemePanelOpen && windowWidth >= 640) {
                     availableWidth -= themeDrawerWidth;
                 }
             }
-            // Left pad (lg:pl-12 = 48px) + right pad (48px, unless the
-            // drawer is open — then the right side is already counted
-            // above as the drawer reservation).
-            availableWidth -= isThemePanelOpen ? 48 : 96;
+            // Left pad (lg:pl-12 = 48px) + right pad. When the drawer is
+            // open the right side reserves drawer width + 48px gap so the
+            // resume page doesn't kiss the drawer edge (matches the left
+            // breathing room). When closed, normal 48px right pad.
+            availableWidth -= isThemePanelOpen ? 96 : 96;
 
             const targetWidth = 794; // A4 width at 96 DPI
-            const fitScale = availableWidth / targetWidth;
+
+            // Fit-to-screen: also bound by viewport height so the first page
+            // is fully visible without scrolling. App header is h-16 (64px).
+            // Container padding is lg:py-12 (96px total) in editor mode,
+            // p-8 (64px total) in fullscreen. 40px bottom buffer.
+            const headerHeight = 64;
+            const verticalPadding = isPreviewFullscreen ? 48 : 64;
+            const availableHeight = windowHeight - headerHeight - verticalPadding - 16;
+            const targetHeight = 1123; // A4 height at 96 DPI
+
+            const widthScale = availableWidth / targetWidth;
+            const heightScale = availableHeight / targetHeight;
+            // Overshoot the fit so text reads at a comfortable size, but
+            // NEVER exceed the available width — if we did, the resume would
+            // be wider than the content box, flex auto-margins would collapse,
+            // and the page would left-align (visible gap only on the right,
+            // looking lopsided against the Design drawer).
+            const overshot = Math.min(widthScale, heightScale) * 1.35;
+            const fitScale = Math.min(overshot, widthScale);
+
             // Preview mode = compact: smaller cap so the paper reads as a
             // contained document, not a magnified billboard. Regular editor
             // mode = 1.3 to fill wide screens. Floor is intentionally low
             // (0.18) so on narrow viewports with both drawers open, the
             // preview still scales down enough to stay fully visible
             // instead of bleeding to the right under the drawer.
-            const maxScale = isPreviewFullscreen ? 1.15 : 1.3;
+            const maxScale = isPreviewFullscreen ? 1.3 : 1.5;
             setScale(Math.max(0.18, Math.min(fitScale, maxScale)));
         };
 
         handleResize(); // Initial call
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [isSidebarOpen, isPreviewFullscreen, isThemePanelOpen]);
+    }, [isPreviewFullscreen, isThemePanelOpen]);
 
     // Autosave: pipe every resume edit into the active profile inside the
     // profiles store. The store helper handles localStorage persistence with
@@ -1008,13 +1024,47 @@ const App = () => {
         return () => window.removeEventListener('keydown', onKey);
     }, [isPreviewFullscreen]);
 
-    const handleStyleUpdate = (id, newPos) => {
+    const handleStyleUpdate = (id, patch) => {
+        // patch can carry {x, y, w, h} from a drag/resize OR {style: {...}}
+        // from the inspector — merge into the existing entry instead of
+        // overwriting so position survives style edits and vice versa.
         setResume((prev) => ({
             ...prev,
             customStyles: {
                 ...prev.customStyles,
-                [id]: newPos,
+                [id]: { ...(prev.customStyles?.[id] || {}), ...patch },
             },
+        }));
+    };
+
+    // Canvas (Pro) — custom blocks added via the library palette.
+    const handleAddCanvasBlock = (block) => {
+        setResume((prev) => ({
+            ...prev,
+            canvasBlocks: [...(prev.canvasBlocks || []), block],
+        }));
+    };
+
+    const handleUpdateCanvasBlock = (id, patch) => {
+        setResume((prev) => ({
+            ...prev,
+            canvasBlocks: (prev.canvasBlocks || []).map((b) => (b.id === id ? { ...b, ...patch } : b)),
+        }));
+    };
+
+    const handleUpdateCanvasBlockStyle = (id, style) => {
+        setResume((prev) => ({
+            ...prev,
+            canvasBlocks: (prev.canvasBlocks || []).map((b) =>
+                b.id === id ? { ...b, style: { ...(b.style || {}), ...style } } : b
+            ),
+        }));
+    };
+
+    const handleDeleteCanvasBlock = (id) => {
+        setResume((prev) => ({
+            ...prev,
+            canvasBlocks: (prev.canvasBlocks || []).filter((b) => b.id !== id),
         }));
     };
 
@@ -1028,6 +1078,10 @@ const App = () => {
             pageIndex,
             isMeasurement,
             onUpdateStyle: handleStyleUpdate,
+            onAddCanvasBlock: handleAddCanvasBlock,
+            onUpdateCanvasBlock: handleUpdateCanvasBlock,
+            onUpdateCanvasBlockStyle: handleUpdateCanvasBlockStyle,
+            onDeleteCanvasBlock: handleDeleteCanvasBlock,
         };
         switch (template.layout) {
             case 'classic':
@@ -1044,8 +1098,6 @@ const App = () => {
                 return <LayoutJakes {...props} />;
             case 'freeform':
                 return <LayoutFreeform {...props} />;
-            case 'creative':
-                return <LayoutCreative {...props} />;
             case 'canvas':
                 return <LayoutCanvas {...props} />;
             case 'executive':
@@ -1417,6 +1469,27 @@ const App = () => {
                         )}
                     </div>
 
+                    {/* Group 1.5: Design (Templates + Theme) — promoted to the top
+                        header so new users can discover template switching
+                        and design customization without hunting through the
+                        editor sidebar. Toggles the right-side Design drawer
+                        which contains: Template picker, Paper size, Accent,
+                        Margins, Header alignment, ATS view, Themes, Fonts,
+                        Text sizes. */}
+                    <button
+                        onClick={() => modals.toggle('theme')}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 border ${
+                            isThemePanelOpen
+                                ? 'bg-slate-900 hover:bg-slate-800 text-white border-slate-800'
+                                : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-stone-200 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                        }`}
+                        title="Design — templates, colors, fonts (⌘D)"
+                        aria-pressed={isThemePanelOpen}
+                    >
+                        <LayoutGrid size={16} />
+                        <span className="hidden sm:inline tracking-wide text-sm">Design</span>
+                    </button>
+
                     {/* Group 2: Export Dropdown */}
                     <div className="relative" ref={exportMenuRef}>
                         <button
@@ -1526,8 +1599,6 @@ const App = () => {
                         updateCustomItem={updateCustomItem}
                         removeCustomItem={removeCustomItem}
                         addCustomItem={addCustomItem}
-                        isThemeOpen={isThemePanelOpen}
-                        onToggleTheme={() => modals.toggle('theme')}
                         profiles={profilesStore.profiles}
                         activeProfileId={activeProfile.id}
                         onSwitchProfile={handleSwitchProfile}
@@ -1549,103 +1620,9 @@ const App = () => {
                             : // Split p-12 into px/py — the shorthand at lg would otherwise
                               // override the conditional right-pad below (Tailwind emits
                               // lg:* after sm:*, and `padding` shorthand resets all sides).
-                              `${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 dark:bg-slate-950 overflow-auto h-full relative print-area flex-col items-center p-4 lg:py-12 lg:pl-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isThemePanelOpen ? 'lg:pr-[340px] xl:pr-[400px]' : !isSidebarOpen ? 'lg:pr-12' : 'xl:pr-[340px] lg:pr-12'}`
+                              `${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 dark:bg-slate-950 overflow-auto h-full relative print-area flex-col items-center p-4 lg:py-12 lg:pl-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isThemePanelOpen ? 'lg:pr-[388px] xl:pr-[448px]' : 'lg:pr-12'}`
                     }
                 >
-                    {/* Template Sidebar Toggle (When Closed) — hidden in fullscreen preview
-                        and when the Design & Theme drawer is occupying the right edge. */}
-                    <button
-                        onClick={() => setIsSidebarOpen(true)}
-                        className={`fixed right-0 top-1/2 -translate-y-1/2 bg-white text-gray-900 p-3 rounded-l-xl shadow-lg border-y border-l border-gray-200 z-20 hidden ${isPreviewFullscreen || isThemePanelOpen ? '' : 'xl:flex'} items-center gap-2 group hover:w-auto hover:pr-6 transition-all duration-300 ${isSidebarOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
-                        title="Open Template Selector"
-                    >
-                        <ChevronRight size={20} className="rotate-180 text-brand-600" />
-                        <span className="font-bold text-sm uppercase tracking-wider w-0 overflow-hidden group-hover:w-auto transition-all duration-300 whitespace-nowrap">
-                            Select Template
-                        </span>
-                    </button>
-
-                    {/* Template Selector Sidebar (Right) - Categorized List — hidden in
-                        fullscreen preview AND when the Design & Theme drawer is open
-                        (they both anchor right; the user only sees one at a time). */}
-                    <div
-                        className={`fixed right-0 top-16 bottom-0 w-80 bg-white/80 backdrop-blur-md border-l border-gray-200 p-6 ${isPreviewFullscreen || isThemePanelOpen ? 'hidden' : 'hidden xl:flex'} flex-col gap-8 no-print z-30 shadow-xl overflow-y-auto transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}
-                    >
-                        <div className="flex items-center justify-between">
-                            <h3 className="font-bold text-gray-900 text-lg uppercase tracking-wider">
-                                Templates
-                            </h3>
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs text-gray-500 font-medium">
-                                    {TEMPLATES.length} designs
-                                </span>
-                                <button
-                                    onClick={() => setIsSidebarOpen(false)}
-                                    className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 rounded-lg transition"
-                                >
-                                    <X size={20} />
-                                </button>
-                            </div>
-                        </div>
-
-                        {[...new Set(TEMPLATES.map((t) => t.category))].map((category) => (
-                            <div key={category} className="space-y-4">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 sticky top-0 bg-white/95 backdrop-blur z-10 py-2">
-                                    {category}
-                                </h4>
-                                <div className="space-y-6">
-                                    {TEMPLATES.filter((t) => t.category === category).map((t) => (
-                                        <motion.button
-                                            key={t.id}
-                                            onClick={() => setSelectedTemplate(t)}
-                                            whileHover={{ y: -3, scale: 1.04 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-                                            className={`w-full aspect-[210/297] rounded-xl overflow-hidden border-4 relative group shadow-sm ${selectedTemplate.id === t.id ? 'border-brand-600 ring-4 ring-brand-100 shadow-xl z-10' : 'border-transparent hover:border-gray-300 hover:shadow-md'}`}
-                                            title={t.name}
-                                        >
-                                            <div className="absolute inset-0 pointer-events-none">
-                                                <TemplateThumbnail
-                                                    layout={t.layout}
-                                                    theme={t.theme}
-                                                    selected={false}
-                                                    personal={resume.personal}
-                                                />
-                                            </div>
-
-                                            {/* Hover Overlay with Name */}
-                                            <div
-                                                className={`absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex flex-col justify-end p-3 ${selectedTemplate.id === t.id ? 'bg-transparent' : ''}`}
-                                            >
-                                                <div
-                                                    className={`bg-white/95 backdrop-blur text-gray-900 text-xs font-bold py-2 px-3 rounded-lg text-center shadow-sm transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ${selectedTemplate.id === t.id ? 'translate-y-0 bg-brand-600 text-white' : ''}`}
-                                                >
-                                                    {t.name}
-                                                </div>
-                                            </div>
-
-                                            {/* Selected Indicator — spring in/out when selection changes */}
-                                            {selectedTemplate.id === t.id && (
-                                                <motion.div
-                                                    initial={{ scale: 0, rotate: -90 }}
-                                                    animate={{ scale: 1, rotate: 0 }}
-                                                    transition={{
-                                                        type: 'spring',
-                                                        stiffness: 500,
-                                                        damping: 22,
-                                                    }}
-                                                    className="absolute top-3 right-3 bg-brand-600 text-white p-1.5 rounded-full shadow-lg"
-                                                >
-                                                    <CheckCircle size={14} />
-                                                </motion.div>
-                                            )}
-                                        </motion.button>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
                     {/* Hidden Measurement Container */}
                     <div
                         id="measurement-container"
@@ -1791,16 +1768,14 @@ const App = () => {
                     modals.close('theme');
                     modals.open('atsPreview');
                 }}
+                templates={TEMPLATES}
+                selectedTemplateId={selectedTemplate?.id}
+                onSelectTemplate={(t) => setSelectedTemplate(t)}
             />
 
-            {/* Parsing Loader */}
-            {isParsing && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex flex-col items-center justify-center text-white">
-                    <Loader className="w-12 h-12 animate-spin mb-4 text-brand-400" />
-                    <h2 className="text-2xl font-bold">Reading your resume...</h2>
-                    <p className="text-gray-300">This uses AI, so it might take a few seconds.</p>
-                </div>
-            )}
+            {/* Parsing Loader — rotates honest progress messages over the
+                ~15-30s upload window so users don't bail thinking it hung. */}
+            <ParsingLoader active={isParsing} />
         </div>
     );
 };

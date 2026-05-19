@@ -3,6 +3,25 @@ import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon, Calendar, Building, GraduationCap } from 'lucide-react';
 import SectionTitle from '../ui/SectionTitle';
 
+// Flatten "Label: a, b" category strings into single tokens for chip display.
+const flattenSkills = (skills) => {
+    const out = [];
+    (skills || []).forEach((s) => {
+        if (typeof s !== 'string') return;
+        const colon = s.indexOf(':');
+        if (colon > 0) {
+            s.slice(colon + 1)
+                .split(',')
+                .map((t) => t.trim())
+                .filter(Boolean)
+                .forEach((t) => out.push(t));
+        } else if (s.trim()) {
+            out.push(s.trim());
+        }
+    });
+    return out;
+};
+
 const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
     const { personal, sectionOrder, customSections } = data;
 
@@ -108,11 +127,11 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
                                 >
                                     Skills
                                 </h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {data.skills.map((skill, i) => (
+                                <div className="flex flex-wrap gap-1.5">
+                                    {flattenSkills(data.skills).map((skill, i) => (
                                         <span
                                             key={i}
-                                            className="px-3 py-1 bg-white/30 rounded-full text-sm font-medium"
+                                            className="px-2.5 py-0.5 bg-white/20 border border-white/25 rounded-full text-[12px] font-medium"
                                         >
                                             {skill}
                                         </span>
@@ -239,20 +258,18 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-gray-600 whitespace-pre-line leading-relaxed">
-                                                {exp.bullets && exp.bullets.length > 0 && (
-                                                    <ul className="list-disc list-outside ml-5 space-y-1">
-                                                        {exp.bullets.map((bullet, i) => (
-                                                            <li
-                                                                key={i}
-                                                                className="text-sm text-gray-700 leading-relaxed"
-                                                            >
-                                                                {bullet}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                )}
-                                            </p>
+                                            {exp.bullets && exp.bullets.length > 0 && (
+                                                <ul className="list-disc list-outside ml-5 space-y-1 text-gray-600 leading-relaxed">
+                                                    {exp.bullets.map((bullet, i) => (
+                                                        <li
+                                                            key={i}
+                                                            className="text-sm text-gray-700 leading-relaxed"
+                                                        >
+                                                            {bullet}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

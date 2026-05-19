@@ -8,7 +8,6 @@ export const LAYOUTS = [
     { id: 'minimal-mono', name: 'Minimal Mono' },
     { id: 'canvas', name: 'The Canvas (Pro)' },
     { id: 'classic', name: 'Classic Stack' },
-    { id: 'creative', name: 'The Creative' },
     { id: 'jakes', name: "The Engineer (Jake's)" },
     { id: 'freeform', name: 'Freeform Builder' },
     { id: 'sidebar-left', name: 'Left Sidebar' },
@@ -125,13 +124,6 @@ export const TEMPLATES = [
     },
 
     // ─── Creative ───────────────────────────────────────────────────────
-    {
-        id: 'creative-1',
-        name: 'The Creative',
-        layout: 'creative',
-        theme: THEMES.find((t) => t.id === 'black'),
-        category: 'Creative',
-    },
     {
         id: 'canvas-1',
         name: 'Canvas (Pro)',
