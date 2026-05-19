@@ -79,6 +79,7 @@ import PageOverflowIndicator from './components/ui/PageOverflowIndicator';
 import EditorSidebar from './components/editor/EditorSidebar';
 import JobAssistantModal from './components/ui/JobAssistantModal';
 import AutoTailorModal from './components/ui/AutoTailorModal';
+import AtsPreviewModal from './components/ui/AtsPreviewModal';
 import { useJobTracker } from './hooks/useJobTracker';
 import RoastModal from './components/ui/RoastModal';
 import CoverLetterModal from './components/ui/CoverLetterModal';
@@ -1747,6 +1748,10 @@ const App = () => {
                 activeProfileName={activeProfile?.name}
             />
 
+            {modals.is('atsPreview') && (
+                <AtsPreviewModal onClose={() => modals.close('atsPreview')} resume={resume} />
+            )}
+
             <CoverLetterModal
                 isOpen={modals.is('coverLetter')}
                 onClose={() => modals.close('coverLetter')}
@@ -1782,6 +1787,10 @@ const App = () => {
                 onClose={() => modals.close('theme')}
                 resume={resume}
                 onResumeChange={setResume}
+                onOpenAtsPreview={() => {
+                    modals.close('theme');
+                    modals.open('atsPreview');
+                }}
             />
 
             {/* Parsing Loader */}

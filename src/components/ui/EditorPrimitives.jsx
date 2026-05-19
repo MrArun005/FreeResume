@@ -15,6 +15,8 @@ import {
     Wand2,
     Loader2,
     BarChart3,
+    UserX,
+    AlertCircle,
 } from 'lucide-react';
 import { analyzeBullet } from '../../utils/bulletQuality';
 
@@ -99,8 +101,14 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
     // Bullet-quality hints. Skip on short drafts (< 18 chars) so users aren't
     // nagged before they've finished a thought. Hidden during focus to keep
     // active editing quiet — they reappear on blur for review.
-    const analysis = len >= 18 ? analyzeBullet(value) : { weakVerbs: [], hasMetric: true, isEmpty: true };
-    const showHints = !focused && !analysis.isEmpty && (analysis.weakVerbs.length > 0 || !analysis.hasMetric);
+    const analysis =
+        len >= 18
+            ? analyzeBullet(value)
+            : { weakVerbs: [], hasMetric: true, hasPronoun: false, hasFiller: false, isEmpty: true };
+    const showHints =
+        !focused &&
+        !analysis.isEmpty &&
+        (analysis.weakVerbs.length > 0 || !analysis.hasMetric || analysis.hasPronoun || analysis.hasFiller);
 
     // Click-to-apply: swap the first occurrence of a weak phrase for the chosen
     // replacement, preserving the original casing at the match site.
@@ -211,6 +219,19 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
                             <div className="inline-flex items-center gap-1 text-[10px] text-sky-700 dark:text-sky-400">
                                 <BarChart3 size={10} strokeWidth={2.2} />
                                 Add a number or % to make the impact concrete.
+                            </div>
+                        )}
+                        {analysis.hasPronoun && (
+                            <div className="inline-flex items-center gap-1 text-[10px] text-purple-700 dark:text-purple-400">
+                                <UserX size={10} strokeWidth={2.2} />
+                                Drop &ldquo;I / my / we&rdquo; — resume voice is implicit.
+                            </div>
+                        )}
+                        {analysis.hasFiller && (
+                            <div className="inline-flex items-center gap-1 text-[10px] text-rose-700 dark:text-rose-400">
+                                <AlertCircle size={10} strokeWidth={2.2} />
+                                Cut filler words (&ldquo;very&rdquo;, &ldquo;really&rdquo;,
+                                &ldquo;basically&rdquo;) — let the metric do the talking.
                             </div>
                         )}
                     </div>

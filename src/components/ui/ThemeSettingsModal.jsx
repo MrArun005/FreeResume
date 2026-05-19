@@ -13,6 +13,7 @@ import {
     FileText,
     Maximize2,
     Droplet,
+    ScanLine,
 } from 'lucide-react';
 import { PAPER_SIZES, PAGE_MARGIN_PRESETS, ACCENT_PRESETS } from '../../utils/paperSize';
 import {
@@ -49,7 +50,7 @@ import {
 // Theme switches are instant: applyTheme() rewrites the CSS custom properties
 // on :root, every `brand-*` Tailwind class repaints immediately. Persistence
 // happens via saveTheme() into localStorage.
-const ThemeSettingsModal = ({ isOpen, onClose, resume, onResumeChange }) => {
+const ThemeSettingsModal = ({ isOpen, onClose, resume, onResumeChange, onOpenAtsPreview }) => {
     const [activeTheme, setActiveTheme] = useState(loadSavedTheme);
     const [activeFont, setActiveFont] = useState(loadSavedFont);
     const [activeSize, setActiveSize] = useState(loadSavedSize);
@@ -350,6 +351,37 @@ const ThemeSettingsModal = ({ isOpen, onClose, resume, onResumeChange }) => {
                                 );
                             })}
                         </div>
+                    </div>
+                )}
+
+                {/* ATS Preview — toggles a modal that shows what an
+                    applicant-tracking system actually parses out of the
+                    PDF. Lives in the Design drawer because it's a "view
+                    mode" of the resume, not a customization. Nobody else
+                    in the market shows users this; biggest credibility
+                    signal for our "we're honest about ATS" pitch. */}
+                {onOpenAtsPreview && (
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                            <ScanLine size={11} /> ATS view
+                        </h3>
+                        <button
+                            onClick={onOpenAtsPreview}
+                            className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-white text-left transition-colors group"
+                        >
+                            <div className="min-w-0">
+                                <div className="text-sm font-semibold text-slate-900">
+                                    See what the bot sees
+                                </div>
+                                <div className="text-[10.5px] text-slate-500 leading-tight">
+                                    Plain-text parse + parser-hostile flags.
+                                </div>
+                            </div>
+                            <ScanLine
+                                size={16}
+                                className="text-slate-400 group-hover:text-slate-700 shrink-0"
+                            />
+                        </button>
                     </div>
                 )}
 

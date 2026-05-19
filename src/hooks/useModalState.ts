@@ -30,7 +30,8 @@ export type ModalKey =
     | 'roast'
     | 'coverLetter'
     | 'shortcuts'
-    | 'jobTracker';
+    | 'jobTracker'
+    | 'atsPreview';
 
 const KNOWN_KEYS: ModalKey[] = [
     'ats',
@@ -47,6 +48,7 @@ const KNOWN_KEYS: ModalKey[] = [
     'coverLetter',
     'shortcuts',
     'jobTracker',
+    'atsPreview',
 ];
 
 type ModalState = Record<ModalKey, boolean>;
