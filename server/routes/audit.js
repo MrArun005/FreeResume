@@ -63,7 +63,9 @@ router.post('/analyze-resume', async (req, res) => {
         // multiple times while iterating. Same resume → same analysis.
         const cacheKey = makeKey('analyze-resume', resumeData);
         const analysis = await memoize(cacheKey, async () => {
-            const textResponse = await runGemini(() => generateWithFallback(prompt, SCHEMA_ANALYZE));
+            const textResponse = await runGemini(() =>
+                generateWithFallback(prompt, SCHEMA_ANALYZE, 'analyze-resume')
+            );
             return extractJson(textResponse);
         });
         res.json(analysis);
@@ -115,7 +117,9 @@ router.post('/roast-resume', async (req, res) => {
         // on the same resume gets the same jokes back, which is fine.
         const cacheKey = makeKey('roast-resume', resumeData);
         const roastData = await memoize(cacheKey, async () => {
-            const textResponse = await runGemini(() => generateWithFallback(prompt, SCHEMA_ROAST));
+            const textResponse = await runGemini(() =>
+                generateWithFallback(prompt, SCHEMA_ROAST, 'roast-resume')
+            );
             return extractJson(textResponse);
         });
         res.json(roastData);

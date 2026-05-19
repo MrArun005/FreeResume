@@ -30,9 +30,20 @@ initGemini(process.env.GEMINI_API_KEY);
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Structured request log. Emits one start line + one end line per API call.
+// Grep `[HTTP]` in Render logs to scan all traffic. Skips noisy paths like
+// healthz so the dashboard isn't flooded by the keep-alive cron.
 app.use((req, res, next) => {
-    console.log(`[DEBUG] Request: ${req.method} ${req.url}`);
-    console.log(`[DEBUG] Content-Length: ${req.headers['content-length']}`);
+    if (req.url === '/api/healthz') return next();
+    const t0 = Date.now();
+    const len = req.headers['content-length'] || '0';
+    const ua = (req.headers['user-agent'] || '').slice(0, 60);
+    console.log(`[HTTP] start method=${req.method} url=${req.url} in_bytes=${len} ua="${ua}"`);
+    res.on('finish', () => {
+        console.log(
+            `[HTTP] end   method=${req.method} url=${req.url} status=${res.statusCode} latency=${Date.now() - t0}ms`
+        );
+    });
     next();
 });
 

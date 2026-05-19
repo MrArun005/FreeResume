@@ -124,7 +124,7 @@ router.post('/parse-resume', upload.single('file'), async (req, res) => {
             parts = [{ text: SYSTEM_PROMPT }, { text: `Resume Text:\n${rawText}` }];
         }
 
-        const textResponse = await generateFromParts(parts, SCHEMA_PARSED_RESUME);
+        const textResponse = await generateFromParts(parts, SCHEMA_PARSED_RESUME, 'parse-resume');
         const parsedData = extractJson(textResponse);
         res.json(parsedData);
     } catch (error) {

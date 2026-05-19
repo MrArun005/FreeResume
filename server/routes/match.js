@@ -45,7 +45,9 @@ router.post('/match-job', async (req, res) => {
         // one model call.
         const cacheKey = makeKey('match-job', resumeData, jobDescription);
         const matchAnalysis = await memoize(cacheKey, async () => {
-            const textResponse = await runGemini(() => generateWithFallback(prompt, SCHEMA_MATCH));
+            const textResponse = await runGemini(() =>
+                generateWithFallback(prompt, SCHEMA_MATCH, 'match-job')
+            );
             return extractJson(textResponse);
         });
         res.json(matchAnalysis);
@@ -108,7 +110,7 @@ router.post('/generate-cover-letter', async (req, res) => {
         const coverLetter = await memoize(
             cacheKey,
             async () => {
-                const out = await runGemini(() => generateWithFallback(prompt));
+                const out = await runGemini(() => generateWithFallback(prompt, null, 'cover-letter'));
                 return out.trim();
             },
             15 * 60 * 1000
@@ -181,7 +183,7 @@ router.post('/tailor-resume', async (req, res) => {
         // again after reading results, so this is a high-hit cache.
         const cacheKey = makeKey('tailor-resume', resumeData, jobUrl);
         const tailoredResume = await memoize(cacheKey, async () => {
-            const textResponse = await runGemini(() => generateWithFallback(prompt));
+            const textResponse = await runGemini(() => generateWithFallback(prompt, null, 'tailor-resume'));
             return extractJson(textResponse);
         });
         res.json({ tailoredResume, jobDescription });
@@ -260,7 +262,9 @@ Return strict JSON:
         // particularly cache-friendly: same (resume, JD) → same order.
         const cacheKey = makeKey('rerank-bullets', compact, jobDescription);
         const parsed = await memoize(cacheKey, async () => {
-            const textResponse = await runGemini(() => generateWithFallback(prompt, SCHEMA_RERANK));
+            const textResponse = await runGemini(() =>
+                generateWithFallback(prompt, SCHEMA_RERANK, 'rerank-bullets')
+            );
             return extractJson(textResponse);
         });
         res.json(parsed);
