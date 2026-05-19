@@ -34,7 +34,7 @@ const port = process.env.PORT || 3000;
 // Grep `[HTTP]` in Render logs to scan all traffic. Skips noisy paths like
 // healthz so the dashboard isn't flooded by the keep-alive cron.
 app.use((req, res, next) => {
-    if (req.url === '/api/healthz') return next();
+    if (req.url === '/api/healthz' || req.url === '/api/log-client') return next();
     const t0 = Date.now();
     const len = req.headers['content-length'] || '0';
     const ua = (req.headers['user-agent'] || '').slice(0, 60);
@@ -58,6 +58,27 @@ app.use('/api', exportRouter);
 app.use('/api', rewriteRouter);
 app.use('/api', auditRouter);
 app.use('/api', matchRouter);
+
+// Client telemetry beacon. Frontend fire-and-forgets here when a user
+// clicks any AI feature, so we see the click in Render logs even if the
+// real AI call later fails network-side. Best-effort; never errors back
+// to the client. Grep `[CLIENT]` to scan user activity.
+app.post('/api/log-client', (req, res) => {
+    try {
+        const { event, op, meta } = req.body || {};
+        const safeEvent = (event || 'unknown').slice(0, 40);
+        const safeOp = (op || '').slice(0, 40);
+        const metaStr = meta
+            ? Object.entries(meta)
+                  .map(([k, v]) => `${k}=${typeof v === 'string' ? v.slice(0, 200) : JSON.stringify(v)}`)
+                  .join(' ')
+            : '';
+        console.log(`[CLIENT] event=${safeEvent} op=${safeOp} ${metaStr}`);
+    } catch {
+        // Don't crash the request — telemetry is fire-and-forget.
+    }
+    res.status(204).end();
+});
 
 // Lightweight health + load telemetry. Returns queue depth and cache size
 // so we can spot pressure during a traffic spike without enabling full

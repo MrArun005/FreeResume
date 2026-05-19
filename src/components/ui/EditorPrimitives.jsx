@@ -19,6 +19,7 @@ import {
     AlertCircle,
 } from 'lucide-react';
 import { analyzeBullet } from '../../utils/bulletQuality';
+import { apiFetch, logAiClick } from '../../utils/aiLogger';
 
 // Soft target for a single bullet. Recruiters and ATS systems read fastest
 // when bullets land in the 80–200 char range. We don't hard-cap, but the
@@ -254,12 +255,17 @@ export const BulletList = ({ bullets, onChange, maxBullets = 5, resumeData }) =>
     };
 
     const improve = async (text) => {
+        logAiClick('improve-bullet', { len: text?.length || 0 });
         try {
-            const response = await fetch('/api/improve-text', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, type: 'bullet', resumeData }),
-            });
+            const response = await apiFetch(
+                '/api/improve-text',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, type: 'bullet', resumeData }),
+                },
+                'improve-bullet'
+            );
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             return data?.improvedText?.trim() || null;

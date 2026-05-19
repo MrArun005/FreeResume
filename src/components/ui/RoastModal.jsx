@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Flame, Share2, AlertTriangle, ThumbsDown, Wand2, CheckCircle, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { isApplicableFix } from '../../utils/applyResumeFix';
+import { apiFetch, logAiClick } from '../../utils/aiLogger';
 
 const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
     const [loading, setLoading] = useState(false);
@@ -11,14 +12,19 @@ const RoastModal = ({ isOpen, onClose, resumeData, onApplyFix }) => {
     const [applied, setApplied] = useState(() => new Set());
 
     const handleRoast = React.useCallback(async () => {
+        logAiClick('roast-resume');
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch('/api/roast-resume', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resumeData }),
-            });
+            const response = await apiFetch(
+                '/api/roast-resume',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData }),
+                },
+                'roast-resume'
+            );
 
             if (!response.ok) throw new Error('Failed to fetch roast');
 

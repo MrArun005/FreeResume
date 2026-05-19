@@ -1,26 +1,32 @@
 import React from 'react';
 import { FileText, Sparkles } from 'lucide-react';
 import { FillTextarea, FieldLabel } from '../ui/EditorPrimitives';
+import { apiFetch, logAiClick } from '../../utils/aiLogger';
 
 const SummarySection = ({ summary, onChange, resume }) => {
     const [improving, setImproving] = React.useState(false);
 
     const handleImprove = async () => {
         if (!summary) return;
+        logAiClick('refine-summary', { len: summary.length });
         setImproving(true);
         try {
-            const response = await fetch('/api/improve-text', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    text: summary,
-                    type: 'summary',
-                    // Send the resume so the server-side prompt can ground the rewrite
-                    // in the candidate's actual role, seniority, and industry rather
-                    // than producing generic prose.
-                    resumeData: resume,
-                }),
-            });
+            const response = await apiFetch(
+                '/api/improve-text',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: summary,
+                        type: 'summary',
+                        // Send the resume so the server-side prompt can ground the rewrite
+                        // in the candidate's actual role, seniority, and industry rather
+                        // than producing generic prose.
+                        resumeData: resume,
+                    }),
+                },
+                'refine-summary'
+            );
             const data = await response.json();
             if (data.improvedText) {
                 onChange({ target: { name: 'summary', value: data.improvedText } });

@@ -1,20 +1,32 @@
 /**
- * resume-parser-v2.js
- * - Sends file to backend for parsing
+ * Resume parser — uploads a file to the backend for AI parsing.
+ * Wrapped in apiFetch so the click + request lifecycle is logged
+ * client-side AND beaconed to the server, so refusals upstream of the
+ * actual AI call are still visible in Render logs.
  */
 
+import { apiFetch, logAiClick } from './aiLogger';
+
 export async function parseResume(file) {
-    console.log('parseResume called with:', file);
     if (!file) throw new Error('No file provided to parseResume');
+    logAiClick('parse-resume', {
+        filename: file.name,
+        size: file.size,
+        type: file.type,
+    });
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-        const response = await fetch('/api/parse-resume', {
-            method: 'POST',
-            body: formData,
-        });
+        const response = await apiFetch(
+            '/api/parse-resume',
+            {
+                method: 'POST',
+                body: formData,
+            },
+            'parse-resume'
+        );
 
         if (!response.ok) {
             const errorData = await response.json();

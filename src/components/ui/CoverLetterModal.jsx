@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, FileText, Loader, Sparkles, Download, Copy, RefreshCcw } from 'lucide-react';
 import { exportCoverLetterPdf } from '../../utils/exportPdf';
+import { apiFetch, logAiClick } from '../../utils/aiLogger';
 
 const TONE_OPTIONS = [
     {
@@ -47,14 +48,19 @@ const CoverLetterModal = ({ isOpen, onClose, resume }) => {
             setError('Paste a job description first.');
             return;
         }
+        logAiClick('cover-letter', { tone, jd_len: jobDescription.length });
         setError('');
         setIsGenerating(true);
         try {
-            const response = await fetch('/api/generate-cover-letter', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resumeData: resume, jobDescription, tone }),
-            });
+            const response = await apiFetch(
+                '/api/generate-cover-letter',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData: resume, jobDescription, tone }),
+                },
+                'cover-letter'
+            );
             const data = await response.json();
             if (!response.ok || !data.coverLetter) {
                 throw new Error(data?.error || data?.details || 'Generation failed.');

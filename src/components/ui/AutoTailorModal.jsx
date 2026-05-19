@@ -13,6 +13,7 @@ import {
     Lock,
     Briefcase,
 } from 'lucide-react';
+import { apiFetch, logAiClick } from '../../utils/aiLogger';
 
 // Smart Tailor — JD-driven non-destructive bullet reranking.
 //
@@ -92,14 +93,19 @@ const AutoTailorModal = ({
             setError('Paste at least a short job description (50+ chars).');
             return;
         }
+        logAiClick('rerank-bullets', { jd_len: jobDescription.length });
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('/api/rerank-bullets', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resumeData: resume, jobDescription }),
-            });
+            const response = await apiFetch(
+                '/api/rerank-bullets',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData: resume, jobDescription }),
+                },
+                'rerank-bullets'
+            );
             if (!response.ok) {
                 const detail = await response.json().catch(() => ({}));
                 throw new Error(detail.details || detail.error || `Server error ${response.status}`);

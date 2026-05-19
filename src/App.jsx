@@ -92,6 +92,7 @@ import {
     applyHeaderAlignment,
 } from './utils/paperSize';
 import { normalizeSkills, forceCategorize } from './utils/skillTaxonomy';
+import { apiFetch, logAiClick } from './utils/aiLogger';
 import { applyResumeFix } from './utils/applyResumeFix';
 import { exportResumePdf, exportResumeDocx } from './utils/exportPdf';
 import {
@@ -310,15 +311,20 @@ const App = () => {
     const handleImproveResume = () => setImproveModalStage('confirm');
 
     const runImproveResume = async () => {
+        logAiClick('improve-resume');
         setImproveModalStage('loading');
         setIsImproving(true);
         setImproveError('');
         try {
-            const response = await fetch('/api/improve-resume', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resumeData: resume }),
-            });
+            const response = await apiFetch(
+                '/api/improve-resume',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData: resume }),
+                },
+                'improve-resume'
+            );
 
             const data = await response.json();
             if (!response.ok) throw new Error(data?.details || data?.error || `HTTP ${response.status}`);

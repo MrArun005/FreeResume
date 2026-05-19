@@ -2,6 +2,7 @@ import React from 'react';
 import { X, AlertTriangle, CheckCircle, Info, AlertCircle, Wand2, RefreshCw } from 'lucide-react';
 import { calculateAtsScore } from '../../utils/atsScorer';
 import { isApplicableFix } from '../../utils/applyResumeFix';
+import { apiFetch, logAiClick } from '../../utils/aiLogger';
 
 const scorePalette = (score) => {
     if (score >= 80) return { bg: '#DCFCE7', border: '#BBF7D0', text: '#16A34A' }; // green
@@ -53,13 +54,18 @@ const AtsScoreModal = ({ resume, onClose, onApplyFix }) => {
     const [applied, setApplied] = React.useState(() => new Set());
 
     const fetchAnalysis = React.useCallback(async () => {
+        logAiClick('analyze-resume');
         setLoading(true);
         try {
-            const response = await fetch('/api/analyze-resume', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resumeData: resume }),
-            });
+            const response = await apiFetch(
+                '/api/analyze-resume',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData: resume }),
+                },
+                'analyze-resume'
+            );
 
             if (!response.ok) throw new Error('Failed to analyze resume');
 

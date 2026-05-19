@@ -10,6 +10,7 @@ import {
     ArrowRight,
     Copy,
 } from 'lucide-react';
+import { apiFetch, logAiClick } from '../../utils/aiLogger';
 
 const JobAssistantModal = ({ isOpen, onClose, resume, onImproveResume }) => {
     const [jobDescription, setJobDescription] = useState('');
@@ -22,13 +23,18 @@ const JobAssistantModal = ({ isOpen, onClose, resume, onImproveResume }) => {
 
     const handleMatch = async () => {
         if (!jobDescription.trim()) return alert('Please enter a job description.');
+        logAiClick('match-job', { jd_len: jobDescription.length });
         setIsLoading(true);
         try {
-            const response = await fetch('/api/match-job', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resumeData: resume, jobDescription }),
-            });
+            const response = await apiFetch(
+                '/api/match-job',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData: resume, jobDescription }),
+                },
+                'match-job'
+            );
             const data = await response.json();
             setMatchResult(data);
         } catch (error) {
@@ -41,13 +47,18 @@ const JobAssistantModal = ({ isOpen, onClose, resume, onImproveResume }) => {
 
     const handleGenerateCoverLetter = async () => {
         if (!jobDescription.trim()) return alert('Please enter a job description.');
+        logAiClick('cover-letter', { from: 'job-assistant', jd_len: jobDescription.length });
         setIsLoading(true);
         try {
-            const response = await fetch('/api/generate-cover-letter', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ resumeData: resume, jobDescription }),
-            });
+            const response = await apiFetch(
+                '/api/generate-cover-letter',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData: resume, jobDescription }),
+                },
+                'cover-letter'
+            );
             const data = await response.json();
             setCoverLetter(data.coverLetter);
         } catch (error) {
@@ -80,11 +91,16 @@ const JobAssistantModal = ({ isOpen, onClose, resume, onImproveResume }) => {
                 return;
             }
 
-            const response = await fetch('/api/tailor-resume', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
+            logAiClick('tailor-resume', { jobUrl: body.jobUrl });
+            const response = await apiFetch(
+                '/api/tailor-resume',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                },
+                'tailor-resume'
+            );
 
             const data = await response.json();
             if (data.tailoredResume) {
