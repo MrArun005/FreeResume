@@ -10,9 +10,13 @@ import { generateFromParts } from '../lib/gemini.js';
 import { extractJson, normalizeRaw, sendError } from '../lib/utils.js';
 import { SCHEMA_PARSED_RESUME } from '../lib/schemas.js';
 
-// pdf-parse is CommonJS — load via createRequire so we can keep this file ESM.
+// pdf-parse is CommonJS — load via createRequire so we can keep this file
+// ESM. We import the internal lib file directly because the package's main
+// entry runs a debug test on import that tries to read a hardcoded test PDF
+// from disk and crashes the server in production. Well-known issue; this
+// workaround is what every Node project doing PDF parsing ends up using.
 const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
+const pdfParse = require('pdf-parse/lib/pdf-parse.js');
 
 // Threshold below which we assume the PDF text extraction came up empty or
 // near-empty (e.g. image-only scanned resume) and fall back to letting
