@@ -109,7 +109,11 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
                 {(data.personal.socials || []).map((s) => (
                     <div key={s.id} className="flex items-center gap-1">
                         <LinkIcon size={14} />{' '}
-                        <a href={s.url} className="hover:underline text-blue-600">
+                        <a
+                            href={s.url}
+                            className="hover:underline"
+                            style={{ color: 'var(--resume-accent, #2563eb)' }}
+                        >
                             {s.network}
                         </a>
                     </div>
@@ -257,7 +261,7 @@ const LayoutFreeform = ({ data, theme, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`p-10 font-sans bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} relative`}
+            className={`p-10 font-sans bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} relative`}
         >
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={items} strategy={verticalListSortingStrategy}>

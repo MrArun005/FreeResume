@@ -6,7 +6,7 @@ import { Mail, Phone, MapPin, Link as LinkIcon } from 'lucide-react';
 const LayoutClassic = ({ data, theme, pageIndex, isMeasurement }) => {
     return (
         <div
-            className={`p-10 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} font-sans text-gray-800 relative box-border`}
+            className={`p-10 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} font-sans text-gray-800 relative box-border`}
         >
             {/* Header - Only on first page */}
             {pageIndex === 0 && (
@@ -50,7 +50,8 @@ const LayoutClassic = ({ data, theme, pageIndex, isMeasurement }) => {
                                     href={url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 font-bold text-xs text-blue-600 hover:underline print:text-blue-600 print:underline"
+                                    className="flex items-center gap-2 font-bold text-xs hover:underline print:underline"
+                                    style={{ color: 'var(--resume-accent, #2563eb)' }}
                                 >
                                     {social.network} <LinkIcon size={14} />
                                 </a>

@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from '../ui/SortableItem';
@@ -25,89 +26,104 @@ const ExperienceSection = ({
             >
                 <SortableContext items={experience} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2.5">
-                        {experience.map((exp) => {
-                            const subtitle = [exp.company, exp.date].filter(Boolean).join(' · ');
-                            return (
-                                <SortableItem key={exp.id} id={exp.id}>
-                                    <CardChrome
-                                        title={exp.role}
-                                        subtitle={subtitle}
-                                        onDelete={() => onRemoveItem('experience', exp.id)}
-                                        onTogglePageBreak={() => onTogglePageBreak(exp.id)}
-                                        isPageBreak={!!pageBreaks?.[exp.id]}
+                        <AnimatePresence initial={false}>
+                            {experience.map((exp) => {
+                                const subtitle = [exp.company, exp.date].filter(Boolean).join(' · ');
+                                return (
+                                    <motion.div
+                                        key={exp.id}
+                                        initial={{ opacity: 0, y: -8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
+                                        transition={{ duration: 0.22, ease: 'easeOut' }}
                                     >
-                                        <div className="grid grid-cols-[1.4fr_1fr] gap-2 mb-2">
-                                            <div>
-                                                <FieldLabel>Role</FieldLabel>
-                                                <FillInput
-                                                    value={exp.role || ''}
-                                                    onChange={(e) =>
-                                                        onArrayChange(
-                                                            'experience',
-                                                            exp.id,
-                                                            'role',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Senior Engineer"
-                                                />
-                                            </div>
-                                            <div>
-                                                <FieldLabel>Dates</FieldLabel>
-                                                <DateRangeInput
-                                                    value={exp.date || ''}
-                                                    onChange={(v) =>
-                                                        onArrayChange('experience', exp.id, 'date', v)
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-[1.4fr_1fr] gap-2 mb-3">
-                                            <div>
-                                                <FieldLabel>Company</FieldLabel>
-                                                <FillInput
-                                                    value={exp.company || ''}
-                                                    onChange={(e) =>
-                                                        onArrayChange(
-                                                            'experience',
-                                                            exp.id,
-                                                            'company',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Company name"
-                                                />
-                                            </div>
-                                            <div>
-                                                <FieldLabel optional>Location</FieldLabel>
-                                                <FillInput
-                                                    value={exp.location || ''}
-                                                    onChange={(e) =>
-                                                        onArrayChange(
-                                                            'experience',
-                                                            exp.id,
-                                                            'location',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Bengaluru"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <FieldLabel>Highlights</FieldLabel>
-                                            <BulletList
-                                                bullets={exp.bullets || []}
-                                                onChange={(newBullets) =>
-                                                    onArrayChange('experience', exp.id, 'bullets', newBullets)
-                                                }
-                                                resumeData={resume}
-                                            />
-                                        </div>
-                                    </CardChrome>
-                                </SortableItem>
-                            );
-                        })}
+                                        <SortableItem id={exp.id}>
+                                            <CardChrome
+                                                title={exp.role}
+                                                subtitle={subtitle}
+                                                onDelete={() => onRemoveItem('experience', exp.id)}
+                                                onTogglePageBreak={() => onTogglePageBreak(exp.id)}
+                                                isPageBreak={!!pageBreaks?.[exp.id]}
+                                            >
+                                                <div className="grid grid-cols-[1.4fr_1fr] gap-2 mb-2">
+                                                    <div>
+                                                        <FieldLabel>Role</FieldLabel>
+                                                        <FillInput
+                                                            value={exp.role || ''}
+                                                            onChange={(e) =>
+                                                                onArrayChange(
+                                                                    'experience',
+                                                                    exp.id,
+                                                                    'role',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="Senior Engineer"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <FieldLabel>Dates</FieldLabel>
+                                                        <DateRangeInput
+                                                            value={exp.date || ''}
+                                                            onChange={(v) =>
+                                                                onArrayChange('experience', exp.id, 'date', v)
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-[1.4fr_1fr] gap-2 mb-3">
+                                                    <div>
+                                                        <FieldLabel>Company</FieldLabel>
+                                                        <FillInput
+                                                            value={exp.company || ''}
+                                                            onChange={(e) =>
+                                                                onArrayChange(
+                                                                    'experience',
+                                                                    exp.id,
+                                                                    'company',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="Company name"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <FieldLabel optional>Location</FieldLabel>
+                                                        <FillInput
+                                                            value={exp.location || ''}
+                                                            onChange={(e) =>
+                                                                onArrayChange(
+                                                                    'experience',
+                                                                    exp.id,
+                                                                    'location',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="Bengaluru"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <FieldLabel>Highlights</FieldLabel>
+                                                    <BulletList
+                                                        bullets={exp.bullets || []}
+                                                        onChange={(newBullets) =>
+                                                            onArrayChange(
+                                                                'experience',
+                                                                exp.id,
+                                                                'bullets',
+                                                                newBullets
+                                                            )
+                                                        }
+                                                        resumeData={resume}
+                                                    />
+                                                </div>
+                                            </CardChrome>
+                                        </SortableItem>
+                                    </motion.div>
+                                );
+                            })}
+                        </AnimatePresence>
                     </div>
                 </SortableContext>
             </DndContext>

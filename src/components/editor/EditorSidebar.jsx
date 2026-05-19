@@ -1,5 +1,6 @@
 import React from 'react';
-import { Download, LayoutGrid, User, Plus, SplitSquareHorizontal, Palette } from 'lucide-react';
+import { LayoutGrid, User, Plus, SplitSquareHorizontal, Palette, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 
@@ -17,7 +18,6 @@ import ProfilesMenu from '../ui/ProfilesMenu';
 
 const EditorSidebar = ({
     mobileView,
-    handleDownloadPDF,
     setView,
     activeSection,
     setActiveSection,
@@ -40,7 +40,8 @@ const EditorSidebar = ({
     updateCustomItem,
     removeCustomItem,
     addCustomItem,
-    onOpenTheme,
+    isThemeOpen,
+    onToggleTheme,
     profiles,
     activeProfileId,
     onSwitchProfile,
@@ -72,24 +73,38 @@ const EditorSidebar = ({
                             />
                         ) : null}
                     </div>
-                    <div className="flex gap-1.5 shrink-0">
-                        <button
-                            onClick={handleDownloadPDF}
-                            className="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-stone-50 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
-                            title="Download PDF"
-                        >
-                            <Download size={14} /> <span className="hidden sm:inline">Export</span>
-                        </button>
-                        {onOpenTheme && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        {/* Primary action: Design — toggles the side drawer.
+                            Export lives in the app header (top-right) with its
+                            full PDF/DOCX dropdown; duplicating it here just
+                            confused users. When open, the button flips to a
+                            "Close" affordance so users don't have to hunt for
+                            the X in the drawer. */}
+                        {onToggleTheme && (
                             <button
-                                onClick={onOpenTheme}
-                                className="p-2 text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                                title="Design & Theme"
+                                onClick={onToggleTheme}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                                    isThemeOpen
+                                        ? 'bg-brand-600 hover:bg-brand-700 text-white border-brand-600'
+                                        : 'bg-brand-50 hover:bg-brand-100 dark:bg-brand-500/15 dark:hover:bg-brand-500/25 text-brand-700 dark:text-brand-300 border-brand-200 dark:border-brand-500/30'
+                                }`}
+                                title={
+                                    isThemeOpen
+                                        ? 'Close design panel'
+                                        : 'Open design panel — fonts, colors, sizes'
+                                }
+                                aria-pressed={isThemeOpen}
                             >
-                                <Palette size={18} />
+                                {isThemeOpen ? <X size={14} /> : <Palette size={14} />}
+                                <span className="hidden sm:inline">{isThemeOpen ? 'Close' : 'Design'}</span>
                             </button>
                         )}
-                        <AppThemeSwitcher className="!p-2" />
+                        {/* Divider between primary actions and tertiary icon
+                            buttons — keeps the cluster readable. */}
+                        <span className="hidden sm:block w-px h-6 bg-slate-200 dark:bg-slate-700 mx-0.5" />
+                        {/* Tertiary actions: dark-mode toggle + back-to-gallery.
+                            Both are icon-only and share consistent sizing. */}
+                        <AppThemeSwitcher className="!p-2 !rounded-lg" />
                         <button
                             onClick={() => setView('gallery')}
                             className="p-2 text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-stone-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
@@ -179,99 +194,111 @@ const EditorSidebar = ({
                         </button>
                     </div>
 
-                    {/* Active Section Editor */}
-                    <div className="animate-fadeIn">
-                        {/* Path B — per-section size override. Skipped for the
-                            Personal block (contact info, not a sized content
-                            section). Renders for everything else: built-in
-                            sections (summary/experience/education/skills/
-                            coverLetter) and custom sections (UUID ids). */}
-                        {activeSection !== 'personal' && (
-                            <SectionSizePicker
-                                resume={resume}
-                                sectionId={activeSection}
-                                onResumeChange={setResume}
-                            />
-                        )}
+                    {/* Active Section Editor — animated swap on tab change.
+                        The outer key changes whenever activeSection changes,
+                        which makes AnimatePresence cross-fade the old section
+                        editor out and the new one in. mode="wait" keeps it
+                        from showing both simultaneously. */}
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.div
+                            key={activeSection}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.18, ease: 'easeOut' }}
+                        >
+                            {/* Path B — per-section size override. Skipped for the
+                                Personal block (contact info, not a sized content
+                                section). Renders for everything else: built-in
+                                sections (summary/experience/education/skills/
+                                coverLetter) and custom sections (UUID ids). */}
+                            {activeSection !== 'personal' && (
+                                <SectionSizePicker
+                                    resume={resume}
+                                    sectionId={activeSection}
+                                    onResumeChange={setResume}
+                                />
+                            )}
 
-                        {activeSection === 'personal' && (
-                            <PersonalSection
-                                resume={resume}
-                                onPersonalChange={handlePersonalChange}
-                                onSocialChange={handleSocialChange}
-                                onAddSocial={handleAddSocial}
-                                onRemoveSocial={handleRemoveSocial}
-                            />
-                        )}
+                            {activeSection === 'personal' && (
+                                <PersonalSection
+                                    resume={resume}
+                                    onPersonalChange={handlePersonalChange}
+                                    onSocialChange={handleSocialChange}
+                                    onAddSocial={handleAddSocial}
+                                    onRemoveSocial={handleRemoveSocial}
+                                />
+                            )}
 
-                        {activeSection === 'summary' && (
-                            <SummarySection
-                                summary={resume.personal.summary}
-                                onChange={handlePersonalChange}
-                                resume={resume}
-                            />
-                        )}
-                        {activeSection === 'experience' && (
-                            <ExperienceSection
-                                experience={resume.experience}
-                                resume={resume}
-                                sensors={sensors}
-                                onDragEnd={handleDragEnd}
-                                onArrayChange={handleArrayChange}
-                                onRemoveItem={removeItem}
-                                onAddItem={addItem}
-                                pageBreaks={resume.pageBreaks}
-                                onTogglePageBreak={togglePageBreak}
-                            />
-                        )}
+                            {activeSection === 'summary' && (
+                                <SummarySection
+                                    summary={resume.personal.summary}
+                                    onChange={handlePersonalChange}
+                                    resume={resume}
+                                />
+                            )}
+                            {activeSection === 'experience' && (
+                                <ExperienceSection
+                                    experience={resume.experience}
+                                    resume={resume}
+                                    sensors={sensors}
+                                    onDragEnd={handleDragEnd}
+                                    onArrayChange={handleArrayChange}
+                                    onRemoveItem={removeItem}
+                                    onAddItem={addItem}
+                                    pageBreaks={resume.pageBreaks}
+                                    onTogglePageBreak={togglePageBreak}
+                                />
+                            )}
 
-                        {activeSection === 'education' && (
-                            <EducationSection
-                                education={resume.education}
-                                resume={resume}
-                                sensors={sensors}
-                                onDragEnd={handleDragEnd}
-                                onArrayChange={handleArrayChange}
-                                onRemoveItem={removeItem}
-                                onAddItem={addItem}
-                                pageBreaks={resume.pageBreaks}
-                                onTogglePageBreak={togglePageBreak}
-                            />
-                        )}
+                            {activeSection === 'education' && (
+                                <EducationSection
+                                    education={resume.education}
+                                    resume={resume}
+                                    sensors={sensors}
+                                    onDragEnd={handleDragEnd}
+                                    onArrayChange={handleArrayChange}
+                                    onRemoveItem={removeItem}
+                                    onAddItem={addItem}
+                                    pageBreaks={resume.pageBreaks}
+                                    onTogglePageBreak={togglePageBreak}
+                                />
+                            )}
 
-                        {activeSection === 'skills' && (
-                            <SkillsSection
-                                skills={resume.skills}
-                                onUpdateSkills={(nextSkills) => {
-                                    setResume((prev) => ({ ...prev, skills: nextSkills }));
-                                }}
-                            />
-                        )}
+                            {activeSection === 'skills' && (
+                                <SkillsSection
+                                    skills={resume.skills}
+                                    onUpdateSkills={(nextSkills) => {
+                                        setResume((prev) => ({ ...prev, skills: nextSkills }));
+                                    }}
+                                />
+                            )}
 
-                        {/* Cover Letter Section */}
-                        {activeSection === 'coverLetter' && (
-                            <CoverLetterSection
-                                coverLetter={resume.coverLetter}
-                                onChange={handleCoverLetterChange}
-                            />
-                        )}
+                            {/* Cover Letter Section */}
+                            {activeSection === 'coverLetter' && (
+                                <CoverLetterSection
+                                    coverLetter={resume.coverLetter}
+                                    onChange={handleCoverLetterChange}
+                                />
+                            )}
 
-                        {/* Custom Section Editor */}
-                        {resume.customSections.find((s) => s.id === activeSection) && (
-                            <CustomSection
-                                section={resume.customSections.find((s) => s.id === activeSection)}
-                                resume={resume}
-                                sensors={sensors}
-                                onDragEnd={handleDragEnd}
-                                onUpdateTitle={updateCustomSectionTitle}
-                                onUpdateItem={updateCustomItem}
-                                onRemoveItem={removeCustomItem}
-                                onAddItem={addCustomItem}
-                                pageBreaks={resume.pageBreaks}
-                                onTogglePageBreak={togglePageBreak}
-                            />
-                        )}
-                    </div>
+                            {/* Custom Section Editor */}
+                            {resume.customSections.find((s) => s.id === activeSection) && (
+                                <CustomSection
+                                    section={resume.customSections.find((s) => s.id === activeSection)}
+                                    resume={resume}
+                                    sensors={sensors}
+                                    onDragEnd={handleDragEnd}
+                                    onUpdateTitle={updateCustomSectionTitle}
+                                    onUpdateItem={updateCustomItem}
+                                    onRemoveItem={removeCustomItem}
+                                    onAddItem={addCustomItem}
+                                    pageBreaks={resume.pageBreaks}
+                                    onTogglePageBreak={togglePageBreak}
+                                />
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             </div>
         </div>

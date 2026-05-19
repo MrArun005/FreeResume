@@ -2,7 +2,7 @@ import React from 'react';
 import DraggableElement from '../ui/DraggableElement';
 import { Mail, Phone, MapPin, Link as LinkIcon } from 'lucide-react';
 
-const LayoutCanvas = ({ data, theme, onUpdateStyle, pageIndex = 0 }) => {
+const LayoutCanvas = ({ data, theme, onUpdateStyle, pageIndex = 0, isMeasurement }) => {
     const { personal, customStyles = {} } = data;
     const pageHeight = 1123;
     const yOffset = pageIndex * pageHeight;
@@ -28,7 +28,9 @@ const LayoutCanvas = ({ data, theme, onUpdateStyle, pageIndex = 0 }) => {
     };
 
     return (
-        <div className="relative w-full h-[1123px] bg-white text-gray-800 font-sans overflow-hidden shadow-inner bg-grid-slate-100">
+        <div
+            className={`relative w-full bg-white text-gray-800 font-sans shadow-inner bg-grid-slate-100 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'}`}
+        >
             {/* Grid Background for guidance */}
             <div
                 className="absolute inset-0 pointer-events-none opacity-10"
@@ -48,7 +50,7 @@ const LayoutCanvas = ({ data, theme, onUpdateStyle, pageIndex = 0 }) => {
                 }}
                 onUpdate={handleUpdate}
             >
-                <h1 className={`text-5xl font-bold uppercase tracking-tight ${theme.text} whitespace-nowrap`}>
+                <h1 className={`text-5xl font-bold uppercase tracking-tight ${theme.text} break-words`}>
                     {personal.fullName || 'Your Name'}
                 </h1>
             </DraggableElement>
@@ -63,7 +65,7 @@ const LayoutCanvas = ({ data, theme, onUpdateStyle, pageIndex = 0 }) => {
                 }}
                 onUpdate={handleUpdate}
             >
-                <p className={`text-2xl font-medium ${theme.primary} whitespace-nowrap`}>
+                <p className="text-2xl font-medium text-zinc-700 break-words">
                     {personal.title || 'Professional Title'}
                 </p>
             </DraggableElement>

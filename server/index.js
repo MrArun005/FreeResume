@@ -11,6 +11,8 @@ import exportRouter from './routes/export.js';
 import rewriteRouter from './routes/rewrite.js';
 import auditRouter from './routes/audit.js';
 import matchRouter from './routes/match.js';
+import { snapshot as queueSnapshot } from './lib/queues.js';
+import { snapshot as cacheSnapshot } from './lib/cache.js';
 
 dotenv.config();
 
@@ -45,6 +47,20 @@ app.use('/api', exportRouter);
 app.use('/api', rewriteRouter);
 app.use('/api', auditRouter);
 app.use('/api', matchRouter);
+
+// Lightweight health + load telemetry. Returns queue depth and cache size
+// so we can spot pressure during a traffic spike without enabling full
+// observability. Render and most uptime monitors can use this as their
+// liveness probe.
+app.get('/api/healthz', (_req, res) => {
+    res.json({
+        ok: true,
+        uptime: process.uptime(),
+        memMb: Math.round(process.memoryUsage().rss / 1024 / 1024),
+        queues: queueSnapshot(),
+        cache: cacheSnapshot(),
+    });
+});
 
 const server = app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);

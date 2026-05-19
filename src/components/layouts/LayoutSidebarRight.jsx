@@ -118,19 +118,32 @@ const LayoutSidebarRight = ({ data, theme, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`w-full flex bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} ${theme.font}`}
+            className={`w-full flex bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} ${theme.font}`}
         >
             {/* Dynamic Main Content */}
             <div className="flex-[2] p-8 text-gray-800 flex flex-col min-w-0">
                 {pageIndex === 0 && (
-                    <header id="section-personal" className="mb-8">
-                        <h1 className={`text-4xl font-bold ${theme.text} mb-2`}>
-                            {data.personal.fullName.split(' ')[0]}{' '}
-                            <span className="font-light text-gray-400">
-                                {data.personal.fullName.split(' ').slice(1).join(' ')}
-                            </span>
+                    <header id="section-personal" className="mb-8 min-w-0">
+                        <h1 className={`text-4xl font-bold ${theme.text} mb-2 break-words`}>
+                            {(() => {
+                                const name = data.personal.fullName || 'Your Name';
+                                const parts = name.split(' ');
+                                const first = parts[0];
+                                const rest = parts.slice(1).join(' ');
+                                return (
+                                    <>
+                                        {first}
+                                        {rest && (
+                                            <>
+                                                {' '}
+                                                <span className="font-light text-gray-400">{rest}</span>
+                                            </>
+                                        )}
+                                    </>
+                                );
+                            })()}
                         </h1>
-                        <p className="text-lg tracking-wider text-gray-600 uppercase">
+                        <p className="text-lg tracking-wider text-gray-600 uppercase break-words">
                             {data.personal.title}
                         </p>
                     </header>

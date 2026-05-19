@@ -20,6 +20,7 @@ export type ModalKey =
     | 'ats'
     | 'theme'
     | 'jobAssistant'
+    | 'autoTailor'
     | 'onboarding'
     | 'share'
     | 'tutorial'
@@ -27,12 +28,15 @@ export type ModalKey =
     | 'aiMenu'
     | 'exportMenu'
     | 'roast'
-    | 'coverLetter';
+    | 'coverLetter'
+    | 'shortcuts'
+    | 'jobTracker';
 
 const KNOWN_KEYS: ModalKey[] = [
     'ats',
     'theme',
     'jobAssistant',
+    'autoTailor',
     'onboarding',
     'share',
     'tutorial',
@@ -41,6 +45,8 @@ const KNOWN_KEYS: ModalKey[] = [
     'exportMenu',
     'roast',
     'coverLetter',
+    'shortcuts',
+    'jobTracker',
 ];
 
 type ModalState = Record<ModalKey, boolean>;

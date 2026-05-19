@@ -239,7 +239,7 @@ const LayoutExecutiveSerif = ({ data, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} w-full bg-white`}
+            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} w-full bg-white`}
             style={{
                 padding: '18mm 20mm',
                 color: TEXT,

@@ -14,12 +14,15 @@ import {
     Github,
     Star,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import TemplatePreview from '../ui/TemplatePreview';
+import TiltCard from '../ui/TiltCard';
 import Testimonials from '../ui/Testimonials';
 import ScrollToTop from '../ui/ScrollToTop';
 import Logo from '../ui/Logo';
 import AppThemeSwitcher from '../ui/AppThemeSwitcher';
+import Counter from '../ui/Counter';
+import LiveTypingDemo from '../ui/LiveTypingDemo';
 import { TEMPLATES } from '../../constants/layouts';
 import { BLOG_POSTS } from '../../constants/blogPosts';
 
@@ -99,6 +102,34 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [formSubmitState, setFormSubmitState] = useState({ loading: false, success: false, error: null });
 
+    // Defer the heavy templates grid to the first browser-idle slot after the
+    // hero paints. Idle callbacks fire within ~50–200ms on any modern device
+    // once the main thread is free, and we cap the wait at 600ms so slower
+    // hardware still mounts well before the user can scroll to the section.
+    // Previous IntersectionObserver approach left skeletons visible for fast
+    // scrollers because mounting didn't start until viewport intersection.
+    const [templatesMounted, setTemplatesMounted] = useState(false);
+
+    useEffect(() => {
+        if (templatesMounted) return;
+        let cancelled = false;
+        const mount = () => {
+            if (!cancelled) setTemplatesMounted(true);
+        };
+        if (typeof window.requestIdleCallback === 'function') {
+            const handle = window.requestIdleCallback(mount, { timeout: 600 });
+            return () => {
+                cancelled = true;
+                window.cancelIdleCallback(handle);
+            };
+        }
+        const handle = setTimeout(mount, 150);
+        return () => {
+            cancelled = true;
+            clearTimeout(handle);
+        };
+    }, [templatesMounted]);
+
     // Lock body scroll when mobile menu is open
     useEffect(() => {
         document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
@@ -115,7 +146,10 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
     return (
         <div className="min-h-screen bg-stone-50 dark:bg-slate-950 text-slate-900 dark:text-stone-100 font-clean antialiased selection:bg-brand-600/15 selection:text-brand-900">
             {/* ─────────── NAV ─────────── */}
-            <nav className="sticky top-0 z-50 bg-stone-50/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
+            {/* Solid-ish bg instead of backdrop-blur-xl — blur-on-scroll forces */}
+            {/* a full-viewport re-rasterize every frame and was the single biggest */}
+            {/* scroll-jank source on the landing page. */}
+            <nav className="sticky top-0 z-50 bg-stone-50/95 dark:bg-slate-950/95 border-b border-slate-200/60 dark:border-slate-800/60">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
                     <a href="#top" className="group">
                         <Logo className="w-7 h-7" textClassName="text-base" />
@@ -211,8 +245,19 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             </nav>
 
             {/* ─────────── HERO ─────────── */}
-            <section id="top" className="pt-20 lg:pt-28 pb-16 lg:pb-24">
-                <div className="max-w-5xl mx-auto px-6 lg:px-8">
+            <section id="top" className="relative pt-20 lg:pt-28 pb-16 lg:pb-24 overflow-hidden">
+                {/* Pure-CSS radial gradient wash. No filter:blur, no animation, no extra */}
+                {/* layers — paints once and the GPU never has to retouch it. Sky at top-left */}
+                {/* + warm peach top-right reads as calm + welcoming without feeling busy. */}
+                <div
+                    aria-hidden
+                    className="absolute inset-0 pointer-events-none dark:opacity-40"
+                    style={{
+                        background:
+                            'radial-gradient(900px circle at 15% 0%, rgba(125,211,252,0.32), transparent 55%), radial-gradient(800px circle at 85% 25%, rgba(254,215,170,0.40), transparent 55%)',
+                    }}
+                />
+                <div className="relative z-10 max-w-5xl mx-auto px-6 lg:px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -249,22 +294,28 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         transition={{ duration: 0.6, delay: 0.25 }}
                         className="mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center"
                     >
-                        <button
+                        <motion.button
                             onClick={() => onSelectTemplate(TEMPLATES[0])}
-                            className="group inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-slate-900 text-base font-medium px-7 py-3.5 rounded-full transition-all shadow-lg shadow-slate-900/10 hover:shadow-xl hover:shadow-slate-900/20 hover:-translate-y-0.5"
+                            whileHover={{ y: -2, scale: 1.02 }}
+                            whileTap={{ scale: 0.97 }}
+                            transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+                            className="group inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-stone-100 dark:hover:bg-white text-stone-50 dark:text-slate-900 text-base font-medium px-7 py-3.5 rounded-full shadow-lg shadow-slate-900/10 hover:shadow-xl hover:shadow-slate-900/20 transition-colors"
                         >
                             Start building
                             <ArrowRight
                                 size={16}
                                 className="group-hover:translate-x-0.5 transition-transform"
                             />
-                        </button>
-                        <a
+                        </motion.button>
+                        <motion.a
                             href="#templates"
-                            className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-stone-100 text-base font-medium px-7 py-3.5 rounded-full border border-slate-200 dark:border-slate-700 transition-colors"
+                            whileHover={{ y: -2 }}
+                            whileTap={{ scale: 0.97 }}
+                            transition={{ type: 'spring', stiffness: 380, damping: 24 }}
+                            className="inline-flex items-center justify-center gap-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-stone-100 text-base font-medium px-7 py-3.5 rounded-full border border-slate-200 dark:border-slate-700"
                         >
                             See templates
-                        </a>
+                        </motion.a>
                     </motion.div>
 
                     <motion.div
@@ -280,6 +331,12 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                             </span>
                         ))}
                     </motion.div>
+
+                    {/* Live-typing demo — shows the editor "improving" a bullet in real */}
+                    {/* time, so the value prop ("AI rewrites your bullets") is visible */}
+                    {/* before the user has to scroll. Constrained width keeps the hero */}
+                    {/* legible. */}
+                    <LiveTypingDemo className="mt-12 max-w-xl" />
                 </div>
 
                 {/* template preview strip */}
@@ -294,26 +351,30 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
                             <div className="px-6 sm:px-10 pt-10 pb-12 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                                 {TEMPLATES.slice(0, 5).map((t, i) => (
-                                    <motion.button
+                                    <motion.div
                                         key={t.id}
-                                        onClick={() => onSelectTemplate(t)}
                                         initial={{ opacity: 0, y: 24 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.6, delay: 0.5 + i * 0.07 }}
-                                        whileHover={{ y: -6 }}
-                                        className="group relative aspect-[210/297] rounded-lg overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-2xl hover:shadow-slate-900/10 transition-shadow"
                                     >
-                                        <div className="absolute inset-0">
-                                            <TemplatePreview
-                                                layout={t.layout}
-                                                theme={t.theme}
-                                                selected={false}
-                                            />
-                                        </div>
-                                        <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent text-stone-50 text-[10px] sm:text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {t.name}
-                                        </div>
-                                    </motion.button>
+                                        <TiltCard
+                                            onClick={() => onSelectTemplate(t)}
+                                            ariaLabel={`Preview ${t.name} template`}
+                                            lift={8}
+                                            className="group relative aspect-[210/297] w-full rounded-lg overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-[0_22px_44px_-16px_rgba(15,23,42,0.25)] dark:hover:shadow-[0_22px_44px_-16px_rgba(56,189,248,0.30)] transition-shadow duration-300"
+                                        >
+                                            <div className="absolute inset-0">
+                                                <TemplatePreview
+                                                    layout={t.layout}
+                                                    theme={t.theme}
+                                                    selected={false}
+                                                />
+                                            </div>
+                                            <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent text-stone-50 text-[10px] sm:text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {t.name}
+                                            </div>
+                                        </TiltCard>
+                                    </motion.div>
                                 ))}
                             </div>
                         </div>
@@ -340,16 +401,38 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                         </h2>
                     </motion.div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: '-80px' }}
+                        variants={{
+                            hidden: {},
+                            visible: { transition: { staggerChildren: 0.08 } },
+                        }}
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-200 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800"
+                    >
                         {FEATURES.map((f) => (
                             <motion.div
                                 key={f.title}
-                                {...fadeUp}
+                                variants={{
+                                    hidden: { opacity: 0, y: 20 },
+                                    visible: {
+                                        opacity: 1,
+                                        y: 0,
+                                        transition: { duration: 0.5, ease: 'easeOut' },
+                                    },
+                                }}
+                                whileHover={{ y: -3 }}
+                                transition={{ type: 'spring', stiffness: 380, damping: 26 }}
                                 className="bg-white dark:bg-slate-900 p-8 lg:p-10 hover:bg-stone-50 dark:hover:bg-slate-800 transition-colors group"
                             >
-                                <div className="w-10 h-10 rounded-lg bg-slate-900 dark:bg-stone-100 text-stone-50 dark:text-slate-900 flex items-center justify-center mb-6 group-hover:bg-brand-600 dark:group-hover:bg-brand-500 group-hover:text-stone-50 transition-colors">
+                                <motion.div
+                                    whileHover={{ rotate: 6, scale: 1.08 }}
+                                    transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+                                    className="w-10 h-10 rounded-lg bg-slate-900 dark:bg-stone-100 text-stone-50 dark:text-slate-900 flex items-center justify-center mb-6 group-hover:bg-brand-600 dark:group-hover:bg-brand-500 group-hover:text-stone-50 transition-colors"
+                                >
                                     <f.icon size={18} strokeWidth={1.8} />
-                                </div>
+                                </motion.div>
                                 <h3 className="text-lg font-semibold text-slate-900 dark:text-stone-100 mb-2 tracking-tight">
                                     {f.title}
                                 </h3>
@@ -358,13 +441,23 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                 </p>
                             </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
             {/* ─────────── TEMPLATES ─────────── */}
-            <section id="templates" className="py-24 lg:py-32">
-                <div className="max-w-6xl mx-auto px-6 lg:px-8">
+            <section id="templates" className="relative py-24 lg:py-32 overflow-hidden">
+                {/* Cool sky→mint radial wash. Makes the gallery feel set apart from */}
+                {/* the rest of the page without committing to a heavy colored bg. */}
+                <div
+                    aria-hidden
+                    className="absolute inset-0 pointer-events-none dark:opacity-30"
+                    style={{
+                        background:
+                            'radial-gradient(1100px circle at 50% 0%, rgba(186,230,253,0.45), transparent 55%), radial-gradient(900px circle at 50% 100%, rgba(167,243,208,0.35), transparent 55%)',
+                    }}
+                />
+                <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8">
                     <motion.div
                         {...fadeUp}
                         className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12"
@@ -381,54 +474,127 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                                 </em>
                             </h2>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            {CATEGORIES.map((c) => (
-                                <button
-                                    key={c.id}
-                                    onClick={() => setActiveCategory(c.id)}
-                                    className={`text-sm px-4 py-2 rounded-full border transition-all ${
-                                        activeCategory === c.id
-                                            ? 'bg-slate-900 dark:bg-stone-100 text-stone-50 dark:text-slate-900 border-slate-900 dark:border-stone-100'
-                                            : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-stone-300 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'
-                                    }`}
-                                >
-                                    {c.label}
-                                </button>
-                            ))}
-                        </div>
+                        {/* Active pill slides between categories via shared layoutId */}
+                        {/* instead of snapping bg colors. One spring drives the whole */}
+                        {/* selection state — feels like the iOS segmented control. */}
+                        <LayoutGroup id="categoryPills">
+                            <div className="flex flex-wrap gap-2">
+                                {CATEGORIES.map((c) => {
+                                    const isActive = activeCategory === c.id;
+                                    return (
+                                        <button
+                                            key={c.id}
+                                            onClick={() => setActiveCategory(c.id)}
+                                            className="relative isolate text-sm px-4 py-2 rounded-full transition-colors"
+                                        >
+                                            {isActive && (
+                                                <motion.span
+                                                    layoutId="categoryPill"
+                                                    className="absolute inset-0 -z-10 rounded-full bg-slate-900 dark:bg-stone-100 shadow-sm"
+                                                    transition={{
+                                                        type: 'spring',
+                                                        stiffness: 380,
+                                                        damping: 32,
+                                                    }}
+                                                />
+                                            )}
+                                            {!isActive && (
+                                                <span className="absolute inset-0 -z-10 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700" />
+                                            )}
+                                            <span
+                                                className={`relative font-medium ${
+                                                    isActive
+                                                        ? 'text-stone-50 dark:text-slate-900'
+                                                        : 'text-slate-700 dark:text-stone-300'
+                                                }`}
+                                            >
+                                                {c.label}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </LayoutGroup>
                     </motion.div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-7">
-                        {filteredTemplates.map((t, i) => (
-                            <motion.button
-                                key={t.id}
-                                onClick={() => onSelectTemplate(t)}
-                                initial={{ opacity: 0, y: 16 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: (i % 4) * 0.05 }}
-                                whileHover={{ y: -4 }}
-                                className="group text-left"
-                            >
-                                <div className="aspect-[210/297] rounded-xl overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-sm group-hover:shadow-xl group-hover:shadow-slate-900/10 group-hover:border-slate-300 dark:group-hover:border-slate-600 transition-all relative">
-                                    <div className="absolute inset-0">
-                                        <TemplatePreview layout={t.layout} theme={t.theme} selected={false} />
-                                    </div>
-                                    <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors" />
-                                    <div className="absolute right-3 top-3 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 -translate-y-1 group-hover:translate-y-0 transition-all">
-                                        <ArrowUpRight size={14} className="text-slate-900" />
-                                    </div>
-                                </div>
-                                <div className="mt-4 flex items-baseline justify-between gap-2">
-                                    <div className="text-sm font-medium text-slate-900 dark:text-stone-100 tracking-tight truncate">
-                                        {t.name}
-                                    </div>
-                                    <div className="text-xs text-slate-500 dark:text-stone-500 shrink-0">
-                                        {t.category}
-                                    </div>
-                                </div>
-                            </motion.button>
-                        ))}
+                    <div
+                        onMouseMove={(e) => {
+                            // Cursor spotlight — write the pointer position straight into
+                            // CSS variables so the radial-gradient below repaints on the
+                            // compositor without going through React state. Cheap enough to
+                            // run at full mousemove cadence.
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            e.currentTarget.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+                            e.currentTarget.style.setProperty('--my', `${e.clientY - rect.top}px`);
+                        }}
+                        className="group/grid relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-7"
+                        style={{ '--mx': '50%', '--my': '50%' }}
+                    >
+                        {/* Cursor spotlight — soft pastel halo following the cursor. */}
+                        {/* Dropped mixBlendMode (overlay) — it was forcing the whole grid */}
+                        {/* region to recomposite each cursor frame. A plain low-alpha */}
+                        {/* radial sits over the cards and looks nearly identical. */}
+                        <div
+                            aria-hidden
+                            className="pointer-events-none absolute inset-0 opacity-0 group-hover/grid:opacity-100 transition-opacity duration-300"
+                            style={{
+                                background:
+                                    'radial-gradient(360px circle at var(--mx) var(--my), rgba(125,211,252,0.18), transparent 70%)',
+                            }}
+                        />
+                        <AnimatePresence mode="popLayout" initial={false}>
+                            {templatesMounted
+                                ? filteredTemplates.map((t) => (
+                                      <motion.button
+                                          key={t.id}
+                                          layout
+                                          onClick={() => onSelectTemplate(t)}
+                                          initial={{ opacity: 0, scale: 0.92 }}
+                                          animate={{ opacity: 1, scale: 1 }}
+                                          exit={{ opacity: 0, scale: 0.92 }}
+                                          transition={{
+                                              layout: { type: 'spring', stiffness: 320, damping: 32 },
+                                              opacity: { duration: 0.25 },
+                                              scale: { duration: 0.25 },
+                                          }}
+                                          whileHover={{ y: -4 }}
+                                          className="group text-left"
+                                      >
+                                          {/* Card hover glow via box-shadow (compositor-only). */}
+                                          <div className="aspect-[210/297] rounded-xl overflow-hidden bg-white border border-slate-200 dark:border-slate-700 shadow-sm group-hover:shadow-[0_18px_36px_-12px_rgba(15,23,42,0.18)] dark:group-hover:shadow-[0_18px_36px_-12px_rgba(56,189,248,0.25)] group-hover:border-slate-300 dark:group-hover:border-slate-600 transition-shadow duration-300 relative">
+                                              <div className="absolute inset-0">
+                                                  <TemplatePreview
+                                                      layout={t.layout}
+                                                      theme={t.theme}
+                                                      selected={false}
+                                                  />
+                                              </div>
+                                              <div className="absolute right-3 top-3 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 -translate-y-1 group-hover:translate-y-0 transition-all">
+                                                  <ArrowUpRight size={14} className="text-slate-900" />
+                                              </div>
+                                          </div>
+                                          <div className="mt-4 flex items-baseline justify-between gap-2">
+                                              <div className="text-sm font-medium text-slate-900 dark:text-stone-100 tracking-tight truncate">
+                                                  {t.name}
+                                              </div>
+                                              <div className="text-xs text-slate-500 dark:text-stone-500 shrink-0">
+                                                  {t.category}
+                                              </div>
+                                          </div>
+                                      </motion.button>
+                                  ))
+                                : Array.from({ length: 8 }).map((_, i) => (
+                                      <motion.div
+                                          key={`skeleton-${i}`}
+                                          exit={{ opacity: 0 }}
+                                          transition={{ duration: 0.2 }}
+                                          className="text-left"
+                                      >
+                                          <div className="aspect-[210/297] rounded-xl bg-stone-100 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/70" />
+                                          <div className="mt-4 h-3 w-24 rounded bg-stone-200 dark:bg-slate-800" />
+                                      </motion.div>
+                                  ))}
+                        </AnimatePresence>
                     </div>
                 </div>
             </section>
@@ -460,12 +626,21 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
                     </div>
 
                     <motion.div {...fadeUp} className="mt-16 text-center">
+                        {/* Stacked-layer hover: warm peach gradient sits underneath, */}
+                        {/* the stone-50 cover fades out on hover so the gradient bleeds */}
+                        {/* through smoothly. transition-opacity is GPU-cheap. */}
                         <button
                             onClick={() => onSelectTemplate(TEMPLATES[0])}
-                            className="group inline-flex items-center gap-2 bg-stone-50 hover:bg-white text-slate-900 text-base font-medium px-7 py-3.5 rounded-full transition-all hover:gap-3"
+                            className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-orange-300 via-amber-300 to-rose-300 text-slate-900 text-base font-medium px-7 py-3.5 rounded-full transition-all hover:gap-3 overflow-hidden"
                         >
-                            Try it now
-                            <ArrowRight size={16} />
+                            <span
+                                aria-hidden
+                                className="absolute inset-0 bg-stone-50 group-hover:opacity-0 transition-opacity duration-400"
+                            />
+                            <span className="relative inline-flex items-center gap-2">
+                                Try it now
+                                <ArrowRight size={16} />
+                            </span>
                         </button>
                         <div className="mt-4 text-sm text-stone-400">
                             No signup. No credit card. Done in 20 minutes.
@@ -478,14 +653,29 @@ const LandingPage = ({ onSelectTemplate, onViewBlog }) => {
             <section className="py-20 border-y border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900">
                 <div className="max-w-6xl mx-auto px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6 text-center">
                     {[
-                        { stat: '15+', label: 'Templates' },
-                        { stat: 'Free', label: 'Forever' },
-                        { stat: '0', label: 'Signups required' },
-                        { stat: '<20m', label: 'To finish' },
+                        {
+                            node: (
+                                <>
+                                    <Counter to={15} />+
+                                </>
+                            ),
+                            label: 'Templates',
+                        },
+                        { node: 'Free', label: 'Forever' },
+                        { node: '0', label: 'Signups required' },
+                        {
+                            node: (
+                                <>
+                                    &lt;
+                                    <Counter to={20} />m
+                                </>
+                            ),
+                            label: 'To finish',
+                        },
                     ].map((s) => (
                         <motion.div key={s.label} {...fadeUp}>
                             <div className="font-serif-display text-5xl lg:text-6xl text-slate-900 dark:text-stone-100 tracking-tight">
-                                {s.stat}
+                                {s.node}
                             </div>
                             <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-stone-500 mt-2">
                                 {s.label}

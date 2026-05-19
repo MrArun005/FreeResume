@@ -73,6 +73,59 @@ export const SCHEMA_MATCH = {
     required: ['score', 'matchSummary', 'missingKeywords', 'tailoringAdvice'],
 };
 
+// Non-destructive JD-driven bullet reranking. Unlike SCHEMA_MATCH (advice)
+// or the tailor-resume endpoint (full rewrite that destroys voice), this
+// returns scores per bullet plus a suggested ordering — the client applies
+// the reorder atomically, keeping the user's exact wording intact.
+export const SCHEMA_RERANK = {
+    type: SchemaType.OBJECT,
+    properties: {
+        currentScore: { type: SchemaType.NUMBER },
+        potentialScore: { type: SchemaType.NUMBER },
+        summary: { type: SchemaType.STRING },
+        missingKeywords: {
+            type: SchemaType.ARRAY,
+            items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    keyword: { type: SchemaType.STRING },
+                    importance: { type: SchemaType.STRING }, // 'must-have' | 'nice-to-have'
+                    rationale: { type: SchemaType.STRING },
+                },
+                required: ['keyword', 'importance'],
+            },
+        },
+        experienceRerank: {
+            type: SchemaType.ARRAY,
+            items: {
+                type: SchemaType.OBJECT,
+                properties: {
+                    // Match by id (number) — we send the original experience.id.
+                    experienceId: { type: SchemaType.NUMBER },
+                    // Suggested order of bullet indices, e.g. [2, 0, 1, 3] means
+                    // "show old-index-2 first, then 0, then 1, then 3".
+                    suggestedOrder: { type: SchemaType.ARRAY, items: { type: SchemaType.NUMBER } },
+                    // Per-bullet score (positive = lift to top, negative = sink).
+                    bulletScores: {
+                        type: SchemaType.ARRAY,
+                        items: {
+                            type: SchemaType.OBJECT,
+                            properties: {
+                                index: { type: SchemaType.NUMBER },
+                                relevance: { type: SchemaType.NUMBER },
+                                rationale: { type: SchemaType.STRING },
+                            },
+                            required: ['index', 'relevance'],
+                        },
+                    },
+                },
+                required: ['experienceId', 'suggestedOrder', 'bulletScores'],
+            },
+        },
+    },
+    required: ['currentScore', 'potentialScore', 'summary', 'missingKeywords', 'experienceRerank'],
+};
+
 export const SCHEMA_ROAST = {
     type: SchemaType.OBJECT,
     properties: {

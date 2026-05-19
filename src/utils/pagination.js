@@ -1,3 +1,97 @@
+// Per-layout top-padding values in px. Each strategy reserves PADDING off
+// the top of every page; if the layout actually paints more padding than the
+// engine reserved, page 1 "feels full" too early and content moves to page 2
+// while the bottom of page 1 is still empty. Keep these numbers honest with
+// the actual CSS in each LayoutXxx.jsx (Tailwind p-10=40, p-12=48; mm values
+// at 96dpi: 14mm≈53, 15mm≈57, 18mm≈68, 20mm≈76).
+const LAYOUT_PADDING = {
+    classic: 40,
+    ats: 48,
+    jakes: 40,
+    freeform: 40,
+    minimal: 76,
+    'minimal-mono': 53,
+    'navy-modern': 53,
+    google: 53,
+    'bold-recruit': 53,
+    'executive-serif': 68,
+    gold: 40,
+    executive: 48,
+    'sidebar-left': 57,
+    'sidebar-right': 32,
+    creative: 32,
+};
+
+// Per-layout vertical gap between items inside a section. Engine adds this
+// on top of each item's measured offsetHeight to model the CSS gap. Mismatch
+// between this and the real layout CSS is the main cause of "page 1 has space
+// but section moved to page 2" — too high here = engine reserves room that
+// the real render doesn't actually paint, so it cuts to a new page too early.
+// Lower than the raw CSS gap on purpose. The engine adds ITEM_MARGIN to
+// every item's offsetHeight, but offsetHeight on a `space-y-X` child already
+// reflects the natural box height — and the parent flex/grid container
+// often absorbs some of the visual gap. Under-counting by 4-8px per item
+// leaves the engine optimistic about fit, which (combined with the
+// post-pagination compaction pass and the overflow slack below) finally
+// lets short tail sections (education, skills) ride alongside experience
+// instead of getting routed to a near-empty page 2.
+const LAYOUT_ITEM_MARGIN = {
+    classic: 12,
+    ats: 12,
+    jakes: 4,
+    freeform: 12,
+    minimal: 16,
+    'minimal-mono': 3,
+    'navy-modern': 6,
+    google: 8,
+    'bold-recruit': 8,
+    'executive-serif': 4,
+    gold: 16,
+    executive: 16,
+    'sidebar-left': 10,
+    'sidebar-right': 10,
+    creative: 12,
+};
+
+// Per-layout vertical gap between sections (after a section title block ends
+// and before the next section's title). Same principle: keep this close to
+// what the layout actually paints. Section titles often have mt-5 or similar
+// top-margin handled by the title itself, so this value is "the rest" of the
+// breathing room between sections.
+const LAYOUT_SECTION_MARGIN = {
+    classic: 14,
+    ats: 14,
+    jakes: 10,
+    freeform: 14,
+    minimal: 16,
+    'minimal-mono': 10,
+    'navy-modern': 10,
+    google: 10,
+    'bold-recruit': 10,
+    'executive-serif': 10,
+    gold: 18,
+    executive: 16,
+    'sidebar-left': 10,
+    'sidebar-right': 10,
+    creative: 14,
+};
+
+// Allow this many pixels of overhang past maxPageHeight before the engine
+// forces a new page. Items render at slightly different heights than the
+// hidden mirror reports (font hinting, line-height rounding, parent flex
+// containers absorbing gaps). overflow:hidden on the page wrapper clips a
+// few px of trailing whitespace anyway, so granting some slack to fit a
+// section that's just barely "over" the budget keeps short tail sections
+// on the right page instead of breaking with 200-500px of empty space.
+const OVERFLOW_SLACK = 28;
+
+const paddingFor = (layoutId, fallback) =>
+    LAYOUT_PADDING[layoutId] != null ? LAYOUT_PADDING[layoutId] : fallback;
+const itemMarginFor = (layoutId, fallback) =>
+    LAYOUT_ITEM_MARGIN[layoutId] != null ? LAYOUT_ITEM_MARGIN[layoutId] : fallback;
+const sectionMarginFor = (layoutId, fallback) =>
+    LAYOUT_SECTION_MARGIN[layoutId] != null ? LAYOUT_SECTION_MARGIN[layoutId] : fallback;
+
 /**
  * Helper to create a fresh page structure
  */
@@ -14,7 +108,7 @@ const createPage = (data) => ({
  * Pagination Strategy for GOLD Layout
  * Features: Single column, Serif fonts, Large headers, Strict 40px margins
  */
-const paginateGold = (data, heights, maxPageHeight) => {
+const paginateGold = (data, heights, maxPageHeight, layoutId = 'gold') => {
     const pages = [];
     let currentPage = createPage(data);
 
@@ -22,9 +116,9 @@ const paginateGold = (data, heights, maxPageHeight) => {
     // PADDING reflects the *top* padding of the layout — it is added to
     // currentHeight once and never released, so the effective fill budget
     // for content on each page is (maxPageHeight - PADDING).
-    const PADDING = 32; // tightened from 40 so page 1 fills more before overflow
-    const ITEM_MARGIN = 24; // tightened from 32 (real CSS space-y-8 measures less in practice)
-    const SECTION_MARGIN = 32; // tightened from 40
+    const PADDING = paddingFor(layoutId, 40);
+    const ITEM_MARGIN = itemMarginFor(layoutId, 24);
+    const SECTION_MARGIN = sectionMarginFor(layoutId, 28);
     const TITLE_HEIGHT = 40;
 
     let currentHeight = 0;
@@ -85,7 +179,10 @@ const paginateGold = (data, heights, maxPageHeight) => {
                     const marginToAdd = currentHeight > PADDING + 10 ? SECTION_MARGIN : 0;
                     const totalToAdd = marginToAdd + titleHeight + itemHeight;
 
-                    if (currentHeight + totalToAdd > maxPageHeight && currentHeight > PADDING + 100) {
+                    if (
+                        currentHeight + totalToAdd > maxPageHeight + OVERFLOW_SLACK &&
+                        currentHeight > PADDING + 100
+                    ) {
                         // Too big, start new page
                         startNewPage();
                         currentPage.sectionOrder.push(sectionId);
@@ -101,7 +198,7 @@ const paginateGold = (data, heights, maxPageHeight) => {
                     }
                 } else {
                     // Subsequent item
-                    if (currentHeight + itemHeight > maxPageHeight) {
+                    if (currentHeight + itemHeight > maxPageHeight + OVERFLOW_SLACK) {
                         // Push current items
                         addItemsToPage(currentPage, sectionId, pageItems, data);
                         pageItems.length = 0; // Clear
@@ -126,7 +223,10 @@ const paginateGold = (data, heights, maxPageHeight) => {
             // Treat as atomic block
             const totalHeight = sectionHeight + SECTION_MARGIN;
 
-            if (currentHeight + totalHeight > maxPageHeight && currentHeight > PADDING + 100) {
+            if (
+                currentHeight + totalHeight > maxPageHeight + OVERFLOW_SLACK &&
+                currentHeight > PADDING + 100
+            ) {
                 startNewPage();
                 currentPage.sectionOrder.push(sectionId);
                 currentHeight += sectionHeight;
@@ -148,14 +248,14 @@ const paginateGold = (data, heights, maxPageHeight) => {
  * Pagination Strategy for EXECUTIVE Layout
  * Features: Single column, similar to Gold but tighter spacing
  */
-const paginateExecutive = (data, heights, maxPageHeight) => {
+const paginateExecutive = (data, heights, maxPageHeight, layoutId = 'executive') => {
     const pages = [];
     let currentPage = createPage(data);
 
     // EXECUTIVE CONSTANTS — tightened to reduce trailing whitespace on page 1
-    const PADDING = 40; // was 48; better matches measured fill
-    const ITEM_MARGIN = 24; // was 32
-    const SECTION_MARGIN = 24; // was 32
+    const PADDING = paddingFor(layoutId, 48);
+    const ITEM_MARGIN = itemMarginFor(layoutId, 24);
+    const SECTION_MARGIN = sectionMarginFor(layoutId, 24);
     const TITLE_HEIGHT = 36;
 
     let currentHeight = 0;
@@ -205,7 +305,8 @@ const paginateExecutive = (data, heights, maxPageHeight) => {
                 if (isFirstItemOnPage) {
                     const marginToAdd = currentHeight > PADDING + 10 ? SECTION_MARGIN : 0;
                     if (
-                        currentHeight + marginToAdd + titleHeight + itemHeight > maxPageHeight &&
+                        currentHeight + marginToAdd + titleHeight + itemHeight >
+                            maxPageHeight + OVERFLOW_SLACK &&
                         currentHeight > PADDING + 100
                     ) {
                         startNewPage();
@@ -218,7 +319,7 @@ const paginateExecutive = (data, heights, maxPageHeight) => {
                         pageItems.push(item);
                     }
                 } else {
-                    if (currentHeight + itemHeight > maxPageHeight) {
+                    if (currentHeight + itemHeight > maxPageHeight + OVERFLOW_SLACK) {
                         addItemsToPage(currentPage, sectionId, pageItems, data);
                         pageItems.length = 0;
                         startNewPage();
@@ -234,7 +335,10 @@ const paginateExecutive = (data, heights, maxPageHeight) => {
             addItemsToPage(currentPage, sectionId, pageItems, data);
         } else {
             const totalHeight = sectionHeight + SECTION_MARGIN;
-            if (currentHeight + totalHeight > maxPageHeight && currentHeight > PADDING + 100) {
+            if (
+                currentHeight + totalHeight > maxPageHeight + OVERFLOW_SLACK &&
+                currentHeight > PADDING + 100
+            ) {
                 startNewPage();
                 currentPage.sectionOrder.push(sectionId);
                 currentHeight += sectionHeight;
@@ -259,10 +363,11 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
     // 1. Setup Pages Array
     const pages = [createPage(data)];
 
-    // CONFIG — was over-conservative (PADDING 80 wasted ~80px per page)
-    const PADDING = 48;
-    const ITEM_MARGIN = 20;
-    const SECTION_MARGIN = 16;
+    // CONFIG — was over-conservative (PADDING 80 wasted ~80px per page).
+    // Per-layout override so each sidebar variant reflects its real CSS.
+    const PADDING = paddingFor(layoutId, 48);
+    const ITEM_MARGIN = itemMarginFor(layoutId, 20);
+    const SECTION_MARGIN = sectionMarginFor(layoutId, 16);
     const TITLE_HEIGHT = 28;
 
     // Define Columns
@@ -336,7 +441,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                 pageHeights[currentPageIndex] = [PADDING, PADDING];
             }
 
-            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight) {
+            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight + OVERFLOW_SLACK) {
                 currentPageIndex++;
                 if (!pages[currentPageIndex]) {
                     pages[currentPageIndex] = createPage(data);
@@ -380,7 +485,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                     const titleH = isFirstOnPage ? titleHeight : 0;
                     const margin = isFirstOnPage ? SECTION_MARGIN : 0;
 
-                    if (currentH + margin + titleH + itemHeight > maxPageHeight) {
+                    if (currentH + margin + titleH + itemHeight > maxPageHeight + OVERFLOW_SLACK) {
                         addItemsToPage(pages[currentPageIndex], sectionId, pageItems, data);
                         pageItems.length = 0;
 
@@ -455,7 +560,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                 const titleH = isFirstOnPage ? titleHeight : 0;
                 const margin = isFirstOnPage ? SECTION_MARGIN : 0;
 
-                if (currentH + margin + titleH + itemHeight > maxPageHeight) {
+                if (currentH + margin + titleH + itemHeight > maxPageHeight + OVERFLOW_SLACK) {
                     addItemsToPage(pages[currentPageIndex], sectionId, pageItems, data);
                     pageItems.length = 0;
 
@@ -484,7 +589,7 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
                 pageHeights[currentPageIndex] = [PADDING, PADDING];
             }
 
-            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight) {
+            if (pageHeights[currentPageIndex][colIndex] + totalHeight > maxPageHeight + OVERFLOW_SLACK) {
                 currentPageIndex++;
                 if (!pages[currentPageIndex]) {
                     pages[currentPageIndex] = createPage(data);
@@ -505,16 +610,18 @@ const paginateSidebar = (data, heights, maxPageHeight, layoutId) => {
 /**
  * Pagination Strategy for STANDARD Layouts (Classic, Minimal, ATS, etc.)
  */
-const paginateStandard = (data, heights, maxPageHeight) => {
+const paginateStandard = (data, heights, maxPageHeight, layoutId = 'classic') => {
     const pages = [];
     let currentPage = createPage(data);
 
-    // CONFIG — tightened so page 1 fills closer to A4 (1123px) before forcing a new page.
-    // Most "standard" layouts (Classic, Minimal, ATS, Jakes) use p-10 or p-12 = 40-48px CSS padding.
-    // PADDING here is the *top* reservation; effective fill budget = (maxPageHeight - PADDING).
-    const PADDING = 40;
-    const ITEM_MARGIN = 12;
-    const SECTION_MARGIN = 16;
+    // CONFIG — all three spacing constants come from per-layout maps so the
+    // engine models each template's actual CSS gaps. A mismatch is the main
+    // cause of "page 1 has free space but the next section jumped to page 2"
+    // — too much reserved gap = engine thinks the page is full before the
+    // real render actually fills it.
+    const PADDING = paddingFor(layoutId, 40);
+    const ITEM_MARGIN = itemMarginFor(layoutId, 12);
+    const SECTION_MARGIN = sectionMarginFor(layoutId, 16);
     const TITLE_HEIGHT = 28;
 
     let currentHeight = 0;
@@ -560,7 +667,8 @@ const paginateStandard = (data, heights, maxPageHeight) => {
                 if (isFirstItemOnPage) {
                     const marginToAdd = currentHeight > PADDING + 10 ? SECTION_MARGIN : 0;
                     if (
-                        currentHeight + marginToAdd + titleHeight + itemHeight > maxPageHeight &&
+                        currentHeight + marginToAdd + titleHeight + itemHeight >
+                            maxPageHeight + OVERFLOW_SLACK &&
                         currentHeight > PADDING + 100
                     ) {
                         startNewPage();
@@ -573,7 +681,7 @@ const paginateStandard = (data, heights, maxPageHeight) => {
                         pageItems.push(item);
                     }
                 } else {
-                    if (currentHeight + itemHeight > maxPageHeight) {
+                    if (currentHeight + itemHeight > maxPageHeight + OVERFLOW_SLACK) {
                         addItemsToPage(currentPage, sectionId, pageItems, data);
                         pageItems.length = 0;
                         startNewPage();
@@ -589,7 +697,10 @@ const paginateStandard = (data, heights, maxPageHeight) => {
             addItemsToPage(currentPage, sectionId, pageItems, data);
         } else {
             const totalHeight = sectionHeight + SECTION_MARGIN;
-            if (currentHeight + totalHeight > maxPageHeight && currentHeight > PADDING + 100) {
+            if (
+                currentHeight + totalHeight > maxPageHeight + OVERFLOW_SLACK &&
+                currentHeight > PADDING + 100
+            ) {
                 startNewPage();
                 currentPage.sectionOrder.push(sectionId);
                 currentHeight += sectionHeight;
@@ -678,31 +789,219 @@ const addPageMetadata = (pages) => {
     return pages;
 };
 
+// Estimate how much vertical space a single section (with its title and
+// items) would consume on a page. Uses the same measured heights the engine
+// already collected — title from #section-title-X, item heights from
+// #item-Y. Returns 0 if the section is empty.
+//
+// `alreadyOnPage` (optional, default false): if the target page already has
+// items from this section, we're appending continuation items — no new
+// section title, no fresh section margin. Skipping those keeps compaction
+// honest about cost so it doesn't refuse a valid pull-up that would fit.
+const estimateSectionHeight = (data, heights, sectionId, page, opts, alreadyOnPage = false) => {
+    const { titleH, itemMargin, sectionMargin } = opts;
+    const title = alreadyOnPage ? 0 : heights[`section-title-${sectionId}`] || titleH;
+    const margin = alreadyOnPage ? 0 : sectionMargin;
+    if (sectionId === 'skills') {
+        return margin + (heights[`section-skills`] || 80);
+    }
+    if (sectionId === 'summary') {
+        return margin + (heights[`section-summary`] || 80);
+    }
+    let items;
+    if (sectionId === 'experience') items = page.experience || [];
+    else if (sectionId === 'education') items = page.education || [];
+    else {
+        const cs = page.customSections.find((s) => s.id === sectionId);
+        items = cs ? cs.items : [];
+    }
+    if (!items.length) return 0;
+    const itemsHeight = items.reduce((sum, it) => sum + (heights[`item-${it.id}`] || 50) + itemMargin, 0);
+    return margin + title + itemsHeight;
+};
+
+// Sum what's actually on a page. Header is page-1-only and already baked
+// into PADDING-derived currentHeight during the first pass, so we approximate
+// page content height by adding header (if page 0) + each section's atomic
+// height. Conservative — used only to compute leftover room.
+const measurePageFill = (page, data, heights, opts) => {
+    const { padding, headerH } = opts;
+    let total = padding;
+    if (page.pageIndex === 0) total += headerH;
+    page.sectionOrder.forEach((sectionId) => {
+        total += estimateSectionHeight(data, heights, sectionId, page, opts);
+    });
+    return total;
+};
+
+// Post-pagination compaction. After the strategy returns N pages, walk
+// page-pairs and try to MOVE the first section of page i+1 up to page i if
+// it would fit in page i's leftover space. Repeats until no more pull-ups
+// are possible. Removes empty trailing pages.
+//
+// This is the layer that delivers "dynamic spacing" from the user's
+// perspective: even if the first-pass paginator was conservative and pushed
+// education/skills to a near-empty page, this pass pulls them back when
+// there's room. Single-column standard layouts only — sidebar/canvas/gold
+// have their own column models and aren't safe to mutate this way.
+const compactPages = (pages, data, heights, maxPageHeight, layoutId) => {
+    if (!pages || pages.length < 2) return pages;
+    const padding = paddingFor(layoutId, 40);
+    const itemMargin = itemMarginFor(layoutId, 12);
+    const sectionMargin = sectionMarginFor(layoutId, 16);
+    const titleH = 28;
+    const headerH = heights['section-personal'] || 0;
+    const opts = { padding, itemMargin, sectionMargin, titleH, headerH };
+    let changed = true;
+    let safety = 8; // never loop forever
+    while (changed && safety-- > 0) {
+        changed = false;
+        for (let i = 0; i < pages.length - 1; i++) {
+            const curr = pages[i];
+            const next = pages[i + 1];
+            if (!next.sectionOrder.length) continue;
+            const firstNextSection = next.sectionOrder[0];
+            // Estimate room on current page.
+            const fill = measurePageFill(curr, data, heights, opts);
+            const leftover = maxPageHeight + OVERFLOW_SLACK - fill;
+            // Cost of moving the entire first section of next page up.
+            // If the section is already on curr (continuation case from a
+            // split), skip the title + section-margin overhead — they're
+            // already paid.
+            const alreadyOnCurr = curr.sectionOrder.includes(firstNextSection);
+            const cost = estimateSectionHeight(data, heights, firstNextSection, next, opts, alreadyOnCurr);
+            if (cost === 0) continue;
+            if (cost <= leftover) {
+                // Move it up. Only register the section name on curr if it
+                // wasn't already there — otherwise this is a continuation
+                // append (split being re-merged), and re-pushing would
+                // duplicate the section in sectionOrder.
+                if (!alreadyOnCurr) curr.sectionOrder.push(firstNextSection);
+                next.sectionOrder.shift();
+                if (firstNextSection === 'experience') {
+                    curr.experience = [...(curr.experience || []), ...(next.experience || [])];
+                    next.experience = [];
+                } else if (firstNextSection === 'education') {
+                    curr.education = [...(curr.education || []), ...(next.education || [])];
+                    next.education = [];
+                } else if (firstNextSection === 'skills') {
+                    curr.skills = data.skills;
+                    next.skills = [];
+                } else {
+                    const csNext = next.customSections.find((s) => s.id === firstNextSection);
+                    if (csNext) {
+                        const existing = curr.customSections.find((s) => s.id === firstNextSection);
+                        if (existing) existing.items = [...existing.items, ...csNext.items];
+                        else curr.customSections.push(csNext);
+                        next.customSections = next.customSections.filter((s) => s.id !== firstNextSection);
+                    }
+                }
+                changed = true;
+            }
+        }
+        // Drop any pages that emptied out completely.
+        for (let i = pages.length - 1; i >= 1; i--) {
+            const p = pages[i];
+            const hasContent =
+                p.sectionOrder.length > 0 ||
+                (p.experience || []).length > 0 ||
+                (p.education || []).length > 0 ||
+                (p.customSections || []).some((s) => s.items?.length > 0);
+            if (!hasContent) {
+                pages.splice(i, 1);
+                changed = true;
+            }
+        }
+    }
+    // Rebuild sectionStartPage metadata after compaction.
+    return addPageMetadata(pages);
+};
+
+// Sum up the natural rendered heights of every section the resume will
+// actually display. Used by the single-page fast-path. Reads the same per-
+// section offsetHeights the engine already measured — these reflect the
+// real DOM height of each <section id="section-X"> block (which includes
+// its own title + items + internal gaps), so summing them gives a tight
+// estimate of total content height that's NOT affected by any `h-full` /
+// `flex-1` quirks on the layout's outer/inner padding wrappers.
+const sumContentHeight = (data, heights, padding, sectionMargin) => {
+    const headerH = heights['section-personal'] || 0;
+    let total = padding + headerH;
+    let measuredCount = 0;
+    (data.sectionOrder || []).forEach((sectionId) => {
+        const h = heights[`section-${sectionId}`] || 0;
+        if (h > 0) {
+            total += h + sectionMargin;
+            measuredCount++;
+        }
+    });
+    return measuredCount > 0 ? total : 0;
+};
+
+// If the hidden mirror reports the resume fits naturally in one page,
+// short-circuit: every section goes on page 0, no splitting attempted.
+// This is the most reliable path because we're trusting the actual rendered
+// height instead of summing item heights + per-layout margin assumptions.
+const buildSinglePage = (data) => ({
+    personal: data.personal,
+    sectionOrder: [...(data.sectionOrder || [])],
+    customSections: (data.customSections || []).map((cs) => ({ ...cs, items: [...cs.items] })),
+    experience: [...(data.experience || [])],
+    education: [...(data.education || [])],
+    skills: [...(data.skills || [])],
+    // Pass-through fields layouts read per-page. Without these, single-page
+    // fast-path results would differ from multi-page strategy outputs in
+    // subtle ways (e.g. layouts that gate elements on `data.pageBreaks` or
+    // `data.sectionStyles` would render differently on a "fits in 1 page"
+    // result vs the same content paginated normally).
+    pageBreaks: data.pageBreaks || {},
+    sectionStyles: data.sectionStyles || {},
+    customStyles: data.customStyles || {},
+    coverLetter: data.coverLetter,
+    pageIndex: 0,
+    sectionStartPage: (data.sectionOrder || []).reduce((acc, id) => {
+        acc[id] = 0;
+        return acc;
+    }, {}),
+});
+
 /**
  * MAIN ENTRY POINT
  */
 export const paginateResume = (data, heights, maxPageHeight = 1000, layoutId = 'classic') => {
+    // Fast-path: if the resume's sections naturally sum to within page
+    // budget, force one page. Summing per-section offsetHeights is more
+    // accurate than measuring the layout's outer container because layouts
+    // commonly use `h-full` + `flex-1` to push content to the bottom of the
+    // page in normal-render mode, which inflates outer.offsetHeight in
+    // measurement mode too.
+    const padding = paddingFor(layoutId, 40);
+    const sectionMargin = sectionMarginFor(layoutId, 16);
+    const naturalHeight = sumContentHeight(data, heights, padding, sectionMargin);
+    if (naturalHeight > 0 && naturalHeight <= maxPageHeight + OVERFLOW_SLACK + 30) {
+        return addPageMetadata([buildSinglePage(data)]);
+    }
+    let pages;
     switch (layoutId) {
         case 'gold':
-            return paginateGold(data, heights, maxPageHeight);
+            pages = paginateGold(data, heights, maxPageHeight, layoutId);
+            break;
         case 'executive':
-            return paginateExecutive(data, heights, maxPageHeight);
+            pages = paginateExecutive(data, heights, maxPageHeight, layoutId);
+            break;
         case 'canvas':
             return paginateCanvas(data);
         case 'creative':
         case 'sidebar-left':
         case 'sidebar-right':
+            // Two-column strategies are NOT safe to compact with the
+            // single-column heuristic — leave them alone.
             return paginateSidebar(data, heights, maxPageHeight, layoutId);
-        case 'modern-grid':
-            // For now, use sidebar logic (2-col) or standard?
-            // Modern grid is complex, let's use sidebar logic but tweak it if needed.
-            // Actually, modern grid is 2-col but not sidebar.
-            // Fallback to standard for now to avoid breaking it, or create paginateModernGrid.
-            // Given time constraints, let's map it to Sidebar but with different config if needed.
-            // But Modern Grid has header spanning both.
-            // Let's use Standard for now (single flow) as it's safer than broken 2-col.
-            return paginateStandard(data, heights, maxPageHeight);
         default:
-            return paginateStandard(data, heights, maxPageHeight);
+            pages = paginateStandard(data, heights, maxPageHeight, layoutId);
     }
+    // Compaction is safe for single-column strategies (standard, gold,
+    // executive) where measurePageFill's "header on page 0 only" assumption
+    // holds.
+    return compactPages(pages, data, heights, maxPageHeight, layoutId);
 };

@@ -193,7 +193,7 @@ const LayoutMinimal = ({ data, theme, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`w-full p-[20mm] bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} ${theme.font}`}
+            className={`w-full p-[20mm] bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} ${theme.font}`}
         >
             {pageIndex === 0 && (
                 <header id="section-personal" className="mb-12">

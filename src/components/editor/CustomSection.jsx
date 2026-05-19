@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from '../ui/SortableItem';
@@ -34,73 +35,88 @@ const CustomSection = ({
             >
                 <SortableContext items={section.items} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2.5">
-                        {section.items.map((item) => {
-                            const subtitle = [item.subtitle, item.date].filter(Boolean).join(' · ');
-                            return (
-                                <SortableItem key={item.id} id={item.id}>
-                                    <CardChrome
-                                        title={item.title}
-                                        subtitle={subtitle}
-                                        onDelete={() => onRemoveItem(section.id, item.id)}
-                                        onTogglePageBreak={() => onTogglePageBreak(item.id)}
-                                        isPageBreak={!!pageBreaks?.[item.id]}
+                        <AnimatePresence initial={false}>
+                            {section.items.map((item) => {
+                                const subtitle = [item.subtitle, item.date].filter(Boolean).join(' · ');
+                                return (
+                                    <motion.div
+                                        key={item.id}
+                                        initial={{ opacity: 0, y: -8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
+                                        transition={{ duration: 0.22, ease: 'easeOut' }}
                                     >
-                                        <div className="mb-2">
-                                            <FieldLabel>Title</FieldLabel>
-                                            <FillInput
-                                                value={item.title || ''}
-                                                onChange={(e) =>
-                                                    onUpdateItem(section.id, item.id, 'title', e.target.value)
-                                                }
-                                                placeholder="AWS Certified Solutions Architect"
-                                            />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-2 mb-2">
-                                            <div>
-                                                <FieldLabel optional>Subtitle</FieldLabel>
-                                                <FillInput
-                                                    value={item.subtitle || ''}
-                                                    onChange={(e) =>
-                                                        onUpdateItem(
-                                                            section.id,
-                                                            item.id,
-                                                            'subtitle',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Amazon Web Services"
-                                                />
-                                            </div>
-                                            <div>
-                                                <FieldLabel optional>Date</FieldLabel>
-                                                <DateRangeInput
-                                                    value={item.date || ''}
-                                                    onChange={(v) =>
-                                                        onUpdateItem(section.id, item.id, 'date', v)
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <FieldLabel optional>Description</FieldLabel>
-                                            <FillTextarea
-                                                value={item.description || ''}
-                                                onChange={(e) =>
-                                                    onUpdateItem(
-                                                        section.id,
-                                                        item.id,
-                                                        'description',
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="Add a short description…"
-                                                rows={3}
-                                            />
-                                        </div>
-                                    </CardChrome>
-                                </SortableItem>
-                            );
-                        })}
+                                        <SortableItem id={item.id}>
+                                            <CardChrome
+                                                title={item.title}
+                                                subtitle={subtitle}
+                                                onDelete={() => onRemoveItem(section.id, item.id)}
+                                                onTogglePageBreak={() => onTogglePageBreak(item.id)}
+                                                isPageBreak={!!pageBreaks?.[item.id]}
+                                            >
+                                                <div className="mb-2">
+                                                    <FieldLabel>Title</FieldLabel>
+                                                    <FillInput
+                                                        value={item.title || ''}
+                                                        onChange={(e) =>
+                                                            onUpdateItem(
+                                                                section.id,
+                                                                item.id,
+                                                                'title',
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="AWS Certified Solutions Architect"
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 mb-2">
+                                                    <div>
+                                                        <FieldLabel optional>Subtitle</FieldLabel>
+                                                        <FillInput
+                                                            value={item.subtitle || ''}
+                                                            onChange={(e) =>
+                                                                onUpdateItem(
+                                                                    section.id,
+                                                                    item.id,
+                                                                    'subtitle',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="Amazon Web Services"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <FieldLabel optional>Date</FieldLabel>
+                                                        <DateRangeInput
+                                                            value={item.date || ''}
+                                                            onChange={(v) =>
+                                                                onUpdateItem(section.id, item.id, 'date', v)
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <FieldLabel optional>Description</FieldLabel>
+                                                    <FillTextarea
+                                                        value={item.description || ''}
+                                                        onChange={(e) =>
+                                                            onUpdateItem(
+                                                                section.id,
+                                                                item.id,
+                                                                'description',
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Add a short description…"
+                                                        rows={3}
+                                                    />
+                                                </div>
+                                            </CardChrome>
+                                        </SortableItem>
+                                    </motion.div>
+                                );
+                            })}
+                        </AnimatePresence>
                     </div>
                 </SortableContext>
             </DndContext>

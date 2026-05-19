@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from '../ui/SortableItem';
@@ -24,77 +25,87 @@ const EducationSection = ({
             >
                 <SortableContext items={education} strategy={verticalListSortingStrategy}>
                     <div className="space-y-2.5">
-                        {education.map((edu) => {
-                            const subtitle = [edu.school, edu.date].filter(Boolean).join(' · ');
-                            return (
-                                <SortableItem key={edu.id} id={edu.id}>
-                                    <CardChrome
-                                        title={edu.degree}
-                                        subtitle={subtitle}
-                                        onDelete={() => onRemoveItem('education', edu.id)}
-                                        onTogglePageBreak={() => onTogglePageBreak(edu.id)}
-                                        isPageBreak={!!pageBreaks?.[edu.id]}
+                        <AnimatePresence initial={false}>
+                            {education.map((edu) => {
+                                const subtitle = [edu.school, edu.date].filter(Boolean).join(' · ');
+                                return (
+                                    <motion.div
+                                        key={edu.id}
+                                        initial={{ opacity: 0, y: -8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8, transition: { duration: 0.15 } }}
+                                        transition={{ duration: 0.22, ease: 'easeOut' }}
                                     >
-                                        <div className="mb-2">
-                                            <FieldLabel>School</FieldLabel>
-                                            <FillInput
-                                                value={edu.school || ''}
-                                                onChange={(e) =>
-                                                    onArrayChange(
-                                                        'education',
-                                                        edu.id,
-                                                        'school',
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="Visvesvaraya Technological University"
-                                            />
-                                        </div>
-                                        <div className="mb-2">
-                                            <FieldLabel>Degree</FieldLabel>
-                                            <FillInput
-                                                value={edu.degree || ''}
-                                                onChange={(e) =>
-                                                    onArrayChange(
-                                                        'education',
-                                                        edu.id,
-                                                        'degree',
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="B.E. Computer Science"
-                                            />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div>
-                                                <FieldLabel>Dates</FieldLabel>
-                                                <DateRangeInput
-                                                    value={edu.date || ''}
-                                                    onChange={(v) =>
-                                                        onArrayChange('education', edu.id, 'date', v)
-                                                    }
-                                                />
-                                            </div>
-                                            <div>
-                                                <FieldLabel optional>Location</FieldLabel>
-                                                <FillInput
-                                                    value={edu.location || ''}
-                                                    onChange={(e) =>
-                                                        onArrayChange(
-                                                            'education',
-                                                            edu.id,
-                                                            'location',
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Mysuru"
-                                                />
-                                            </div>
-                                        </div>
-                                    </CardChrome>
-                                </SortableItem>
-                            );
-                        })}
+                                        <SortableItem id={edu.id}>
+                                            <CardChrome
+                                                title={edu.degree}
+                                                subtitle={subtitle}
+                                                onDelete={() => onRemoveItem('education', edu.id)}
+                                                onTogglePageBreak={() => onTogglePageBreak(edu.id)}
+                                                isPageBreak={!!pageBreaks?.[edu.id]}
+                                            >
+                                                <div className="mb-2">
+                                                    <FieldLabel>School</FieldLabel>
+                                                    <FillInput
+                                                        value={edu.school || ''}
+                                                        onChange={(e) =>
+                                                            onArrayChange(
+                                                                'education',
+                                                                edu.id,
+                                                                'school',
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Visvesvaraya Technological University"
+                                                    />
+                                                </div>
+                                                <div className="mb-2">
+                                                    <FieldLabel>Degree</FieldLabel>
+                                                    <FillInput
+                                                        value={edu.degree || ''}
+                                                        onChange={(e) =>
+                                                            onArrayChange(
+                                                                'education',
+                                                                edu.id,
+                                                                'degree',
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="B.E. Computer Science"
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <FieldLabel>Dates</FieldLabel>
+                                                        <DateRangeInput
+                                                            value={edu.date || ''}
+                                                            onChange={(v) =>
+                                                                onArrayChange('education', edu.id, 'date', v)
+                                                            }
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <FieldLabel optional>Location</FieldLabel>
+                                                        <FillInput
+                                                            value={edu.location || ''}
+                                                            onChange={(e) =>
+                                                                onArrayChange(
+                                                                    'education',
+                                                                    edu.id,
+                                                                    'location',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            placeholder="Mysuru"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </CardChrome>
+                                        </SortableItem>
+                                    </motion.div>
+                                );
+                            })}
+                        </AnimatePresence>
                     </div>
                 </SortableContext>
             </DndContext>

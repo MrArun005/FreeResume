@@ -14,16 +14,12 @@ import LayoutClassic from '../layouts/LayoutClassic';
 import LayoutSidebarLeft from '../layouts/LayoutSidebarLeft';
 import LayoutSidebarRight from '../layouts/LayoutSidebarRight';
 import LayoutMinimal from '../layouts/LayoutMinimal';
-import LayoutModernGrid from '../layouts/LayoutModernGrid';
 import LayoutAts from '../layouts/LayoutAts';
 import LayoutJakes from '../layouts/LayoutJakes';
-import LayoutDeedy from '../layouts/LayoutDeedy';
 import LayoutFreeform from '../layouts/LayoutFreeform';
 import LayoutCreative from '../layouts/LayoutCreative';
 import LayoutCanvas from '../layouts/LayoutCanvas';
-import LayoutGlitch from '../layouts/LayoutGlitch';
 import LayoutExecutive from '../layouts/LayoutExecutive';
-import LayoutLeaf from '../layouts/LayoutLeaf';
 import LayoutGold from '../layouts/LayoutGold';
 import LayoutGoogle from '../layouts/LayoutGoogle';
 import LayoutBoldRecruit from '../layouts/LayoutBoldRecruit';
@@ -38,16 +34,12 @@ const LAYOUT_MAP = {
     'sidebar-left': LayoutSidebarLeft,
     'sidebar-right': LayoutSidebarRight,
     minimal: LayoutMinimal,
-    'modern-grid': LayoutModernGrid,
     ats: LayoutAts,
     jakes: LayoutJakes,
-    deedy: LayoutDeedy,
     freeform: LayoutFreeform,
     creative: LayoutCreative,
     canvas: LayoutCanvas,
-    glitch: LayoutGlitch,
     executive: LayoutExecutive,
-    leaf: LayoutLeaf,
     gold: LayoutGold,
     google: LayoutGoogle,
     'bold-recruit': LayoutBoldRecruit,
@@ -80,7 +72,15 @@ const TemplatePreview = ({ layout, theme, selected = false, data = initialData }
     const LayoutComponent = LAYOUT_MAP[layout] || LayoutClassic;
 
     return (
-        <div ref={ref} className="relative w-full aspect-[210/297] bg-white overflow-hidden">
+        <div
+            ref={ref}
+            className="relative w-full aspect-[210/297] bg-white overflow-hidden"
+            // content-visibility:auto lets the browser skip layout + paint work
+            // for thumbnails that aren't currently in the viewport. The
+            // contain-intrinsic-size keeps the page from jumping when the browser
+            // virtualizes them out — it reserves the thumbnail-aspect box.
+            style={{ contentVisibility: 'auto', containIntrinsicSize: '210px 297px' }}
+        >
             {/* The inner box is fixed at A4 size; transform scales the whole
                 rendered layout into the thumbnail box. transform-origin
                 pins to the top-left so the scale collapses cleanly. */}

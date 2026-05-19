@@ -157,6 +157,10 @@ export const emptyResume = {
     sectionOrder: ['summary', 'experience', 'education', 'skills'],
     pageBreaks: {},
     sectionStyles: {},
+    paperSize: 'A4',
+    accentColor: null,
+    pageMargins: 'standard',
+    headerAlignment: 'left',
 };
 
 export const parsedMockData = {

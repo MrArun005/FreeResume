@@ -9,6 +9,8 @@ import { generateWithFallback } from '../lib/gemini.js';
 import { extractJson, sendError } from '../lib/utils.js';
 import { INFER_CONTEXT_PREAMBLE, deriveResumeContext } from '../lib/prompts.js';
 import { SCHEMA_ANALYZE, SCHEMA_ROAST } from '../lib/schemas.js';
+import { runGemini } from '../lib/queues.js';
+import { makeKey, memoize } from '../lib/cache.js';
 
 const router = Router();
 
@@ -57,8 +59,13 @@ router.post('/analyze-resume', async (req, res) => {
         For "before → after" improvements, always use replace-text with the AFTER text. The fix's value must be production-ready content the user can paste straight in — no placeholders, no "[YOUR METRIC HERE]".
         `;
 
-        const textResponse = await generateWithFallback(prompt, SCHEMA_ANALYZE);
-        const analysis = extractJson(textResponse);
+        // Cache analysis per resume snapshot — users open the ATS modal
+        // multiple times while iterating. Same resume → same analysis.
+        const cacheKey = makeKey('analyze-resume', resumeData);
+        const analysis = await memoize(cacheKey, async () => {
+            const textResponse = await runGemini(() => generateWithFallback(prompt, SCHEMA_ANALYZE));
+            return extractJson(textResponse);
+        });
         res.json(analysis);
     } catch (error) {
         console.error('Error analyzing resume:', error);
@@ -104,8 +111,13 @@ router.post('/roast-resume', async (req, res) => {
         For "rewrite this bullet" red flags, always emit replace-text with the production-ready AFTER text in value — no placeholders.
         `;
 
-        const textResponse = await generateWithFallback(prompt, SCHEMA_ROAST);
-        const roastData = extractJson(textResponse);
+        // Roast cache — same TTL window as analysis. Re-clicking Roast
+        // on the same resume gets the same jokes back, which is fine.
+        const cacheKey = makeKey('roast-resume', resumeData);
+        const roastData = await memoize(cacheKey, async () => {
+            const textResponse = await runGemini(() => generateWithFallback(prompt, SCHEMA_ROAST));
+            return extractJson(textResponse);
+        });
         res.json(roastData);
     } catch (error) {
         console.error('Error roasting resume:', error);

@@ -6,7 +6,8 @@ import React from 'react';
 import { sectionStyle } from '../../utils/sectionStyles';
 import { Phone, Mail, MapPin, Linkedin } from 'lucide-react';
 
-const ACCENT = '#DC2626'; // red-600
+// User can override the accent via resume.accentColor → --resume-accent.
+const ACCENT = 'var(--resume-accent, #DC2626)';
 const TEXT = '#0F172A';
 const MUTED = '#475569';
 const RULE = '#CBD5E1';
@@ -252,7 +253,7 @@ const LayoutBoldRecruit = ({ data, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} w-full bg-white font-clean`}
+            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} w-full bg-white font-clean`}
             style={{ padding: '14mm 16mm', color: TEXT }}
         >
             {/* Header — only on page 1 */}

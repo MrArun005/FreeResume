@@ -2,7 +2,7 @@ import React from 'react';
 import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon } from 'lucide-react';
 
-const LayoutExecutive = ({ data, pageIndex }) => {
+const LayoutExecutive = ({ data, pageIndex, isMeasurement }) => {
     const { personal, experience, education, skills, customSections } = data;
 
     const shouldRenderTitle = (sectionId) => {
@@ -10,14 +10,19 @@ const LayoutExecutive = ({ data, pageIndex }) => {
     };
 
     return (
-        <div className="w-full h-[297mm] bg-white text-slate-800 font-serif overflow-hidden relative">
+        <div
+            className={`w-full bg-white text-slate-800 font-serif relative ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'}`}
+        >
             {/* Elegant Top Border */}
             <div className="absolute top-0 left-0 w-full h-3 bg-slate-900"></div>
             <div className="absolute top-3 left-0 w-full h-1 bg-[#D4AF37]"></div> {/* Gold Accent */}
-            <div className="px-16 py-12 h-full flex flex-col">
+            <div className={`px-16 py-12 flex flex-col ${isMeasurement ? '' : 'h-full'}`}>
                 {/* Header - Only on first page */}
                 {(!pageIndex || pageIndex === 0) && (
-                    <header className="text-center mb-10 border-b border-slate-200 pb-8">
+                    <header
+                        id="section-personal"
+                        className="text-center mb-10 border-b border-slate-200 pb-8"
+                    >
                         <h1
                             className="text-4xl font-bold text-slate-900 mb-3 tracking-wide uppercase"
                             style={{ fontFamily: 'Playfair Display, serif' }}

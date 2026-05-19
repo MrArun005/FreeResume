@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
     return (
         <div
-            className={`p-12 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} font-sans text-gray-900 bg-white relative box-border`}
+            className={`p-12 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} font-sans text-gray-900 bg-white relative box-border`}
         >
             {/* Header - Only on first page */}
             {pageIndex === 0 && (
@@ -43,7 +43,8 @@ const LayoutAts = ({ data, theme, pageIndex, isMeasurement }) => {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-blue-600 hover:underline"
+                                    className="hover:underline"
+                                    style={{ color: 'var(--resume-accent, #2563eb)' }}
                                 >
                                     {social.username || social.url}
                                 </a>

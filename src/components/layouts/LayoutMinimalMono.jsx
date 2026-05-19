@@ -244,7 +244,7 @@ const LayoutMinimalMono = ({ data, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} w-full bg-white font-clean`}
+            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} w-full bg-white font-clean`}
             style={{ padding: '14mm 16mm', color: TEXT }}
         >
             {pageIndex === 0 && (

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { useModalState } from './hooks/useModalState';
 import {
     Layout,
@@ -32,12 +33,14 @@ import { KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/c
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 import { TEMPLATES } from './constants/layouts';
-import { initialData, emptyResume } from './data/mockData';
+import { initialData } from './data/mockData';
 
 // UI Components
 import TemplateThumbnail from './components/ui/TemplateThumbnail';
 import LandingPage from './components/pages/LandingPage';
 import OnboardingModal from './components/ui/OnboardingModal';
+import KeyboardShortcutsModal from './components/ui/KeyboardShortcutsModal';
+import JobTrackerModal from './components/ui/JobTrackerModal';
 import FeatureTourModal from './components/ui/FeatureTourModal';
 import TutorialModal from './components/ui/TutorialModal';
 import ShareModal from './components/ui/ShareModal';
@@ -48,16 +51,12 @@ import LayoutClassic from './components/layouts/LayoutClassic';
 import LayoutSidebarLeft from './components/layouts/LayoutSidebarLeft';
 import LayoutSidebarRight from './components/layouts/LayoutSidebarRight';
 import LayoutMinimal from './components/layouts/LayoutMinimal';
-import LayoutModernGrid from './components/layouts/LayoutModernGrid';
 import LayoutAts from './components/layouts/LayoutAts';
 import LayoutJakes from './components/layouts/LayoutJakes';
-import LayoutDeedy from './components/layouts/LayoutDeedy';
 import LayoutFreeform from './components/layouts/LayoutFreeform';
 import LayoutCreative from './components/layouts/LayoutCreative';
 import LayoutCanvas from './components/layouts/LayoutCanvas';
-import LayoutGlitch from './components/layouts/LayoutGlitch';
 import LayoutExecutive from './components/layouts/LayoutExecutive';
-import LayoutLeaf from './components/layouts/LayoutLeaf';
 import LayoutGold from './components/layouts/LayoutGold';
 import LayoutGoogle from './components/layouts/LayoutGoogle';
 import LayoutBoldRecruit from './components/layouts/LayoutBoldRecruit';
@@ -78,14 +77,22 @@ import ThemeSettingsModal from './components/ui/ThemeSettingsModal';
 import AutoScrollingGuide from './components/ui/AutoScrollingGuide';
 import PageOverflowIndicator from './components/ui/PageOverflowIndicator';
 import EditorSidebar from './components/editor/EditorSidebar';
-import PreviewPanel from './components/editor/PreviewPanel';
 import JobAssistantModal from './components/ui/JobAssistantModal';
+import AutoTailorModal from './components/ui/AutoTailorModal';
+import { useJobTracker } from './hooks/useJobTracker';
 import RoastModal from './components/ui/RoastModal';
 import CoverLetterModal from './components/ui/CoverLetterModal';
 import ImproveResumeModal from './components/ui/ImproveResumeModal';
 
 import { parseResume } from './utils/resumeParser';
 import { paginateResume } from './utils/pagination';
+import {
+    applyPaperSizeToDocument,
+    resolvePaperSize,
+    applyPageMargins,
+    applyAccentColor,
+    applyHeaderAlignment,
+} from './utils/paperSize';
 import { normalizeSkills, forceCategorize } from './utils/skillTaxonomy';
 import { applyResumeFix } from './utils/applyResumeFix';
 import { exportResumePdf, exportResumeDocx } from './utils/exportPdf';
@@ -112,6 +119,12 @@ const App = () => {
     // migration and the legacy skills mega-bucket case. Used both for loading
     // a stored resume and for seeding new profiles created via Duplicate.
     const normalizeResumeShape = (parsed) => {
+        // Defensive against null/undefined and against explicit-undefined
+        // values inside the parsed blob. Spread `{...obj}` copies undefined
+        // properties too, so `{...initialData, ...{personal: undefined}}`
+        // would clobber initialData.personal — every required key gets an
+        // explicit fallback below.
+        const safe = parsed && typeof parsed === 'object' ? parsed : {};
         const migrateItemToBullets = (item) => {
             if (item.description && !item.bullets) {
                 const bullets = item.description
@@ -125,22 +138,41 @@ const App = () => {
         };
         return {
             ...initialData,
-            ...parsed,
-            experience: (parsed.experience || []).map(migrateItemToBullets),
-            customSections: (parsed.customSections || []).map((section) => ({
+            ...safe,
+            // Deep-merge personal so a saved `{personal: {fullName: 'X'}}`
+            // doesn't drop the rest (email/socials) — and a missing/undefined
+            // personal falls back to initialData.personal in full.
+            personal: { ...initialData.personal, ...(safe.personal || {}) },
+            experience: (safe.experience || []).map(migrateItemToBullets),
+            education: safe.education || initialData.education || [],
+            customSections: (safe.customSections || []).map((section) => ({
                 ...section,
                 items: (section.items || []).map(migrateItemToBullets),
             })),
-            skills: normalizeSkills(parsed.skills || []),
-            sectionOrder: parsed.sectionOrder || ['summary', 'experience', 'education', 'skills'],
-            pageBreaks: parsed.pageBreaks || {},
+            skills: normalizeSkills(safe.skills || []),
+            sectionOrder: safe.sectionOrder || ['summary', 'experience', 'education', 'skills'],
+            pageBreaks: safe.pageBreaks || {},
             // Path B per-section size scales. Keyed by sectionId (built-in
             // 'summary'|'experience'|'education'|'skills'|'projects' or a
             // custom UUID). Value is the scale preset key — see
             // src/utils/sectionStyles.js for the multiplier table. Missing
             // sections fall back to scale=1 (no change), so older resumes
             // without this field render identically.
-            sectionStyles: parsed.sectionStyles || {},
+            sectionStyles: safe.sectionStyles || {},
+            // Paper size — A4 (default) or 'letter'. Drives both preview
+            // dimensions and the exported PDF/DOCX page size.
+            paperSize: safe.paperSize || 'A4',
+            // Optional accent override (hex string like '#1a73e8'). When set,
+            // layouts that opt-in read it via var(--resume-accent, <fallback>);
+            // null means "use the layout's built-in accent".
+            accentColor: safe.accentColor || null,
+            // Outer page-padding preset: 'standard' (no extra) | 'spacious'
+            // (adds margin inside the page). Lives on .resume-paper via
+            // --page-margin-extra so it stacks on top of layout-internal padding.
+            pageMargins: safe.pageMargins || 'standard',
+            // Header alignment for layouts that support it. Layouts read
+            // var(--resume-header-align, left).
+            headerAlignment: safe.headerAlignment || 'left',
         };
     };
 
@@ -181,7 +213,32 @@ const App = () => {
     const [profilesStore, setProfilesStore] = useState(getInitialProfilesStore);
     const activeProfile = getActiveProfile(profilesStore);
 
-    const [resume, setResume, undo, redo, canUndo, canRedo] = useHistory(activeProfile.resume);
+    // Defensive seed: normalizeResumeShape merges initialData defaults into
+    // whatever the active profile actually holds, so even a half-corrupt
+    // {} or a partial blob like { experience: [...] } gets every required
+    // top-level key (personal, experience, education, skills, sectionOrder,
+    // …). Without this, downstream `resume.personal.fullName` and friends
+    // would crash on any stored profile shape that pre-dates the current
+    // schema. The autosave loop persists the normalized shape back, so a
+    // single edit upgrades the saved blob permanently.
+    const [resume, rawSetResume, undo, redo, canUndo, canRedo] = useHistory(
+        normalizeResumeShape(activeProfile?.resume || {})
+    );
+
+    // Wrap setResume so EVERY path — onCreateNew, AI improve, file upload,
+    // applyResumeFix, profile switch — routes through normalizeResumeShape.
+    // Without this, an AI response missing `personal` would crash descendants
+    // until the user manually re-typed it. Functional updates run inside so
+    // both `setResume(obj)` and `setResume(prev => …)` shapes are normalized.
+    const setResume = useCallback(
+        (action) => {
+            rawSetResume((prev) => {
+                const next = typeof action === 'function' ? action(prev) : action;
+                return normalizeResumeShape(next);
+            });
+        },
+        [rawSetResume]
+    );
 
     // Whenever the user switches to a different profile, push that profile's
     // resume into the history stack so the editor reflects the new content.
@@ -189,21 +246,54 @@ const App = () => {
     // (where activeId stays the same but the store object changes).
     const lastActiveIdRef = React.useRef(activeProfile.id);
     useEffect(() => {
-        if (activeProfile.id !== lastActiveIdRef.current) {
-            setResume(activeProfile.resume);
+        if (activeProfile && activeProfile.id !== lastActiveIdRef.current) {
+            // Same normalization as the initial seed — guarantees every
+            // top-level field exists on the new active profile's resume
+            // before any descendant component reads it.
+            setResume(normalizeResumeShape(activeProfile.resume || {}));
             lastActiveIdRef.current = activeProfile.id;
         }
-    }, [activeProfile, setResume]);
+        // Dep is the ID only — not the full activeProfile object — so this
+        // effect doesn't re-run on every autosave (which rebuilds the store
+        // and produces a new activeProfile reference with the same id).
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeProfile?.id]);
+
+    // Paper size — write `--page-width` / `--page-height` to :root so every
+    // layout, the print CSS, and the standalone HTML built for PDF export
+    // all pick up the user's choice from a single CSS variable.
+    useEffect(() => {
+        applyPaperSizeToDocument(resume?.paperSize);
+    }, [resume?.paperSize]);
+
+    // Resume-level design knobs (accent color override, page-margin preset,
+    // header alignment). All three set CSS custom properties on :root so
+    // every layout that opts in via var(--resume-…, fallback) picks them up.
+    useEffect(() => {
+        applyAccentColor(resume?.accentColor);
+    }, [resume?.accentColor]);
+
+    useEffect(() => {
+        applyPageMargins(resume?.pageMargins);
+    }, [resume?.pageMargins]);
+
+    useEffect(() => {
+        applyHeaderAlignment(resume?.headerAlignment);
+    }, [resume?.headerAlignment]);
 
     // Profile management handlers — each one runs the corresponding store
     // helper and triggers a re-render via setProfilesStore.
     const handleSwitchProfile = (id) => setProfilesStore((prev) => switchActive(prev, id));
     const handleCreateProfile = (name) =>
         setProfilesStore((prev) => {
-            // Blank scaffold — user explicitly asked for "New resume", they
-            // want a fresh start, not a clone of the demo. Use Duplicate to
-            // copy an existing profile.
-            const seed = normalizeResumeShape(emptyResume);
+            // Seed the new profile with a deep-clone of the user's current
+            // resume so a freshly created profile starts as a snapshot of
+            // their existing work — they can then diverge it independently
+            // (tailored for a different role, different layout, etc.) without
+            // re-entering everything from scratch. The autosave loop keeps
+            // each profile's edits scoped to itself, so switching back to the
+            // source profile preserves its original state.
+            const seed = JSON.parse(JSON.stringify(resume));
             return createProfile(prev, name || 'Untitled Resume', seed).store;
         });
     const handleDuplicateProfile = (id) => setProfilesStore((prev) => duplicateProfile(prev, id).store);
@@ -256,7 +346,12 @@ const App = () => {
     const [activeSection, setActiveSection] = useState('personal');
     const [isParsing, setIsParsing] = useState(false);
     const [isOverflowing] = useState(false);
-    const [pagedData, setPagedData] = useState([initialData]);
+    // Seed pagedData from the same resume useHistory was initialized with so
+    // the FIRST render shows the user's actual content, not the default
+    // initialData blob. Otherwise there's a 500ms window where the preview
+    // shows initialData (then pagination runs and switches to real data) —
+    // visible to users as a "flash of wrong content".
+    const [pagedData, setPagedData] = useState(() => [resume]);
     const [isCalculatingLayout, setIsCalculatingLayout] = useState(false);
     const [scale, setScale] = useState(1);
 
@@ -275,10 +370,21 @@ const App = () => {
     // preview has to shrink to stay visible alongside it.
     const isThemePanelOpen = modals.is('theme');
 
+    // Lift the job-tracker hook to App-level so both the tracker modal AND
+    // the Smart Tailor modal (which can "Save to tracker" with a JD + match
+    // score) write through the same in-memory state. Without this, the two
+    // would each own a separate copy of the jobs array and overwrite each
+    // other's localStorage writes.
+    const jobTracker = useJobTracker();
+
     useEffect(() => {
         const handleResize = () => {
             const windowWidth = window.innerWidth;
             let availableWidth = windowWidth;
+
+            // Match the responsive drawer width in ThemeSettingsModal:
+            // 340px below xl (1280), 400px at xl+.
+            const themeDrawerWidth = windowWidth >= 1280 ? 400 : 340;
 
             if (!isPreviewFullscreen) {
                 if (windowWidth >= 768) {
@@ -290,18 +396,24 @@ const App = () => {
                     availableWidth -= 340;
                 }
                 if (isThemePanelOpen && windowWidth >= 640) {
-                    availableWidth -= 420; // Design & Theme side drawer
+                    availableWidth -= themeDrawerWidth;
                 }
             }
-            availableWidth -= 96; // Horizontal padding
+            // Left pad (lg:pl-12 = 48px) + right pad (48px, unless the
+            // drawer is open — then the right side is already counted
+            // above as the drawer reservation).
+            availableWidth -= isThemePanelOpen ? 48 : 96;
 
             const targetWidth = 794; // A4 width at 96 DPI
             const fitScale = availableWidth / targetWidth;
             // Preview mode = compact: smaller cap so the paper reads as a
             // contained document, not a magnified billboard. Regular editor
-            // mode = 1.3 to fill wide screens.
+            // mode = 1.3 to fill wide screens. Floor is intentionally low
+            // (0.18) so on narrow viewports with both drawers open, the
+            // preview still scales down enough to stay fully visible
+            // instead of bleeding to the right under the drawer.
             const maxScale = isPreviewFullscreen ? 1.15 : 1.3;
-            setScale(Math.max(0.3, Math.min(fitScale, maxScale)));
+            setScale(Math.max(0.18, Math.min(fitScale, maxScale)));
         };
 
         handleResize(); // Initial call
@@ -335,9 +447,26 @@ const App = () => {
     // Dynamic Pagination Logic
     useEffect(() => {
         let timeoutId;
+        let cancelled = false;
 
         const calculatePages = async () => {
+            if (cancelled) return;
             setIsCalculatingLayout(true);
+
+            // Wait for web fonts to finish loading before measuring. Custom
+            // fonts (Playfair Display etc.) load asynchronously; if we
+            // measure before they swap in, items measure at fallback-font
+            // height, pagination decides the wrong split, then the real font
+            // swaps in and the layout visibly "jumps". This blocks ~tens of
+            // ms on first paint, then resolves instantly.
+            if (document.fonts && document.fonts.ready) {
+                try {
+                    await document.fonts.ready;
+                } catch {
+                    // ignore — fall through to measurement
+                }
+            }
+            if (cancelled) return;
 
             const hiddenContainer = document.getElementById('measurement-container');
             if (!hiddenContainer) {
@@ -365,6 +494,18 @@ const App = () => {
             // --- STANDARD LAYOUT PAGINATION ---
             // Measure all potential elements
             const heights = {};
+
+            // Total rendered content height of the layout in the hidden mirror.
+            // The mirror renders with `h-auto overflow-visible` (isMeasurement
+            // mode), so its offsetHeight reflects the natural height of the
+            // entire resume. If that's ≤ page budget, the engine can fast-path
+            // to a single page without any item-by-item math — eliminating the
+            // "everything fits on page 1 for a moment, then jumps to page 2"
+            // flash caused by conservative per-item splitting decisions.
+            const measuredRoot = hiddenContainer.firstElementChild;
+            if (measuredRoot) {
+                heights['__total_content'] = measuredRoot.offsetHeight;
+            }
 
             // Measure Header
             const header = hiddenContainer.querySelector('#section-personal');
@@ -403,25 +544,53 @@ const App = () => {
                 }
             });
 
-            // Per-layout fill ceiling (A4 ≈ 1123px). The pagination engine reserves
-            // PADDING off the top, so effective content budget = ceiling - PADDING.
-            // Pushed close to the literal A4 boundary; any minor spillover is clipped
-            // by `overflow: hidden` on .resume-paper, which is fine — better than
-            // leaving 200-500px of empty space at the bottom of a page.
+            // Per-layout fill ceiling. The pagination engine reserves PADDING
+            // off the top, so effective content budget = ceiling - PADDING.
+            // Pushed close to the literal page boundary; any minor spillover
+            // is clipped by `overflow: hidden` on .resume-paper, which is fine
+            // — better than leaving 200-500px of empty space at the bottom.
+            // Numbers below are for A4 (~1123px @96dpi). Letter is ~64px
+            // shorter, so we subtract that delta at the end.
+            // Per-layout fill ceiling. Bumped close to the literal A4 height
+            // (1123px @96dpi) so the engine uses every available pixel —
+            // overflow:hidden on the page wrapper trims any final-pixel
+            // overhang, and the OVERFLOW_SLACK constant in pagination.js
+            // grants additional measurement-variance slack. Net effect: short
+            // tail sections (education, skills) stay with experience on
+            // page 1 instead of getting pushed to a half-empty page 2.
             const ceilingByLayout = {
-                gold: 1130,
-                executive: 1120,
-                'sidebar-left': 1120,
-                'sidebar-right': 1120,
-                creative: 1120,
-                google: 1115,
-                'bold-recruit': 1115,
-                'executive-serif': 1110,
-                'navy-modern': 1115,
-                'minimal-mono': 1120,
+                gold: 1145,
+                executive: 1140,
+                'sidebar-left': 1140,
+                'sidebar-right': 1140,
+                creative: 1140,
+                google: 1140,
+                'bold-recruit': 1140,
+                'executive-serif': 1135,
+                'navy-modern': 1140,
+                'minimal-mono': 1140,
             };
-            const maxPageHeight = ceilingByLayout[selectedTemplate.layout] || 1115;
+            const baseCeiling = ceilingByLayout[selectedTemplate.layout] || 1140;
+            const paper = resolvePaperSize(resume);
+            // Adjust the budget by the height delta vs. A4 so the same layout
+            // tunings work for Letter without per-template re-tuning.
+            const A4_HEIGHT_PX = 1123;
+            const paperHeightPx = (paper.heightMm / 25.4) * 96;
+            // Page-margin preset scales the layout content visually (see
+            // index.css `.resume-paper > *:first-child { transform: scale(...) }`).
+            // With transform-origin: center, scaling by `s` shifts the
+            // visible window: at s<1 the visual content stops short of the
+            // page bottom AND the top, so pagination should pack MORE to
+            // make the bottom whitespace symmetric with the top; at s>1
+            // the content overflows top + bottom (clipped), so pagination
+            // should pack LESS to avoid losing the last bullet.
+            // Correct multiplier is 1/s in both directions.
+            const PAGE_CONTENT_SCALES = { compact: 1.04, standard: 1.0, spacious: 0.94 };
+            const contentScale = PAGE_CONTENT_SCALES[resume.pageMargins] ?? 1.0;
+            const paperBudget = baseCeiling - (A4_HEIGHT_PX - paperHeightPx);
+            const maxPageHeight = Math.round(paperBudget / contentScale);
             const pages = paginateResume(resume, heights, maxPageHeight, selectedTemplate.layout);
+            if (cancelled) return;
             setPagedData(pages);
             setIsCalculatingLayout(false);
         };
@@ -436,7 +605,10 @@ const App = () => {
             });
         }, 500);
 
-        return () => clearTimeout(timeoutId);
+        return () => {
+            cancelled = true;
+            clearTimeout(timeoutId);
+        };
     }, [resume, selectedTemplate]);
 
     // Drag & Drop Sensors
@@ -715,10 +887,16 @@ const App = () => {
     // the helper falls back to window.print() — the @media print rules in
     // index.css already force only the resume pages to render at A4, so the
     // visual output still matches the preview.
-    const baseFileName = () => (resume.personal.fullName || 'Resume').replace(/\s+/g, '_');
+    const baseFileName = () => (resume?.personal?.fullName || 'Resume').replace(/\s+/g, '_');
 
-    const handleDownloadPDF = async () => {
-        const result = await exportResumePdf({ filename: `${baseFileName()}_Resume.pdf` });
+    // useCallback because handleDownloadPDF is in the keyboard shortcut
+    // useEffect's deps list. Without memoization the effect re-binds on
+    // every render — wasted work and a noisy lint warning.
+    const handleDownloadPDF = React.useCallback(async () => {
+        const result = await exportResumePdf({
+            filename: `${baseFileName()}_Resume.pdf`,
+            paperSize: resume?.paperSize || 'A4',
+        });
 
         if (result.ok && result.method === 'server') {
             modals.open('share');
@@ -727,7 +905,9 @@ const App = () => {
         } else {
             alert(`Failed to generate PDF: ${result.reason || 'unknown error'}`);
         }
-    };
+        // baseFileName() reads `resume`; modals is a stable ref from the hook.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [resume, modals]);
 
     // DOCX export — separate pipeline (structural Word document built from
     // resume data, not from preview HTML). Recruiters and ATSes that prefer
@@ -747,18 +927,75 @@ const App = () => {
         }
     };
 
-    // Handle Cmd+P Override
+    // Global keyboard shortcuts. Centralized in one listener so we can keep
+    // editable-field detection consistent — we don't want Cmd+Z to fight a
+    // contenteditable inside the editor, and `?` shouldn't fire while the
+    // user is typing a question mark into an input.
     useEffect(() => {
-        const handlePrintShortcut = (e) => {
-            if ((e.metaKey || e.ctrlKey) && (e.key === 'p' || e.key === 'P')) {
+        const isEditableTarget = (target) => {
+            if (!target) return false;
+            const tag = target.tagName;
+            return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+        };
+
+        const handler = (e) => {
+            const mod = e.metaKey || e.ctrlKey;
+
+            // Cmd/Ctrl + P → export PDF (overrides browser print)
+            if (mod && (e.key === 'p' || e.key === 'P')) {
                 e.preventDefault();
                 handleDownloadPDF();
+                return;
+            }
+
+            // Cmd/Ctrl + Shift + Z → redo (check first because Shift modifies Z)
+            if (mod && e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+                e.preventDefault();
+                if (canRedo) redo();
+                return;
+            }
+            // Cmd/Ctrl + Z → undo
+            if (mod && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+                e.preventDefault();
+                if (canUndo) undo();
+                return;
+            }
+
+            // ? → open shortcuts cheatsheet (only when not typing in a field)
+            if (e.key === '?' && !isEditableTarget(e.target)) {
+                e.preventDefault();
+                modals.toggle('shortcuts');
+                return;
+            }
+
+            // Cmd/Ctrl + K → Smart Tailor. Standard "command palette" key in
+            // most modern apps — repurposed here for our flagship AI feature
+            // so power users can fire it without reaching for the mouse.
+            if (mod && (e.key === 'k' || e.key === 'K')) {
+                e.preventDefault();
+                modals.toggle('autoTailor');
+                return;
+            }
+            // Cmd/Ctrl + J → Job Tracker.
+            if (mod && (e.key === 'j' || e.key === 'J')) {
+                e.preventDefault();
+                modals.toggle('jobTracker');
+                return;
+            }
+            // Cmd/Ctrl + D → Design panel (toggle the side drawer).
+            // Browser default for Cmd+D is "bookmark this page" — overriding
+            // here is mildly aggressive, but the editor is a tool, not a
+            // bookmarkable destination.
+            if (mod && (e.key === 'd' || e.key === 'D')) {
+                e.preventDefault();
+                modals.toggle('theme');
+                return;
             }
         };
 
-        window.addEventListener('keydown', handlePrintShortcut);
-        return () => window.removeEventListener('keydown', handlePrintShortcut);
-    });
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [handleDownloadPDF, undo, redo, canUndo, canRedo, modals]);
 
     // Esc closes the fullscreen preview — matches iOS Quick Look gesture.
     useEffect(() => {
@@ -800,26 +1037,18 @@ const App = () => {
                 return <LayoutSidebarRight {...props} />;
             case 'minimal':
                 return <LayoutMinimal {...props} />;
-            case 'modern-grid':
-                return <LayoutModernGrid {...props} />;
             case 'ats':
                 return <LayoutAts {...props} />;
             case 'jakes':
                 return <LayoutJakes {...props} />;
-            case 'deedy':
-                return <LayoutDeedy {...props} />;
             case 'freeform':
                 return <LayoutFreeform {...props} />;
             case 'creative':
                 return <LayoutCreative {...props} />;
             case 'canvas':
                 return <LayoutCanvas {...props} />;
-            case 'glitch':
-                return <LayoutGlitch {...props} />;
             case 'executive':
                 return <LayoutExecutive {...props} />;
-            case 'leaf':
-                return <LayoutLeaf {...props} />;
             case 'gold':
                 return <LayoutGold {...props} />;
             case 'google':
@@ -972,6 +1201,14 @@ const App = () => {
                                 <Sparkles size={16} className="text-amber-400/80" />
                                 <span className="hidden lg:inline">Help</span>
                             </button>
+                            <button
+                                onClick={() => modals.open('jobTracker')}
+                                className="text-gray-400 hover:text-white flex items-center gap-1.5 text-sm font-medium transition-colors"
+                                title="Job application tracker"
+                            >
+                                <Briefcase size={16} className="text-sky-400/80" />
+                                <span className="hidden lg:inline">Jobs</span>
+                            </button>
                             <div className="h-6 w-px bg-white/10 mx-2" />
                             <h1 className="font-semibold text-sm tracking-wide hidden lg:block text-gray-300">
                                 Editing{' '}
@@ -1055,8 +1292,35 @@ const App = () => {
 
                         {/* Dropdown Content */}
                         {modals.is('aiMenu') && (
-                            <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                            <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
                                 <div className="p-2 space-y-1">
+                                    {/* Smart Tailor — our differentiator. Non-destructive
+                                        bullet reranking. Pinned at the top of the AI menu so
+                                        users see the voice-preserving option BEFORE the
+                                        destructive "Tailor to Job" rewrite below. */}
+                                    <button
+                                        onClick={() => {
+                                            modals.open('autoTailor');
+                                            modals.close('aiMenu');
+                                        }}
+                                        className="w-full flex items-center gap-3 px-3 py-3 hover:bg-emerald-50 text-gray-700 hover:text-emerald-800 rounded-lg transition-colors text-left border border-transparent hover:border-emerald-200"
+                                    >
+                                        <div className="p-2 bg-gradient-to-br from-emerald-100 to-brand-100 text-emerald-700 rounded-lg">
+                                            <Sparkles size={18} />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="font-bold text-sm flex items-center gap-1.5">
+                                                Smart Tailor
+                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 leading-none">
+                                                    NEW
+                                                </span>
+                                            </div>
+                                            <div className="text-xs text-gray-500 leading-tight">
+                                                Rank your bullets for a JD &mdash; keeps your voice.
+                                            </div>
+                                        </div>
+                                    </button>
+
                                     <button
                                         onClick={() => {
                                             modals.open('jobAssistant');
@@ -1070,7 +1334,7 @@ const App = () => {
                                         <div>
                                             <div className="font-bold text-sm">Tailor to Job</div>
                                             <div className="text-xs text-gray-500">
-                                                Rewrite for a specific role
+                                                Full rewrite for a specific role
                                             </div>
                                         </div>
                                     </button>
@@ -1239,7 +1503,6 @@ const App = () => {
                 {!isPreviewFullscreen && (
                     <EditorSidebar
                         mobileView={mobileView}
-                        handleDownloadPDF={handleDownloadPDF}
                         setView={setView}
                         activeSection={activeSection}
                         setActiveSection={setActiveSection}
@@ -1262,7 +1525,8 @@ const App = () => {
                         updateCustomItem={updateCustomItem}
                         removeCustomItem={removeCustomItem}
                         addCustomItem={addCustomItem}
-                        onOpenTheme={() => modals.open('theme')}
+                        isThemeOpen={isThemePanelOpen}
+                        onToggleTheme={() => modals.toggle('theme')}
                         profiles={profilesStore.profiles}
                         activeProfileId={activeProfile.id}
                         onSwitchProfile={handleSwitchProfile}
@@ -1281,7 +1545,10 @@ const App = () => {
                               // Export stay accessible). Resume centered, scaled down for a
                               // contained "preview of a document" feel.
                               'fixed inset-x-0 top-16 bottom-0 z-[40] bg-slate-950/95 backdrop-blur-md overflow-auto flex flex-col items-center p-8 gap-8 print-area'
-                            : `${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 dark:bg-slate-950 overflow-auto h-full relative print-area flex-col items-center p-4 lg:p-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isThemePanelOpen ? 'sm:pr-[420px]' : !isSidebarOpen ? 'xl:pr-12' : 'xl:pr-[340px]'}`
+                            : // Split p-12 into px/py — the shorthand at lg would otherwise
+                              // override the conditional right-pad below (Tailwind emits
+                              // lg:* after sm:*, and `padding` shorthand resets all sides).
+                              `${mobileView === 'preview' ? 'flex' : 'hidden'} lg:flex flex-1 bg-stone-100 dark:bg-slate-950 overflow-auto h-full relative print-area flex-col items-center p-4 lg:py-12 lg:pl-12 gap-8 pb-24 lg:pb-12 transition-all duration-300 ${isThemePanelOpen ? 'lg:pr-[340px] xl:pr-[400px]' : !isSidebarOpen ? 'lg:pr-12' : 'xl:pr-[340px] lg:pr-12'}`
                     }
                 >
                     {/* Template Sidebar Toggle (When Closed) — hidden in fullscreen preview
@@ -1327,10 +1594,13 @@ const App = () => {
                                 </h4>
                                 <div className="space-y-6">
                                     {TEMPLATES.filter((t) => t.category === category).map((t) => (
-                                        <button
+                                        <motion.button
                                             key={t.id}
                                             onClick={() => setSelectedTemplate(t)}
-                                            className={`w-full aspect-[210/297] rounded-xl overflow-hidden border-4 transition-all duration-300 relative group shadow-sm ${selectedTemplate.id === t.id ? 'border-brand-600 ring-4 ring-brand-100 scale-105 shadow-xl z-10' : 'border-transparent hover:border-gray-300 hover:scale-105 hover:shadow-md'}`}
+                                            whileHover={{ y: -3, scale: 1.04 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+                                            className={`w-full aspect-[210/297] rounded-xl overflow-hidden border-4 relative group shadow-sm ${selectedTemplate.id === t.id ? 'border-brand-600 ring-4 ring-brand-100 shadow-xl z-10' : 'border-transparent hover:border-gray-300 hover:shadow-md'}`}
                                             title={t.name}
                                         >
                                             <div className="absolute inset-0 pointer-events-none">
@@ -1353,13 +1623,22 @@ const App = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Selected Indicator */}
+                                            {/* Selected Indicator — spring in/out when selection changes */}
                                             {selectedTemplate.id === t.id && (
-                                                <div className="absolute top-3 right-3 bg-brand-600 text-white p-1.5 rounded-full shadow-lg">
+                                                <motion.div
+                                                    initial={{ scale: 0, rotate: -90 }}
+                                                    animate={{ scale: 1, rotate: 0 }}
+                                                    transition={{
+                                                        type: 'spring',
+                                                        stiffness: 500,
+                                                        damping: 22,
+                                                    }}
+                                                    className="absolute top-3 right-3 bg-brand-600 text-white p-1.5 rounded-full shadow-lg"
+                                                >
                                                     <CheckCircle size={14} />
-                                                </div>
+                                                </motion.div>
                                             )}
-                                        </button>
+                                        </motion.button>
                                     ))}
                                 </div>
                             </div>
@@ -1373,7 +1652,7 @@ const App = () => {
                             position: 'absolute',
                             visibility: 'hidden',
                             pointerEvents: 'none',
-                            width: '210mm',
+                            width: 'var(--page-width)',
                             zIndex: -1000,
                         }}
                     >
@@ -1381,37 +1660,40 @@ const App = () => {
                     </div>
 
                     <div className="w-full flex-col items-center print:block print:w-auto" ref={contentRef}>
-                        {pagedData.map((pageData, index) => (
-                            <div
-                                key={index}
-                                style={{
-                                    width: `${210 * scale}mm`,
-                                    height: `${297 * scale}mm`,
-                                    marginBottom: '2rem',
-                                }}
-                                className="relative transition-all duration-300 mx-auto print:mx-0 print:mb-0"
-                            >
+                        {pagedData.map((pageData, index) => {
+                            const paper = resolvePaperSize(resume);
+                            return (
                                 <div
-                                    id={`resume-page-${index + 1}`}
-                                    className="resume-paper bg-white shadow-2xl relative overflow-hidden origin-top-left print:shadow-none print:m-0 print:p-0 page-break-after-always"
+                                    key={index}
                                     style={{
-                                        width: '210mm',
-                                        height: '297mm',
-                                        transform: `scale(${scale})`,
+                                        width: `${paper.widthMm * scale}mm`,
+                                        height: `${paper.heightMm * scale}mm`,
+                                        marginBottom: '2rem',
                                     }}
+                                    className="relative transition-all duration-300 mx-auto print:mx-0 print:mb-0"
                                 >
-                                    {/* Page Number Indicator (only visible in editor, not print) */}
-                                    <div className="absolute -right-12 top-0 text-gray-400 font-bold text-xs no-print">
-                                        Page {index + 1}
+                                    <div
+                                        id={`resume-page-${index + 1}`}
+                                        className="resume-paper bg-white shadow-2xl relative overflow-hidden origin-top-left print:shadow-none print:m-0 print:p-0 page-break-after-always"
+                                        style={{
+                                            width: 'var(--page-width)',
+                                            height: 'var(--page-height)',
+                                            transform: `scale(${scale})`,
+                                        }}
+                                    >
+                                        {/* Page Number Indicator (only visible in editor, not print) */}
+                                        <div className="absolute -right-12 top-0 text-gray-400 font-bold text-xs no-print">
+                                            Page {index + 1}
+                                        </div>
+
+                                        {/* Page Overflow Indicator */}
+                                        <PageOverflowIndicator pageId={`resume-page-${index + 1}`} />
+
+                                        {renderLayout(selectedTemplate.id, pageData, index)}
                                     </div>
-
-                                    {/* Page Overflow Indicator */}
-                                    <PageOverflowIndicator pageId={`resume-page-${index + 1}`} />
-
-                                    {renderLayout(selectedTemplate.id, pageData, index)}
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {isCalculatingLayout && (
@@ -1455,6 +1737,16 @@ const App = () => {
                 }
             />
 
+            <AutoTailorModal
+                isOpen={modals.is('autoTailor')}
+                onClose={() => modals.close('autoTailor')}
+                resume={resume}
+                onResumeChange={setResume}
+                onSaveToTracker={jobTracker.addJob}
+                activeProfileId={activeProfile?.id}
+                activeProfileName={activeProfile?.name}
+            />
+
             <CoverLetterModal
                 isOpen={modals.is('coverLetter')}
                 onClose={() => modals.close('coverLetter')}
@@ -1476,8 +1768,21 @@ const App = () => {
                 />
             )}
             {modals.is('tutorial') && <TutorialModal onClose={() => modals.close('tutorial')} />}
+            {modals.is('shortcuts') && <KeyboardShortcutsModal onClose={() => modals.close('shortcuts')} />}
+            {modals.is('jobTracker') && (
+                <JobTrackerModal
+                    onClose={() => modals.close('jobTracker')}
+                    profiles={profilesStore.profiles}
+                    tracker={jobTracker}
+                />
+            )}
             <ShareModal isOpen={modals.is('share')} onClose={() => modals.close('share')} />
-            <ThemeSettingsModal isOpen={modals.is('theme')} onClose={() => modals.close('theme')} />
+            <ThemeSettingsModal
+                isOpen={modals.is('theme')}
+                onClose={() => modals.close('theme')}
+                resume={resume}
+                onResumeChange={setResume}
+            />
 
             {/* Parsing Loader */}
             {isParsing && (

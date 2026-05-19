@@ -8,7 +8,10 @@ const PageOverflowIndicator = ({ pageId }) => {
             const pageElement = document.getElementById(pageId);
             if (!pageElement) return;
 
-            const layoutContainer = pageElement.querySelector('[class*="h-[297mm]"]');
+            // Selector matches the page-sized layout wrapper, which uses
+            // `h-[var(--page-height)]` (driven by resume.paperSize). The
+            // substring "h-[var" is stable across paper sizes.
+            const layoutContainer = pageElement.querySelector('[class*="h-[var"]');
             if (!layoutContainer) return;
 
             const safeHeight = 770;

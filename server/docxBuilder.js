@@ -474,6 +474,13 @@ export async function buildResumeDocx(resume, templateId = 'standard', typograph
             {
                 properties: {
                     page: {
+                        // Page size: A4 (default) or US Letter, mirroring
+                        // resume.paperSize. Twips are 1/1440 inch — A4 is
+                        // 11906 × 16838, Letter is 12240 × 15840.
+                        size:
+                            resume.paperSize === 'letter'
+                                ? { width: 12240, height: 15840 }
+                                : { width: 11906, height: 16838 },
                         margin: { top: 720, bottom: 720, left: 1080, right: 1080 },
                     },
                 },

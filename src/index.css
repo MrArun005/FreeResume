@@ -204,10 +204,10 @@
         box-shadow: none !important;
         margin: 0 auto !important;
         border: none !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        max-height: 297mm !important;
-        min-height: 297mm !important;
+        width: var(--page-width) !important;
+        height: var(--page-height) !important;
+        max-height: var(--page-height) !important;
+        min-height: var(--page-height) !important;
         overflow: hidden !important;
         /* Prevent content spill */
         position: relative !important;
@@ -334,6 +334,22 @@ html {
        giving the user independent control over visual hierarchy. */
     --resume-font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     --resume-font-size: 16px;
+
+    /* Paper size — overwritten at runtime by applyPaperSizeToDocument()
+       in src/utils/paperSize.js. Default is A4; switching to US Letter
+       updates these and every layout's page-sized container picks them
+       up immediately. */
+    --page-width: 210mm;
+    --page-height: 297mm;
+
+    /* Whitespace preset (Compact / Standard / Spacious). Visually scales
+       each layout's first-child so we don't have to edit per-layout
+       padding. The layout's bounding box stays at full page size; only
+       the rendered content shrinks/grows around the center. */
+    --page-content-scale: 1;
+
+    /* Header alignment for layouts that opt in. */
+    --resume-header-align: left;
     --resume-heading-size: 22px;
     --resume-body-size: 14px;
     --resume-bullet-size: 13px;
@@ -355,6 +371,29 @@ html {
 .resume-paper,
 .resume-paper * {
     font-family: var(--resume-font-family) !important;
+}
+
+/* Whitespace preset — scale the layout root visually so we don't need to
+   edit per-layout padding. Compact > 1, Spacious < 1. Origin: center so
+   the white space grows evenly on all four sides. */
+.resume-paper > *:first-child {
+    transform: scale(var(--page-content-scale, 1));
+    transform-origin: center center;
+    /* Avoid blurry text at non-1 scales (browser sub-pixel snapping). */
+    will-change: transform;
+}
+
+/* Header alignment — every layout exposes the personal block as
+   #section-personal, so a single rule applies text-align across templates.
+   `!important` because some layouts pin alignment via Tailwind utility. */
+.resume-paper #section-personal {
+    text-align: var(--resume-header-align, left) !important;
+}
+/* For layouts that center contact rows via flex, also adjust justify-content
+   to match the chosen alignment so the chips don't stay glued to the left. */
+.resume-paper #section-personal .flex,
+.resume-paper #section-personal [class*='flex'] {
+    justify-content: var(--resume-header-justify, flex-start);
 }
 
 /* Element-type size overrides — apply on top of the base font-size above.
@@ -526,10 +565,10 @@ html {
         box-shadow: none !important;
         margin: 0 !important;
         padding: 0 !important;
-        width: 210mm !important;
-        height: 297mm !important;
-        min-height: 297mm !important;
-        max-height: 297mm !important;
+        width: var(--page-width) !important;
+        height: var(--page-height) !important;
+        min-height: var(--page-height) !important;
+        max-height: var(--page-height) !important;
         page-break-after: always !important;
         page-break-inside: avoid !important;
         break-after: page !important;

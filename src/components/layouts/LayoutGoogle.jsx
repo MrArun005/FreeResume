@@ -6,7 +6,9 @@ import { sectionStyle } from '../../utils/sectionStyles';
 const TEXT = '#202124'; // Google text gray-900
 const MUTED = '#5f6368'; // Google gray-600
 const BORDER = '#dadce0'; // Google gray-300
-const ACCENT = '#1a73e8'; // Google blue 600
+// User can override the accent via resume.accentColor → --resume-accent.
+// Fallback is Google's brand blue so the template looks "right" by default.
+const ACCENT = 'var(--resume-accent, #1a73e8)';
 const ACCENT_BG = '#e8f0fe'; // Google blue 50
 
 const SectionTitle = ({ title }) => (
@@ -255,7 +257,7 @@ const LayoutGoogle = ({ data, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} w-full bg-white font-clean`}
+            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} w-full bg-white font-clean`}
             style={{ padding: '14mm 16mm', color: TEXT }}
         >
             {/* Header */}

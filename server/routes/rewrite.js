@@ -8,6 +8,8 @@ import { Router } from 'express';
 import { generateWithFallback } from '../lib/gemini.js';
 import { extractJson, sendError } from '../lib/utils.js';
 import { INFER_CONTEXT_PREAMBLE, deriveResumeContext } from '../lib/prompts.js';
+import { runGemini } from '../lib/queues.js';
+import { makeKey, memoize } from '../lib/cache.js';
 
 const router = Router();
 
@@ -34,7 +36,10 @@ Return ONLY the rewritten bullet (no quotes, no leading dash). Input: "${text}"`
 ${contextBlock}
 Return ONLY the rewritten summary (no quotes, no leading whitespace). Input: "${text}"`;
 
-        const improvedText = (await generateWithFallback(prompt)).trim();
+        // No cache on /improve-text — single bullet rewrites have low
+        // hit rate and would inflate cache size. Still gate behind the
+        // queue so a burst doesn't slam Gemini.
+        const improvedText = (await runGemini(() => generateWithFallback(prompt))).trim();
         res.json({ improvedText });
     } catch (error) {
         console.error('Error improving text:', error);
@@ -83,8 +88,12 @@ router.post('/improve-resume', async (req, res) => {
         Return ONLY the improved resume JSON object (no markdown, no commentary).
         `;
 
-        const textResponse = await generateWithFallback(prompt);
-        const improvedResume = extractJson(textResponse);
+        // Whole-resume rewrite is expensive — definitely cache.
+        const cacheKey = makeKey('improve-resume', resumeData);
+        const improvedResume = await memoize(cacheKey, async () => {
+            const textResponse = await runGemini(() => generateWithFallback(prompt));
+            return extractJson(textResponse);
+        });
         res.json({ improvedResume });
     } catch (error) {
         console.error('Error improving resume:', error);

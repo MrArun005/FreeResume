@@ -134,17 +134,19 @@ const LayoutSidebarLeft = ({ data, theme, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`w-full flex bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} ${theme.font}`}
+            className={`w-full flex bg-white ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} ${theme.font}`}
         >
             {/* Fixed Sidebar */}
             <div className={`w-1/3 ${theme.primary} text-white p-[15mm] flex flex-col min-h-full`}>
                 {pageIndex === 0 && (
                     <div id="section-personal">
-                        <div className="mb-8">
-                            <h1 className="text-2xl font-bold leading-tight mb-2">
+                        <div className="mb-8 min-w-0">
+                            <h1 className="text-2xl font-bold leading-tight mb-2 break-words">
                                 {data.personal.fullName}
                             </h1>
-                            <p className="text-white/80 text-sm font-medium">{data.personal.title}</p>
+                            <p className="text-white/80 text-sm font-medium break-words">
+                                {data.personal.title}
+                            </p>
                         </div>
                         <div className="mb-8 space-y-3 text-white/90">
                             <div className="flex items-center gap-2 text-xs">

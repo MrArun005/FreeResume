@@ -6,6 +6,7 @@ import {
     loadSavedBodySize,
     loadSavedBulletSize,
 } from '../theme/tokens';
+import { getPaperSize, DEFAULT_PAPER_SIZE } from './paperSize';
 
 // True-WYSIWYG PDF export.
 //
@@ -57,11 +58,16 @@ function collectFontLinks() {
 
 // Build a self-contained HTML document containing only the resume pages.
 // Each page sits in its own block with `page-break-after: always` so
-// Puppeteer's pdf() will emit one A4 page per resume page rather than
-// merging them.
-function buildStandaloneHtml() {
+// Puppeteer's pdf() will emit one page per resume page rather than
+// merging them. Paper size flows from the resume so PDF dimensions match
+// the preview the user sees.
+function buildStandaloneHtml(paperSizeKey = DEFAULT_PAPER_SIZE) {
     const pages = Array.from(document.querySelectorAll('[id^="resume-page-"]'));
     if (pages.length === 0) return null;
+
+    const paper = getPaperSize(paperSizeKey);
+    const pageWidth = `${paper.widthMm}mm`;
+    const pageHeight = `${paper.heightMm}mm`;
 
     // Clone each page and strip the scaling transform on its ancestor (we
     // want 100% size in the printed PDF, not the editor's preview zoom).
@@ -79,8 +85,8 @@ function buildStandaloneHtml() {
     const fontLinks = collectFontLinks();
 
     // The override stylesheet at the bottom must beat anything in inlineCss,
-    // hence it comes last and uses !important where needed. We force every
-    // page to a clean 210mm × 297mm and break to a new page after.
+    // hence it comes last and uses !important where needed. Page dimensions
+    // come from the resume's paperSize so PDF matches the editor preview.
     return `<!doctype html>
 <html lang="en">
 <head>
@@ -88,7 +94,8 @@ function buildStandaloneHtml() {
 ${fontLinks}
 <style>${inlineCss}</style>
 <style>
-  @page { size: A4; margin: 0; }
+  :root { --page-width: ${pageWidth}; --page-height: ${pageHeight}; }
+  @page { size: ${paper.pdfFormat}; margin: 0; }
   html, body {
     margin: 0 !important;
     padding: 0 !important;
@@ -98,10 +105,10 @@ ${fontLinks}
   }
   /* Reset preview-only chrome inside the cloned page divs. */
   [id^="resume-page-"] {
-    width: 210mm !important;
-    height: 297mm !important;
-    min-height: 297mm !important;
-    max-height: 297mm !important;
+    width: ${pageWidth} !important;
+    height: ${pageHeight} !important;
+    min-height: ${pageHeight} !important;
+    max-height: ${pageHeight} !important;
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
@@ -141,14 +148,14 @@ function downloadBlob(blob, filename) {
 
 // Round-trip the preview HTML to the Puppeteer endpoint and download the
 // resulting PDF. Throws on any non-2xx so the caller can fall back.
-export async function exportPdfViaServer({ filename = 'Resume.pdf' } = {}) {
-    const html = buildStandaloneHtml();
+export async function exportPdfViaServer({ filename = 'Resume.pdf', paperSize = DEFAULT_PAPER_SIZE } = {}) {
+    const html = buildStandaloneHtml(paperSize);
     if (!html) throw new Error('Resume preview not ready — pages not found in DOM.');
 
     const response = await fetch('/api/generate-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ html }),
+        body: JSON.stringify({ html, paperSize }),
     });
 
     if (!response.ok) {
@@ -177,9 +184,9 @@ export function exportPdfViaPrint() {
 // the browser print dialog if anything goes wrong. Returns a small object
 // describing what happened so callers can show appropriate UI ("Saved to
 // downloads" vs "Print dialog opened — choose Save as PDF").
-export async function exportResumePdf({ filename = 'Resume.pdf' } = {}) {
+export async function exportResumePdf({ filename = 'Resume.pdf', paperSize = DEFAULT_PAPER_SIZE } = {}) {
     try {
-        await exportPdfViaServer({ filename });
+        await exportPdfViaServer({ filename, paperSize });
         return { ok: true, method: 'server' };
     } catch (error) {
         console.warn('[exportPdf] Server export unavailable, falling back to browser print:', error);

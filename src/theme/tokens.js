@@ -120,25 +120,77 @@ const STORAGE_KEY = 'paperjetTheme';
 // widely-installed system fallback, so PDF parsers handle them cleanly.
 // Inter and Instrument Serif are already preloaded via index.html.
 export const FONT_FAMILIES = {
+    // ─── Modern sans-serif ────────────────────────────────────────────────
     inter: {
         name: 'Inter',
         description: 'Modern sans-serif. The default. Crisp on screen and in PDF.',
         stack: 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     },
+    roboto: {
+        name: 'Roboto',
+        description: "Google's Material sans. Friendly and extremely ATS-tested.",
+        stack: 'Roboto, "Helvetica Neue", Arial, sans-serif',
+    },
+    lato: {
+        name: 'Lato',
+        description: 'Warm, humanist sans. Popular on LinkedIn-style résumés.',
+        stack: 'Lato, "Helvetica Neue", Arial, sans-serif',
+    },
+    sourceSans: {
+        name: 'Source Sans 3',
+        description: "Adobe's open sans. Clean lines, excellent in long bullets.",
+        stack: '"Source Sans 3", "Source Sans Pro", "Helvetica Neue", Arial, sans-serif',
+    },
+    ibmPlex: {
+        name: 'IBM Plex Sans',
+        description: 'Corporate-modern with quiet personality. Tech-leaning roles.',
+        stack: '"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif',
+    },
+    workSans: {
+        name: 'Work Sans',
+        description: 'Designed for UI — light, balanced. Holds up at small sizes.',
+        stack: '"Work Sans", "Helvetica Neue", Arial, sans-serif',
+    },
+
+    // ─── Classic / safe sans ──────────────────────────────────────────────
     classicSans: {
         name: 'Helvetica',
         description: 'The recruiter-safe classic. Universally readable, ATS-favored.',
         stack: 'Helvetica, Arial, "Liberation Sans", sans-serif',
     },
+
+    // ─── Serif ────────────────────────────────────────────────────────────
     instrumentSerif: {
         name: 'Instrument Serif',
         description: 'Editorial serif with personality. Great for design / writing roles.',
         stack: '"Instrument Serif", Georgia, "Times New Roman", serif',
     },
+    ebGaramond: {
+        name: 'EB Garamond',
+        description: 'Classical book serif. Reads as senior, considered, old-school print.',
+        stack: '"EB Garamond", Garamond, Georgia, "Times New Roman", serif',
+    },
+    merriweather: {
+        name: 'Merriweather',
+        description: 'Serif tuned for screens. Reads beautifully in long paragraphs.',
+        stack: 'Merriweather, Georgia, "Times New Roman", serif',
+    },
+    lora: {
+        name: 'Lora',
+        description: 'Modern serif with calligraphic roots. Subtle character.',
+        stack: 'Lora, Georgia, "Times New Roman", serif',
+    },
     classicSerif: {
         name: 'Georgia',
         description: 'Traditional serif. Reads like a thoughtful résumé from a senior pro.',
         stack: 'Georgia, "Times New Roman", Times, serif',
+    },
+
+    // ─── Monospace ────────────────────────────────────────────────────────
+    jetbrainsMono: {
+        name: 'JetBrains Mono',
+        description: "Programmer's mono — clean, no ligatures in this context.",
+        stack: '"JetBrains Mono", "Source Code Pro", Menlo, Consolas, monospace',
     },
     mono: {
         name: 'Share Tech Mono',

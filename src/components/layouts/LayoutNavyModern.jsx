@@ -5,7 +5,8 @@
 
 import { sectionStyle } from '../../utils/sectionStyles';
 
-const NAVY = '#0F2C5E';
+// User can override the accent via resume.accentColor → --resume-accent.
+const NAVY = 'var(--resume-accent, #0F2C5E)';
 const TEXT = '#0F172A';
 const MUTED = '#475569';
 const CHIP_BG = '#E0EAFC';
@@ -285,7 +286,7 @@ const LayoutNavyModern = ({ data, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} w-full bg-white font-clean`}
+            className={`${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} w-full bg-white font-clean`}
             style={{ padding: '14mm 16mm', color: TEXT }}
         >
             {pageIndex === 0 && (

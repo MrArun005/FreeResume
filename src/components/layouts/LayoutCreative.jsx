@@ -32,7 +32,7 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`flex bg-white text-gray-800 font-sans w-full max-w-full ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'}`}
+            className={`flex bg-white text-gray-800 font-sans w-full max-w-full ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'}`}
         >
             {/* Sidebar - Left Side */}
             <div
@@ -40,7 +40,7 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
             >
                 {isFirstPage && (
                     /* Contact Info - Page 1 Only */
-                    <div className="flex flex-col gap-4 text-sm opacity-90 mb-8">
+                    <div id="section-personal" className="flex flex-col gap-4 text-sm opacity-90 mb-8">
                         {personal.email && (
                             <div className="flex items-center gap-3">
                                 <Mail size={16} className="flex-shrink-0" />{' '}
@@ -101,8 +101,11 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
                     }
                     if (sectionId === 'skills' && data.skills && data.skills.length > 0) {
                         return (
-                            <div key="skills" className="mb-8">
-                                <h3 className="text-lg font-bold uppercase tracking-wider border-b border-white/30 pb-2 mb-4">
+                            <div key="skills" id="section-skills" className="mb-8">
+                                <h3
+                                    id="section-title-skills"
+                                    className="text-lg font-bold uppercase tracking-wider border-b border-white/30 pb-2 mb-4"
+                                >
                                     Skills
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
@@ -122,8 +125,11 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
                     const cs = customSections.find((s) => s.id === sectionId);
                     if (cs && cs.items.length > 0) {
                         return (
-                            <div key={sectionId} className="mb-8">
-                                <h3 className="text-lg font-bold uppercase tracking-wider border-b border-white/30 pb-2 mb-4">
+                            <div key={sectionId} id={`section-${sectionId}`} className="mb-8">
+                                <h3
+                                    id={`section-title-${sectionId}`}
+                                    className="text-lg font-bold uppercase tracking-wider border-b border-white/30 pb-2 mb-4"
+                                >
                                     {cs.title}
                                 </h3>
                                 <div className="flex flex-col gap-3">
@@ -156,13 +162,13 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
             {/* Main Content - Right Side */}
             <div className="flex-1 p-8 flex flex-col gap-6">
                 {isFirstPage && (
-                    <div className="mb-4">
+                    <div className="mb-4 min-w-0">
                         <h1
-                            className={`text-5xl font-extrabold ${theme.text} mb-2 uppercase tracking-tight leading-none`}
+                            className={`text-5xl font-extrabold ${theme.text} mb-2 uppercase tracking-tight leading-none break-words`}
                         >
                             {personal.fullName || 'Your Name'}
                         </h1>
-                        <p className={`text-2xl font-medium ${theme.primary} opacity-90`}>
+                        <p className="text-2xl font-medium text-zinc-700 break-words">
                             {personal.title || 'Professional Title'}
                         </p>
                     </div>
@@ -256,15 +262,16 @@ const LayoutCreative = ({ data, theme, pageIndex, isMeasurement }) => {
 
                     if (isCustom && sectionData && sectionData.items.length > 0) {
                         return (
-                            <div key={sectionId}>
+                            <div key={sectionId} id={`section-${sectionId}`}>
                                 <h3
+                                    id={`section-title-${sectionId}`}
                                     className={`text-xl font-bold uppercase tracking-wider ${theme.text} border-b-2 ${theme.border} pb-2 mb-4`}
                                 >
                                     {sectionData.title}
                                 </h3>
                                 <div className="flex flex-col gap-6">
                                     {sectionData.items.map((item) => (
-                                        <div key={item.id}>
+                                        <div key={item.id} id={`item-${item.id}`}>
                                             <div className="flex justify-between items-baseline font-bold text-gray-900 text-lg">
                                                 <span>{item.title}</span>
                                                 <span className="text-sm text-gray-500 font-normal">

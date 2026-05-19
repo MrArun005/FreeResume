@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Plus, Copy, Pencil, Trash2, Check } from 'lucide-react';
+import { ChevronDown, Plus, Copy, Pencil, Trash2, Check, FileText } from 'lucide-react';
 
 // Compact profile switcher rendered in the editor sidebar header. Shows
 // the active profile name as a pill button; clicking opens a dropdown with
@@ -19,6 +19,8 @@ const ProfilesMenu = ({
     const [open, setOpen] = useState(false);
     const [renamingId, setRenamingId] = useState(null);
     const [renameDraft, setRenameDraft] = useState('');
+    const [isCreating, setIsCreating] = useState(false);
+    const [createDraft, setCreateDraft] = useState('');
     const containerRef = useRef(null);
 
     const active = profiles.find((p) => p.id === activeProfileId);
@@ -30,6 +32,8 @@ const ProfilesMenu = ({
             if (containerRef.current && !containerRef.current.contains(e.target)) {
                 setOpen(false);
                 setRenamingId(null);
+                setIsCreating(false);
+                setCreateDraft('');
             }
         };
         document.addEventListener('mousedown', onDocClick);
@@ -49,12 +53,26 @@ const ProfilesMenu = ({
         setRenameDraft('');
     };
 
-    const handleCreate = () => {
-        const name = window.prompt('Name this resume profile:', `Resume ${profiles.length + 1}`);
-        if (name && name.trim() && onCreateProfile) {
-            onCreateProfile(name.trim());
-            setOpen(false);
+    const beginCreate = () => {
+        // Pre-fill with a sensible default so a user who just hits Enter
+        // gets a profile created (without having to type anything).
+        setCreateDraft(`Resume ${profiles.length + 1}`);
+        setIsCreating(true);
+    };
+
+    const commitCreate = () => {
+        const name = createDraft.trim();
+        if (name && onCreateProfile) {
+            onCreateProfile(name);
         }
+        setIsCreating(false);
+        setCreateDraft('');
+        setOpen(false);
+    };
+
+    const cancelCreate = () => {
+        setIsCreating(false);
+        setCreateDraft('');
     };
 
     const handleDelete = (profile, e) => {
@@ -64,15 +82,32 @@ const ProfilesMenu = ({
         if (ok && onDeleteProfile) onDeleteProfile(profile.id);
     };
 
+    const hasMultiple = profiles.length > 1;
+
     return (
         <div ref={containerRef} className="relative">
             <button
                 onClick={() => setOpen((v) => !v)}
-                className="inline-flex items-center gap-1.5 max-w-[200px] px-2.5 py-1 rounded-md text-xs font-medium text-slate-700 dark:text-stone-300 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors"
+                className={`inline-flex items-center gap-1.5 max-w-[240px] px-2.5 py-1.5 rounded-lg text-sm font-medium text-slate-700 dark:text-stone-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors shadow-sm ${
+                    open
+                        ? 'ring-2 ring-brand-200 dark:ring-brand-500/30 border-brand-300 dark:border-brand-500/40'
+                        : ''
+                }`}
                 title="Switch resume profile"
+                aria-expanded={open}
+                aria-haspopup="menu"
             >
+                <FileText size={14} className="text-slate-500 dark:text-stone-400 shrink-0" />
                 <span className="truncate">{active?.name || 'My Resume'}</span>
-                <ChevronDown size={12} className="text-slate-500 dark:text-stone-400 shrink-0" />
+                {hasMultiple && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 shrink-0 leading-none">
+                        {profiles.length}
+                    </span>
+                )}
+                <ChevronDown
+                    size={14}
+                    className={`text-slate-500 dark:text-stone-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+                />
             </button>
 
             {open && (
@@ -168,12 +203,33 @@ const ProfilesMenu = ({
                         })}
                     </ul>
                     <div className="border-t border-slate-100 dark:border-slate-700 p-1">
-                        <button
-                            onClick={handleCreate}
-                            className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors font-medium"
-                        >
-                            <Plus size={13} /> New resume
-                        </button>
+                        {isCreating ? (
+                            // Inline create — same UX shape as inline rename.
+                            // Replaces the old window.prompt() flow that felt
+                            // jarring and got blocked in some embedded contexts.
+                            <div className="flex items-center gap-1 px-2 py-1.5">
+                                <Plus size={13} className="text-brand-600 dark:text-brand-400 shrink-0" />
+                                <input
+                                    autoFocus
+                                    value={createDraft}
+                                    onChange={(e) => setCreateDraft(e.target.value)}
+                                    onBlur={commitCreate}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') commitCreate();
+                                        if (e.key === 'Escape') cancelCreate();
+                                    }}
+                                    placeholder="Resume name"
+                                    className="flex-1 text-[12px] bg-white dark:bg-slate-900 text-slate-900 dark:text-stone-100 border border-slate-300 dark:border-slate-600 rounded px-1.5 py-0.5 outline-none focus:border-brand-400"
+                                />
+                            </div>
+                        ) : (
+                            <button
+                                onClick={beginCreate}
+                                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] text-brand-700 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors font-medium"
+                            >
+                                <Plus size={13} /> New resume
+                            </button>
+                        )}
                     </div>
                 </div>
             )}

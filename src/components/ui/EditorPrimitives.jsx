@@ -14,7 +14,9 @@ import {
     X,
     Wand2,
     Loader2,
+    BarChart3,
 } from 'lucide-react';
+import { analyzeBullet } from '../../utils/bulletQuality';
 
 // Soft target for a single bullet. Recruiters and ATS systems read fastest
 // when bullets land in the 80–200 char range. We don't hard-cap, but the
@@ -94,6 +96,27 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
     const over = len > BULLET_SOFT_LIMIT;
     const nearLimit = len > BULLET_SOFT_LIMIT * 0.9;
 
+    // Bullet-quality hints. Skip on short drafts (< 18 chars) so users aren't
+    // nagged before they've finished a thought. Hidden during focus to keep
+    // active editing quiet — they reappear on blur for review.
+    const analysis = len >= 18 ? analyzeBullet(value) : { weakVerbs: [], hasMetric: true, isEmpty: true };
+    const showHints = !focused && !analysis.isEmpty && (analysis.weakVerbs.length > 0 || !analysis.hasMetric);
+
+    // Click-to-apply: swap the first occurrence of a weak phrase for the chosen
+    // replacement, preserving the original casing at the match site.
+    const applyVerbReplacement = (phrase, replacement) => {
+        const re = new RegExp(`\\b${phrase.replace(/\s+/g, '\\s+')}\\b`, 'i');
+        const match = value.match(re);
+        if (!match) return;
+        const matched = match[0];
+        const startsUpper =
+            matched[0] === matched[0].toUpperCase() && matched[0] !== matched[0].toLowerCase();
+        const replacementText = startsUpper
+            ? replacement.charAt(0).toUpperCase() + replacement.slice(1)
+            : replacement.toLowerCase();
+        onChange(value.replace(re, replacementText));
+    };
+
     const handleImprove = async () => {
         if (!onImprove || improving || !value?.trim()) return;
         setImproving(true);
@@ -162,6 +185,34 @@ export const BulletRow = ({ value, onChange, onRemove, onImprove, autoFocus = fa
                         className={`text-[10px] mt-0.5 px-2 transition-colors ${over ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`}
                     >
                         {len} / {BULLET_SOFT_LIMIT} chars{over ? ' · consider trimming' : ''}
+                    </div>
+                )}
+                {showHints && (
+                    <div className="mt-1 px-2 space-y-1">
+                        {analysis.weakVerbs.map(({ phrase, suggestions }) => (
+                            <div key={phrase} className="flex flex-wrap items-center gap-1">
+                                <span className="text-[10px] text-amber-700 dark:text-amber-400">
+                                    Swap <em className="not-italic font-semibold">{phrase}</em> →
+                                </span>
+                                {suggestions.slice(0, 3).map((s) => (
+                                    <button
+                                        key={s}
+                                        type="button"
+                                        onClick={() => applyVerbReplacement(phrase, s)}
+                                        className="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors"
+                                        title={`Replace "${phrase}" with "${s}"`}
+                                    >
+                                        {s}
+                                    </button>
+                                ))}
+                            </div>
+                        ))}
+                        {!analysis.hasMetric && (
+                            <div className="inline-flex items-center gap-1 text-[10px] text-sky-700 dark:text-sky-400">
+                                <BarChart3 size={10} strokeWidth={2.2} />
+                                Add a number or % to make the impact concrete.
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

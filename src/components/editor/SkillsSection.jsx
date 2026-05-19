@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, X, FolderPlus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FieldLabel } from '../ui/EditorPrimitives';
+import { normalizeSkills } from '../../utils/skillTaxonomy';
 
 // Categories the user is likely to want. Quick-add chips create a new group
 // pre-named so they don't have to type the label.
@@ -25,10 +27,20 @@ const parseCategory = (s) => {
 const buildCategory = (label, items) => `${label.trim()}: ${items.trim()}`;
 
 const SkillsSection = ({ skills, onUpdateSkills }) => {
-    // Only category-shaped entries are surfaced here. The App-level
-    // `normalizeSkills` helper consolidates any legacy/plain skills into a
-    // "Technical Skills" category at load time, so this list is always
-    // category-only by the time it reaches the editor.
+    // Auto-normalize ONCE on mount if we detect any flat (non-category)
+    // skills. Watching [skills] would re-fire on every keystroke and cascade
+    // into pagination re-runs; mount-only is enough because every other
+    // entry point (load, profile switch, AI rewrite) goes through
+    // normalizeResumeShape which already normalizes skills.
+    useEffect(() => {
+        const hasFlat = skills.some((s) => typeof s === 'string' && s.trim().length > 0 && !isCategory(s));
+        if (hasFlat) {
+            onUpdateSkills?.(normalizeSkills(skills));
+        }
+        // Intentionally empty deps — see comment above.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const categories = skills
         .map((s, idx) => ({ original: s, idx }))
         .filter(({ original }) => isCategory(original));
@@ -116,15 +128,58 @@ const SkillsSection = ({ skills, onUpdateSkills }) => {
     );
 };
 
-// Inline editor for one category. Two fields: label + comma-separated items.
-// State is local until blur to avoid a parent rerender thrash while typing.
+// Splits the stored comma string into displayable skills. Trims and filters
+// empties so a trailing comma or stray whitespace never produces ghost chips.
+const splitSkills = (items) =>
+    items
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+// Joins back to the canonical "a, b, c" storage format the rest of the app
+// (PDF/DOCX exporters, AI prompts) expects.
+const joinSkills = (arr) => arr.join(', ');
+
+// Inline editor for one category. Label stays as a plain input; the items
+// list is rendered as removable chips with an inline add-input. Each chip
+// has its own X so the user can drop individual skills (Python, SQL…) without
+// editing a long comma string by hand.
 const CategoryRow = ({ label, items, onChange, onRemove }) => {
     const [localLabel, setLocalLabel] = useState(label);
-    const [localItems, setLocalItems] = useState(items);
+    const [draft, setDraft] = useState('');
+    const skillList = splitSkills(items);
 
-    const commit = () => {
-        if (localLabel !== label || localItems !== items) {
-            onChange(localLabel, localItems);
+    const commitLabel = () => {
+        if (localLabel !== label) onChange(localLabel, items);
+    };
+
+    const removeSkill = (idx) => {
+        const next = skillList.filter((_, i) => i !== idx);
+        onChange(localLabel, joinSkills(next));
+    };
+
+    const addSkillsFromDraft = () => {
+        // Allow paste of "Python, SQL, R" — split and add each as its own chip.
+        const incoming = splitSkills(draft);
+        if (!incoming.length) return;
+        const merged = [...skillList];
+        incoming.forEach((s) => {
+            if (!merged.some((existing) => existing.toLowerCase() === s.toLowerCase())) {
+                merged.push(s);
+            }
+        });
+        onChange(localLabel, joinSkills(merged));
+        setDraft('');
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            addSkillsFromDraft();
+        } else if (e.key === 'Backspace' && draft === '' && skillList.length > 0) {
+            // Backspace on empty input nukes the last chip — matches the
+            // expected behavior of every chip-editor users have seen elsewhere.
+            removeSkill(skillList.length - 1);
         }
     };
 
@@ -134,7 +189,7 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
                 <input
                     value={localLabel}
                     onChange={(e) => setLocalLabel(e.target.value)}
-                    onBlur={commit}
+                    onBlur={commitLabel}
                     placeholder="Category name"
                     className="flex-1 text-[12px] font-bold text-slate-900 dark:text-stone-100 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-transparent border-0 border-b border-transparent hover:border-slate-300 dark:hover:border-slate-600 focus:border-slate-400 dark:focus:border-slate-500 focus:bg-white dark:focus:bg-slate-800 px-1 py-0.5 outline-none transition-colors"
                 />
@@ -146,13 +201,61 @@ const CategoryRow = ({ label, items, onChange, onRemove }) => {
                     <X size={14} />
                 </button>
             </div>
-            <input
-                value={localItems}
-                onChange={(e) => setLocalItems(e.target.value)}
-                onBlur={commit}
-                placeholder="Python, SQL, JavaScript…"
-                className="w-full text-[12px] text-slate-700 dark:text-stone-200 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1.5 focus:border-slate-400 dark:focus:border-slate-500 outline-none"
-            />
+
+            {/* Chip row — each existing skill is its own removable pill, then
+                an inline input for adding more. Wrapping is fine because chips
+                are short; the container clicks focus onto the input so the
+                whole row feels like one tag editor. */}
+            <div
+                className="flex flex-wrap items-center gap-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2 py-1.5 focus-within:border-slate-400 dark:focus-within:border-slate-500"
+                onClick={(e) => {
+                    const input = e.currentTarget.querySelector('input');
+                    if (input && e.target === e.currentTarget) input.focus();
+                }}
+            >
+                <AnimatePresence initial={false}>
+                    {skillList.map((skill, idx) => (
+                        <motion.span
+                            key={skill}
+                            layout
+                            initial={{ opacity: 0, scale: 0.6 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.12 } }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 28, mass: 0.5 }}
+                            className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full text-[11px] font-medium bg-brand-50 dark:bg-brand-900/30 text-brand-800 dark:text-brand-200 border border-brand-200 dark:border-brand-800"
+                        >
+                            {skill}
+                            <button
+                                type="button"
+                                onClick={() => removeSkill(idx)}
+                                className="hover:bg-brand-200 dark:hover:bg-brand-800 rounded-full p-0.5 transition-colors"
+                                title={`Remove ${skill}`}
+                            >
+                                <X size={10} />
+                            </button>
+                        </motion.span>
+                    ))}
+                </AnimatePresence>
+                <input
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onBlur={addSkillsFromDraft}
+                    placeholder={skillList.length === 0 ? 'Python, SQL, JavaScript…' : 'Add skill…'}
+                    className="flex-1 min-w-[80px] text-[12px] text-slate-700 dark:text-stone-200 placeholder:text-slate-400 dark:placeholder:text-stone-500 bg-transparent border-0 outline-none py-0.5"
+                />
+            </div>
+            <div className="mt-1.5 text-[10px] text-slate-400 dark:text-stone-500">
+                Type a skill and press{' '}
+                <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 font-mono text-[10px]">
+                    Enter
+                </kbd>{' '}
+                or{' '}
+                <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 font-mono text-[10px]">
+                    ,
+                </kbd>{' '}
+                to add. Click ✕ on a chip to remove.
+            </div>
         </div>
     );
 };

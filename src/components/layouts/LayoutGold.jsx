@@ -2,19 +2,21 @@ import React from 'react';
 import { sectionStyle } from '../../utils/sectionStyles';
 import { Mail, Phone, MapPin, Link as LinkIcon, Award } from 'lucide-react';
 
-const LayoutGold = ({ data, pageIndex }) => {
+const LayoutGold = ({ data, pageIndex, isMeasurement }) => {
     const { personal, experience, education, skills, customSections } = data;
 
     const shouldRenderTitle = (sectionId) => {
         return !data.sectionStartPage || data.sectionStartPage[sectionId] === pageIndex;
     };
 
-    const goldColor = '#C5A028'; // A slightly darker, richer gold for better readability
+    // User can override the accent via resume.accentColor → --resume-accent.
+    // Default falls back to the original rich gold.
+    const goldColor = 'var(--resume-accent, #C5A028)';
     const bgRich = '#FFFCF5'; // Very subtle cream background
 
     return (
         <div
-            className="w-full h-[297mm] text-slate-800 font-serif overflow-hidden relative print:break-inside-avoid print:break-before-avoid"
+            className={`w-full text-slate-800 font-serif relative print:break-inside-avoid print:break-before-avoid ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'}`}
             style={{ backgroundColor: bgRich }}
         >
             {/* Decorative Frame */}
@@ -41,10 +43,10 @@ const LayoutGold = ({ data, pageIndex }) => {
                 style={{ borderColor: goldColor }}
             ></div>
 
-            <div className="px-20 py-10 h-full flex flex-col">
+            <div className={`px-20 py-10 flex flex-col ${isMeasurement ? '' : 'h-full'}`}>
                 {/* Header - Only on first page */}
                 {(!pageIndex || pageIndex === 0) && (
-                    <header className="text-center mb-12 relative">
+                    <header id="section-personal" className="text-center mb-12 relative">
                         <div
                             className="inline-block mb-4 p-2 border rounded-full"
                             style={{ borderColor: goldColor }}
@@ -88,7 +90,7 @@ const LayoutGold = ({ data, pageIndex }) => {
                                 <a
                                     key={index}
                                     href={social.url}
-                                    className="flex items-center gap-2 hover:text-[#C5A028] transition-colors"
+                                    className="flex items-center gap-2 transition-colors hover:[color:var(--resume-accent,#C5A028)]"
                                 >
                                     <LinkIcon size={12} color={goldColor} /> {social.network}
                                 </a>
@@ -202,7 +204,7 @@ const LayoutGold = ({ data, pageIndex }) => {
                                                             >
                                                                 <span
                                                                     className="text-xl mt-[-2px] shrink-0"
-                                                                    style={{ color: '#C5A028' }}
+                                                                    style={{ color: goldColor }}
                                                                 >
                                                                     •
                                                                 </span>

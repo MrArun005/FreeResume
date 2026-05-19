@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
-import { X, Palette, Check, Type, AArrowUp, Heading, AlignLeft, List } from 'lucide-react';
+import {
+    X,
+    Palette,
+    Check,
+    Type,
+    AArrowUp,
+    Heading,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
+    List,
+    FileText,
+    Maximize2,
+    Droplet,
+} from 'lucide-react';
+import { PAPER_SIZES, PAGE_MARGIN_PRESETS, ACCENT_PRESETS } from '../../utils/paperSize';
 import {
     THEMES,
     applyTheme,
@@ -34,7 +49,7 @@ import {
 // Theme switches are instant: applyTheme() rewrites the CSS custom properties
 // on :root, every `brand-*` Tailwind class repaints immediately. Persistence
 // happens via saveTheme() into localStorage.
-const ThemeSettingsModal = ({ isOpen, onClose }) => {
+const ThemeSettingsModal = ({ isOpen, onClose, resume, onResumeChange }) => {
     const [activeTheme, setActiveTheme] = useState(loadSavedTheme);
     const [activeFont, setActiveFont] = useState(loadSavedFont);
     const [activeSize, setActiveSize] = useState(loadSavedSize);
@@ -130,7 +145,7 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
     // (see the handleResize dep on modals.is('theme') in App.jsx).
     return (
         <div
-            className="fixed right-0 top-16 bottom-0 w-full sm:w-[420px] z-40 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl dark:shadow-black/40 flex flex-col animate-in slide-in-from-right duration-300 no-print"
+            className="fixed right-0 top-16 bottom-0 w-full sm:w-[340px] xl:w-[400px] z-40 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl dark:shadow-black/40 flex flex-col animate-in slide-in-from-right duration-300 no-print"
             onClick={(e) => e.stopPropagation()}
         >
             <header className="px-6 py-5 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
@@ -160,6 +175,184 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
             </header>
 
             <div className="px-6 py-5 overflow-y-auto space-y-6">
+                {/* Paper size — top of the drawer because it changes the
+                    canvas dimensions, which affects how everything else
+                    reads. Per-resume (lives on resume.paperSize) so a US
+                    profile and an EU profile can coexist. */}
+                {resume && onResumeChange && (
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                            <FileText size={11} /> Paper size
+                        </h3>
+                        <div className="grid grid-cols-2 gap-2">
+                            {Object.entries(PAPER_SIZES).map(([key, size]) => {
+                                const isActive = (resume.paperSize || 'A4') === key;
+                                return (
+                                    <button
+                                        key={key}
+                                        onClick={() =>
+                                            onResumeChange((prev) => ({ ...prev, paperSize: key }))
+                                        }
+                                        className={`flex flex-col items-start gap-1 px-3 py-2.5 rounded-xl border transition-all text-left ${
+                                            isActive
+                                                ? 'border-slate-900 bg-slate-50'
+                                                : 'border-slate-200 hover:border-slate-300 bg-white'
+                                        }`}
+                                    >
+                                        <div className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+                                            {size.label}
+                                            {isActive && <Check size={14} className="text-emerald-600" />}
+                                        </div>
+                                        <div className="text-[10.5px] text-slate-500 leading-tight">
+                                            {size.description}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Accent color — overrides each layout's built-in accent
+                    via --resume-accent. Preset swatches + raw hex picker.
+                    Layouts that opt-in (currently Google / BoldRecruit /
+                    NavyModern) repaint immediately; others keep their
+                    original accent. */}
+                {resume && onResumeChange && (
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                            <Droplet size={11} /> Accent color
+                        </h3>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            <button
+                                onClick={() => onResumeChange((prev) => ({ ...prev, accentColor: null }))}
+                                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[12px] font-medium transition-colors ${
+                                    !resume.accentColor
+                                        ? 'border-slate-900 bg-slate-50 text-slate-900'
+                                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                                }`}
+                            >
+                                Default
+                                {!resume.accentColor && <Check size={12} className="text-emerald-600" />}
+                            </button>
+                            {ACCENT_PRESETS.map((preset) => {
+                                const isActive = resume.accentColor === preset.value;
+                                return (
+                                    <button
+                                        key={preset.key}
+                                        onClick={() =>
+                                            onResumeChange((prev) => ({
+                                                ...prev,
+                                                accentColor: preset.value,
+                                            }))
+                                        }
+                                        className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                            isActive
+                                                ? 'border-slate-900 scale-110 ring-2 ring-slate-200'
+                                                : 'border-white shadow-sm hover:scale-105'
+                                        }`}
+                                        style={{ backgroundColor: preset.value }}
+                                        title={preset.label}
+                                    />
+                                );
+                            })}
+                        </div>
+                        <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                                <input
+                                    type="color"
+                                    value={resume.accentColor || '#1a73e8'}
+                                    onChange={(e) =>
+                                        onResumeChange((prev) => ({
+                                            ...prev,
+                                            accentColor: e.target.value,
+                                        }))
+                                    }
+                                    className="w-7 h-7 rounded cursor-pointer border border-slate-300"
+                                    aria-label="Custom accent color"
+                                />
+                                <span>Custom hex</span>
+                            </label>
+                            <span className="text-slate-400">Applies to layouts that support it.</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Page margins — visually scales the layout root so users
+                    can tighten or loosen whitespace without re-picking a
+                    template. Implementation lives in index.css. */}
+                {resume && onResumeChange && (
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                            <Maximize2 size={11} /> Page margins
+                        </h3>
+                        <div className="grid grid-cols-3 gap-2">
+                            {Object.entries(PAGE_MARGIN_PRESETS).map(([key, preset]) => {
+                                const isActive = (resume.pageMargins || 'standard') === key;
+                                return (
+                                    <button
+                                        key={key}
+                                        onClick={() =>
+                                            onResumeChange((prev) => ({
+                                                ...prev,
+                                                pageMargins: key,
+                                            }))
+                                        }
+                                        className={`flex flex-col items-start gap-0.5 px-2.5 py-2 rounded-lg border transition-all text-left ${
+                                            isActive
+                                                ? 'border-slate-900 bg-slate-50'
+                                                : 'border-slate-200 hover:border-slate-300 bg-white'
+                                        }`}
+                                        title={preset.description}
+                                    >
+                                        <div className="text-xs font-semibold text-slate-900">
+                                            {preset.label}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
+                {/* Header alignment — text-align on #section-personal, plus
+                    justify-content for any flex contact rows inside. */}
+                {resume && onResumeChange && (
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3 flex items-center gap-1.5">
+                            <AlignLeft size={11} /> Header alignment
+                        </h3>
+                        <div className="grid grid-cols-3 gap-2">
+                            {[
+                                { key: 'left', label: 'Left', Icon: AlignLeft },
+                                { key: 'center', label: 'Center', Icon: AlignCenter },
+                                { key: 'right', label: 'Right', Icon: AlignRight },
+                            ].map(({ key, label, Icon }) => {
+                                const isActive = (resume.headerAlignment || 'left') === key;
+                                return (
+                                    <button
+                                        key={key}
+                                        onClick={() =>
+                                            onResumeChange((prev) => ({
+                                                ...prev,
+                                                headerAlignment: key,
+                                            }))
+                                        }
+                                        className={`flex flex-col items-center gap-1 px-2.5 py-2.5 rounded-lg border transition-all ${
+                                            isActive
+                                                ? 'border-slate-900 bg-slate-50 text-slate-900'
+                                                : 'border-slate-200 hover:border-slate-300 bg-white text-slate-500'
+                                        }`}
+                                    >
+                                        <Icon size={16} />
+                                        <span className="text-[11px] font-semibold">{label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
                 {/* Preset list */}
                 <div>
                     <h3 className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-3">
@@ -232,11 +425,20 @@ const ThemeSettingsModal = ({ isOpen, onClose }) => {
                                         Aa
                                     </div>
                                     <div className="flex-1 text-left">
-                                        <div className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+                                        {/* Name + description rendered IN the font itself
+                                            so users can preview each option without picking
+                                            it. The font stack flows from the parent. */}
+                                        <div
+                                            className="text-sm font-semibold text-slate-900 flex items-center gap-1.5"
+                                            style={{ fontFamily: font.stack }}
+                                        >
                                             {font.name}
                                             {isActive && <Check size={14} className="text-emerald-600" />}
                                         </div>
-                                        <div className="text-[11px] text-slate-500 mt-0.5">
+                                        <div
+                                            className="text-[11px] text-slate-500 mt-0.5"
+                                            style={{ fontFamily: font.stack }}
+                                        >
                                             {font.description}
                                         </div>
                                     </div>

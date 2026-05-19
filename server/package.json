@@ -23,6 +23,7 @@
     "express": "^5.1.0",
     "mammoth": "^1.11.0",
     "multer": "^2.0.2",
+    "p-queue": "^9.3.0",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^5.4.449",
     "puppeteer": "^24.38.0"

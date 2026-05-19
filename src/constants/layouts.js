@@ -9,17 +9,13 @@ export const LAYOUTS = [
     { id: 'canvas', name: 'The Canvas (Pro)' },
     { id: 'classic', name: 'Classic Stack' },
     { id: 'creative', name: 'The Creative' },
-    { id: 'deedy', name: "The Designer (Deedy's)" },
-    { id: 'modern-grid', name: 'Modern Grid' },
     { id: 'jakes', name: "The Engineer (Jake's)" },
     { id: 'freeform', name: 'Freeform Builder' },
     { id: 'sidebar-left', name: 'Left Sidebar' },
     { id: 'sidebar-right', name: 'Right Sidebar' },
     { id: 'minimal', name: 'Minimalist' },
     { id: 'ats', name: 'ATS Friendly' },
-    { id: 'glitch', name: 'The Glitch (Cyberpunk)' },
     { id: 'executive', name: 'The Executive' },
-    { id: 'leaf', name: 'The Leaf (Organic)' },
     { id: 'gold', name: 'The Gold Standard' },
 ];
 
@@ -28,12 +24,11 @@ export const LAYOUTS = [
 // categories add visual variety for candidates whose roles benefit from
 // design signaling (designers, marketers, ICs at startups). Layouts that
 // stay hidden:
-//   - glitch (cyberpunk gimmick — too niche for a default gallery)
 //   - freeform (too unstructured for most resumes)
 //
-// All listed layouts are wired through PreviewPanel + TemplatePreview, so
-// adding one here automatically makes it pickable in the gallery and
-// renderable in the editor.
+// All listed layouts are wired through TemplatePreview, so adding one here
+// automatically makes it pickable in the gallery and renderable in the
+// editor.
 export const TEMPLATES = [
     // ─── Modern ─────────────────────────────────────────────────────────
     {
@@ -47,13 +42,6 @@ export const TEMPLATES = [
         id: 'navy-modern-1',
         name: 'Navy Modern',
         layout: 'navy-modern',
-        theme: THEMES.find((t) => t.id === 'black'),
-        category: 'Modern',
-    },
-    {
-        id: 'modern-grid-1',
-        name: 'Modern Grid',
-        layout: 'modern-grid',
         theme: THEMES.find((t) => t.id === 'black'),
         category: 'Modern',
     },
@@ -135,26 +123,12 @@ export const TEMPLATES = [
         theme: THEMES.find((t) => t.id === 'black'),
         category: 'Sidebar',
     },
-    {
-        id: 'deedy-1',
-        name: 'Designer (Deedy)',
-        layout: 'deedy',
-        theme: THEMES.find((t) => t.id === 'black'),
-        category: 'Sidebar',
-    },
 
     // ─── Creative ───────────────────────────────────────────────────────
     {
         id: 'creative-1',
         name: 'The Creative',
         layout: 'creative',
-        theme: THEMES.find((t) => t.id === 'black'),
-        category: 'Creative',
-    },
-    {
-        id: 'leaf-1',
-        name: 'Leaf (Organic)',
-        layout: 'leaf',
         theme: THEMES.find((t) => t.id === 'black'),
         category: 'Creative',
     },

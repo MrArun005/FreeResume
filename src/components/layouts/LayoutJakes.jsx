@@ -7,11 +7,11 @@ const LayoutJakes = ({ data, theme, pageIndex, isMeasurement }) => {
 
     return (
         <div
-            className={`p-10 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[297mm] overflow-hidden'} font-serif text-gray-900 bg-white relative box-border`}
+            className={`p-10 ${isMeasurement ? 'h-auto overflow-visible' : 'h-[var(--page-height)] overflow-hidden'} font-serif text-gray-900 bg-white relative box-border`}
         >
             {/* Header */}
             {pageIndex === 0 && (
-                <div className="text-center mb-4">
+                <div id="section-personal" className="text-center mb-4">
                     <h1 className="text-3xl font-normal uppercase tracking-wide mb-1">{personal.fullName}</h1>
                     <div className="flex justify-center items-center gap-3 text-sm">
                         {personal.phone && <span>{personal.phone}</span>}
